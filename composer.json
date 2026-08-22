@@ -1,0 +1,29 @@
+
+{
+    "name": "renziito/made",
+    "description": "Project of the website of made.brands",
+    "type": "project",
+    "require": {
+        "yiisoft/yii": "1.1.29",
+        "phpmailer/phpmailer": "6.9"
+    },
+    "authors": [
+        {
+            "name": "Renziito",
+            "email": "sepia.aki@gmail.com"
+        }
+    ],
+    "config": {
+        "audit": {
+            "ignore": [
+                "PKSA-5knt-m24q-vw91"
+            ]
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php mkdir.php"
+        ]
+    },
+    "minimum-stability": "dev"
+}

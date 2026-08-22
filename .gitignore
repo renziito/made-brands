@@ -1,0 +1,7 @@
+/assets/*
+/protected/runtime/*
+protected/runtime/*
+/vendor/*
+vendor/*
+images/*
+/images/*
