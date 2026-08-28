@@ -1,53 +1,153 @@
 <?php
 /* @var $this SiteController */
 /* @var $model LoginForm */
-/* @var $form CActiveForm  */
+/* @var $form CActiveForm */
 
-$this->pageTitle=Yii::app()->name . ' - Login';
-$this->breadcrumbs=array(
+$this->pageTitle = Yii::app()->name . ' - Login';
+$this->breadcrumbs = array(
 	'Login',
 );
 ?>
 
-<h1>Login</h1>
+<div class="login-page">
+	<div class="container">
+		<div class="login-page__wrapper">
 
-<p>Please fill out the following form with your login credentials:</p>
+			<div class="login-card">
 
-<div class="form">
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'login-form',
-	'enableClientValidation'=>true,
-	'clientOptions'=>array(
-		'validateOnSubmit'=>true,
-	),
-)); ?>
+				<div class="login-card__header">
+					<h1 class="login-card__title">
+						Bienvenido
+					</h1>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+					<p class="login-card__description">
+						Inicia sesión para acceder al panel de administración.
+					</p>
+				</div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'username'); ?>
-		<?php echo $form->textField($model,'username'); ?>
-		<?php echo $form->error($model,'username'); ?>
+				<div class="login-card__body">
+
+					<?php $form = $this->beginWidget('CActiveForm', array(
+						'id' => 'login-form',
+						'enableClientValidation' => true,
+						'clientOptions' => array(
+							'validateOnSubmit' => true,
+						),
+						'htmlOptions' => array(
+							'class' => 'login-form',
+						),
+					)); ?>
+
+					<div class="login-form__field">
+						<?php echo $form->labelEx($model, 'username', array(
+							'class' => 'login-form__label',
+						)); ?>
+
+						<div class="login-form__input-wrapper">
+							<span class="login-form__input-icon">
+								<i class="fa fa-user"></i>
+							</span>
+
+							<?php echo $form->textField($model, 'username', array(
+								'class' => 'login-form__input',
+								'placeholder' => 'Ingresa tu usuario',
+								'autocomplete' => 'username',
+							)); ?>
+						</div>
+
+						<?php echo $form->error($model, 'username', array(
+							'class' => 'login-form__error',
+						)); ?>
+					</div>
+
+					<div class="login-form__field">
+						<?php echo $form->labelEx($model, 'password', array(
+							'class' => 'login-form__label',
+						)); ?>
+
+						<div class="login-form__input-wrapper">
+							<span class="login-form__input-icon">
+								<i class="fa fa-lock"></i>
+							</span>
+
+							<?php echo $form->passwordField($model, 'password', array(
+								'class' => 'login-form__input',
+								'placeholder' => 'Ingresa tu contraseña',
+								'autocomplete' => 'current-password',
+							)); ?>
+
+							<button
+								type="button"
+								class="login-form__password-toggle"
+								aria-label="Mostrar contraseña"
+								tabindex="-1">
+								<i class="fa fa-eye"></i>
+							</button>
+						</div>
+
+						<?php echo $form->error($model, 'password', array(
+							'class' => 'login-form__error',
+						)); ?>
+					</div>
+
+					<div class="login-form__options">
+						<label class="login-form__remember">
+							<?php echo $form->checkBox($model, 'rememberMe', array(
+								'class' => 'login-form__checkbox',
+							)); ?>
+
+							<span class="login-form__checkmark"></span>
+
+							<span>
+								Recordarme
+							</span>
+						</label>
+					</div>
+
+					<div class="login-form__actions">
+						<?php echo CHtml::submitButton('Iniciar sesión', array(
+							'class' => 'login-form__submit',
+						)); ?>
+					</div>
+
+					<?php $this->endWidget(); ?>
+
+				</div>
+
+				<div class="login-card__footer">
+					<span class="login-card__footer-icon">
+						<i class="fa fa-shield"></i>
+					</span>
+
+					<span>
+						Acceso seguro al panel de administración
+					</span>
+				</div>
+
+			</div>
+
+		</div>
 	</div>
+</div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'password'); ?>
-		<?php echo $form->passwordField($model,'password'); ?>
-		<?php echo $form->error($model,'password'); ?>
-		<p class="hint">
-			Hint: You may login with <kbd>demo</kbd>/<kbd>demo</kbd> or <kbd>admin</kbd>/<kbd>admin</kbd>.
-		</p>
-	</div>
+<script>
+	$(document).on('click', '.login-form__password-toggle', function() {
+		var $button = $(this);
+		var $input = $('#LoginForm_password');
+		var $icon = $button.find('i');
 
-	<div class="row rememberMe">
-		<?php echo $form->checkBox($model,'rememberMe'); ?>
-		<?php echo $form->label($model,'rememberMe'); ?>
-		<?php echo $form->error($model,'rememberMe'); ?>
-	</div>
+		if (!$input.length) {
+			return;
+		}
 
-	<div class="row buttons">
-		<?php echo CHtml::submitButton('Login'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
-</div><!-- form -->
+		if ($input.attr('type') === 'password') {
+			$input.attr('type', 'text');
+			$icon.removeClass('fa-eye').addClass('fa-eye-slash');
+			$button.attr('aria-label', 'Ocultar contraseña');
+		} else {
+			$input.attr('type', 'password');
+			$icon.removeClass('fa-eye-slash').addClass('fa-eye');
+			$button.attr('aria-label', 'Mostrar contraseña');
+		}
+	});
+</script>

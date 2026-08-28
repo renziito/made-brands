@@ -1,0 +1,89 @@
+@charset "UTF-8";
+
+/*
+|--------------------------------------------------------------------------
+| MADE THEME - VARIABLES
+|--------------------------------------------------------------------------
+| Single source of truth for visual tokens.
+| Change colors, fonts, spacing, radius and motion here.
+|--------------------------------------------------------------------------
+*/
+
+:root {
+
+    /* Colors */
+    --made-color-primary: #3d3a87;
+    --made-color-primary-dark: #302d70;
+    --made-color-secondary: #392566;
+    --made-color-secondary-dark: #302056;
+
+    --made-color-text: #171717;
+    --made-color-text-soft: #333b4a;
+    --made-color-text-muted: #666666;
+    --made-color-text-light: #999999;
+
+    --made-color-background: #ffffff;
+    --made-color-background-soft: #f5f5f3;
+    --made-color-background-muted: #f3f0f6;
+    --made-color-border: #e5e5e5;
+    --made-color-border-light: #eeeeee;
+
+    --made-color-dark: #050505;
+    --made-color-dark-soft: #111111;
+
+    --made-color-white: #ffffff;
+    --made-color-black: #000000;
+
+    /* Typography */
+    --made-font-sans:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    --made-font-serif:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    --made-font-body: var(--made-font-sans);
+    --made-font-heading: var(--made-font-serif);
+    --made-font-ui: var(--made-font-sans);
+
+    --made-font-size-body: 16px;
+    --made-line-height-body: 1.5;
+
+    /* Layout */
+    --made-container-width: 1280px;
+    --made-container-padding: 24px;
+
+    /* Spacing */
+    --made-spacing-xs: 8px;
+    --made-spacing-sm: 16px;
+    --made-spacing-md: 24px;
+    --made-spacing-lg: 40px;
+    --made-spacing-xl: 64px;
+    --made-spacing-xxl: 96px;
+
+    /* Radius */
+    --made-radius-sm: 4px;
+    --made-radius-md: 8px;
+    --made-radius-lg: 16px;
+    --made-radius-pill: 999px;
+
+    /* Shadows */
+    --made-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --made-shadow-md: 0 5px 14px rgba(0, 0, 0, 0.10);
+    --made-shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+    /* Motion */
+    --made-transition-fast: 0.2s ease;
+    --made-transition: 0.3s ease;
+    --made-transition-slow: 0.6s ease;
+
+    /* Header */
+    --made-header-height: 84px;
+
+    /* Focus */
+    --made-focus-width: 2px;
+    --made-focus-offset: 4px;
+}

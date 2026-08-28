@@ -1,11 +1,11 @@
-
 {
     "name": "renziito/made",
     "description": "Project of the website of made.brands",
     "type": "project",
     "require": {
         "yiisoft/yii": "1.1.29",
-        "phpmailer/phpmailer": "6.9"
+        "phpmailer/phpmailer": "6.9",
+        "vlucas/phpdotenv": "^5.7"
     },
     "authors": [
         {

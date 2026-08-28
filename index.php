@@ -1,4 +1,8 @@
 <?php
+$loader        = require(__DIR__ . '/vendor/autoload.php');
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__FILE__));
+$dotenv->load();
 
 set_time_limit(0);
 // change the following paths if necessary
@@ -14,6 +18,6 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 3);
 
 require_once($yii);
-$loader        = require(__DIR__ . '/vendor/autoload.php');
+
 Yii::$classMap = $loader->getClassMap();
 Yii::createWebApplication($config)->run();

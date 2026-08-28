@@ -1,0 +1,345 @@
+@charset "UTF-8";
+
+/*
+|--------------------------------------------------------------------------
+| MADE THEME - INTRO / ABOUT
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| INTRO
+|--------------------------------------------------------------------------
+*/
+
+.intro {
+    width: 100%;
+    background: var(--made-color-background);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MISSION
+|--------------------------------------------------------------------------
+*/
+
+.intro__mission {
+    width: 100%;
+    padding: 72px 0;
+    text-align: center;
+    background: var(--made-color-background-soft);
+}
+
+.intro__mission-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.intro .section-label,
+.intro__about-text .section-label {
+    color: var(--made-color-primary);
+}
+
+.intro__mission .section-label {
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.intro__mission-title {
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--made-color-text);
+    font-family: var(--made-font-heading);
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+
+.intro__mission-title em {
+    font-style: italic;
+}
+
+.intro__mission-description {
+    max-width: 760px;
+    margin: 20px auto 0;
+    color: var(--made-color-text-soft);
+    font-family: var(--made-font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT
+|--------------------------------------------------------------------------
+*/
+
+.intro__about {
+    width: 100%;
+    background: var(--made-color-background);
+}
+
+.intro__about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT TEXT
+|--------------------------------------------------------------------------
+*/
+
+.intro__about-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px max(40px, 5.6vw);
+}
+
+.intro__about-text .section-label {
+    margin-bottom: 14px;
+}
+
+.intro__about-title {
+    position: relative;
+    margin: 0;
+    padding-bottom: 25px;
+    color: var(--made-color-text);
+    font-family: var(--made-font-heading);
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+}
+
+.intro__about-title::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: var(--made-color-primary);
+    content: "";
+}
+
+.intro__about-description {
+    max-width: 520px;
+    margin: 24px 0 0;
+    color: var(--made-color-text-soft);
+    font-family: var(--made-font-ui);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.intro__about-description+.intro__about-description {
+    margin-top: 16px;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT HIGHLIGHTS
+|--------------------------------------------------------------------------
+*/
+
+.intro__about-highlights {
+    display: grid;
+    grid-template-columns: repeat(var(--about-highlights-columns),
+            minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 560px;
+    margin-top: 32px;
+}
+
+.intro__about-highlight {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 86px;
+    padding: 16px 18px;
+    border: 1px solid var(--made-color-border);
+    border-radius: 10px;
+    background: var(--made-color-background-soft);
+}
+
+.intro__about-highlight-title {
+    display: block;
+    color: var(--made-color-text);
+    font-family: var(--made-font-heading);
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.intro__about-highlight-description {
+    display: block;
+    margin-top: 8px;
+    color: var(--made-color-text-soft);
+    font-family: var(--made-font-ui);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT IMAGE
+|--------------------------------------------------------------------------
+*/
+
+.intro__about-image {
+    width: 100%;
+    min-height: 500px;
+    overflow: hidden;
+    background: var(--made-color-dark-soft);
+}
+
+.intro__about-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| TABLET
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 992px) {
+
+    .intro__mission {
+        padding: 60px 0;
+    }
+
+    .intro__mission-title {
+        max-width: 700px;
+        font-size: 38px;
+    }
+
+    .intro__about-text {
+        padding: 60px 40px;
+    }
+
+    .intro__about-title {
+        font-size: 36px;
+    }
+
+    .intro__about-highlights {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 768px) {
+
+    .intro__mission {
+        padding: 52px 0;
+    }
+
+    .intro__mission-title {
+        max-width: 600px;
+        font-size: 34px;
+        line-height: 1.08;
+    }
+
+    .intro__mission-description {
+        max-width: 560px;
+        margin-top: 18px;
+        font-size: 14px;
+    }
+
+    .intro__about-content {
+        grid-template-columns: 1fr;
+    }
+
+    .intro__about-text {
+        padding: 52px 20px;
+    }
+
+    .intro__about-title {
+        font-size: 34px;
+    }
+
+    .intro__about-highlights {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: none;
+    }
+
+    .intro__about-image {
+        min-height: 360px;
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SMALL MOBILE
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 480px) {
+
+    .intro__mission {
+        padding: 44px 0;
+    }
+
+    .intro__mission-title {
+        font-size: 30px;
+    }
+
+    .intro__mission-description {
+        font-size: 13px;
+    }
+
+    .intro__about-text {
+        padding: 44px 16px;
+    }
+
+    .intro__about-title {
+        font-size: 30px;
+    }
+
+    .intro__about-highlights {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .intro__about-highlight {
+        min-height: 76px;
+    }
+
+    .intro__about-image {
+        min-height: 300px;
+    }
+
+}

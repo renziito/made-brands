@@ -1,0 +1,184 @@
+<?php
+
+/**
+ * Description of Menu
+ *
+ * @author renziito
+ */
+class Menu
+{
+
+    public static function getMenu()
+    {
+        $menu = [
+            [
+                'name'  => 'Inicio',
+                'link'  => Yii::app()->getBaseUrl(true),
+                'icon'  => 'fas fa-home',
+                'class' => self::isActive(['cpanel', ['default'], 'index'])
+            ],
+            [
+                'name'  => 'Branding',
+                'link'  =>  Yii::app()->createurl('cpanel/branding'),
+                'icon'  => 'fas fa-palette',
+                'class' => self::isActive(['cpanel', ['branding'], '*'])
+            ],
+            [
+                'name'  => 'Idiomas',
+                'link'  =>  Yii::app()->createurl('cpanel/languages'),
+                'icon'  => 'fas fa-language',
+                'class' => self::isActive(['cpanel', ['languages'], '*'])
+            ],
+            [
+                'name'  => 'Users',
+                'link'  =>  Yii::app()->createurl('cpanel/users'),
+                'icon'  => 'fas fa-users',
+                'class' => self::isActive(['cpanel', ['users'], '*'])
+            ],
+
+            [
+                'name'  => 'Catalogo',
+                'link'  => 'javascript:;',
+                'icon'  => 'fab fa-product-hunt',
+                'class' => self::isActive(['cpanel', ['brands', 'about', 'faq'], '*']),
+                'sub'   => [
+                    [
+                        'name'  => 'Marcas',
+                        'icon'  => ' fas fa-tags',
+                        'class' => self::isActive(['cpanel', ['brands'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/brands'),
+                    ],
+
+                    [
+                        'name'  => 'Categorias',
+                        'icon'  => ' fas fa-th-large',
+                        'class' => self::isActive(['cpanel', ['categories'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/categories'),
+                    ],
+
+                    [
+                        'name'  => 'Productos',
+                        'icon'  => ' fas fa-box-open',
+                        'class' => self::isActive(['cpanel', ['products'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/products'),
+                    ]
+
+                ]
+            ],
+            [
+                'name'  => 'Extras',
+                'link'  => 'javascript:;',
+                'icon'  => 'fas fa-plus-square',
+                'class' => self::isActive(['cpanel', ['social'], '*']),
+                'sub'   => [
+                    [
+                        'name'  => 'Redes',
+                        'link'  =>  Yii::app()->createurl('cpanel/social'),
+                        'icon'  => 'fas fa-share-alt',
+                        'class' => self::isActive(['cpanel', ['social'], '*'])
+                    ],
+                    [
+                        'name'  => 'Fomularios',
+                        'icon'  => ' fas fa-edit',
+                        'class' => self::isActive(['cpanel', ['faq'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/faq'),
+                    ],
+                    [
+                        'name'  => 'Contacto',
+                        'link'  =>  Yii::app()->createurl('cpanel/contact'),
+                        'icon'  => ' fas fa-id-badge',
+                        'class' => self::isActive(['cpanel', ['contact'], '*'])
+                    ],
+                    [
+                        'name'  => 'CTA',
+                        'link'  =>  Yii::app()->createurl('cpanel/cta'),
+                        'icon'  => 'fas fa-external-link-square-alt',
+                        'class' => self::isActive(['cpanel', ['cta'], '*'])
+                    ],
+                ]
+            ],
+
+            [
+                'name'  => 'Secciones',
+                'link'  => 'javascript:;',
+                'icon'  => 'fas fa-copy',
+                'class' => self::isActive(['cpanel', ['hero', 'about', 'faq'], '*']),
+                'sub'   => [
+                    [
+                        'name'  => 'Hero',
+                        'icon'  => ' fas fa-images',
+                        'class' => self::isActive(['cpanel', ['hero'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/hero'),
+                    ],
+
+                    [
+                        'name'  => 'Intro',
+                        'icon'  => ' fas fa-align-left',
+                        'class' => self::isActive(['cpanel', ['intro'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/intro'),
+                    ],
+
+                    [
+                        'name'  => 'Somos',
+                        'icon'  => ' fas fa-info-circle',
+                        'class' => self::isActive(['cpanel', ['about'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/about'),
+                    ],
+                    [
+                        'name'  => 'Clientes',
+                        'icon'  => ' fas fa-users',
+                        'class' => self::isActive(['cpanel', ['about'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/about'),
+                    ],
+
+                    [
+                        'name'  => 'FAQ',
+                        'icon'  => ' fas fa-question-circle',
+                        'class' => self::isActive(['cpanel', ['faq'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/faq'),
+                    ],
+                    [
+                        'name'  => 'Footer',
+                        'link'  =>  Yii::app()->createurl('cpanel/footer'),
+                        'icon'  => ' fas fa-window-maximize',
+                        'class' => self::isActive(['cpanel', ['footer'], '*'])
+                    ],
+
+                ]
+            ]
+        ];
+        return $menu;
+    }
+
+    public static function isActive($p)
+    {
+        $m   = (Yii::app()->controller->module ? Yii::app()->controller->module->id : '');
+        $c   = (Yii::app()->controller->id == 'site' ? '' : Yii::app()->controller->id);
+        $a   = ($c == '' && Yii::app()->controller->action->id == 'index' ? '' : Yii::app()->controller->action->id);
+        $non = [];
+        if (is_array($p[2])) {
+            foreach ($p[2] as $act) {
+                $temp = explode("!", $act);
+                if (count($temp) > 1) {
+                    $non[] = $temp[1];
+                }
+            }
+        } else {
+            $temp = explode("!", $p[2]);
+            if (count($temp) > 1) {
+                $non[] = $temp[1];
+            }
+        }
+
+        if (count($non) > 1) {
+            $action = !(in_array($a, $non));
+        } else {
+            $action = $a == $p['2'];
+        }
+        $module     = (is_array($p['0'])) ? in_array($m, $p['0']) : $m == $p['0'];
+        $controller = (in_array($c, $p['1']) || in_array('*', $p['1']));
+
+        $result = ($module && $controller) && ($p['2'] == '*' ? true : $action);
+        return ($result ? 'open active' : '');
+    }
+}

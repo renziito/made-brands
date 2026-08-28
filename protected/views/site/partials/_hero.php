@@ -23,11 +23,12 @@ $themeUrl = Yii::app()->baseUrl;
 | Campos:
 |
 | id          => Identificador del slide
-| image       => Ruta relativa de la imagen
+| image       => Ruta relativa de la imagen (OBLIGATORIA)
 | alt         => Texto alternativo
-| eyebrow     => Texto pequeño superior
-| title       => Título principal
-| description => Descripción
+| alignment   => left / center / right
+| eyebrow     => Texto pequeño superior (OPCIONAL)
+| title       => Título principal (OPCIONAL)
+| description => Descripción (OPCIONAL)
 | active      => Define el slide inicial
 | loading     => lazy / eager
 |--------------------------------------------------------------------------
@@ -41,6 +42,8 @@ $heroSlides = array(
 		'image' => '/images/hero/hero-01.jpg',
 
 		'alt' => 'Representamos marcas que inspiran confianza',
+
+		'alignment' => 'left',
 
 		'eyebrow' => 'CONECTAMOS MARCAS CON MERCADOS',
 
@@ -72,6 +75,8 @@ $heroSlides = array(
 
 		'alt' => 'Productos que inspiran experiencias',
 
+		'alignment' => 'center',
+
 		'eyebrow' => 'CONECTAMOS MARCAS CON MERCADOS',
 
 		'title' => '
@@ -101,6 +106,8 @@ $heroSlides = array(
 		'image' => '/images/hero/hero-03.jpg',
 
 		'alt' => 'Marcas que trascienden',
+
+		'alignment' => 'right',
 
 		'eyebrow' => 'MARCAS QUE TRASCIENDEN',
 
@@ -132,6 +139,8 @@ $heroSlides = array(
 
 		'alt' => 'Experiencias que dejan huella',
 
+		'alignment' => 'left',
+
 		'eyebrow' => 'EXPERIENCIAS QUE DEJAN HUELLA',
 
 		'title' => '
@@ -161,6 +170,8 @@ $heroSlides = array(
 		'image' => '/images/hero/hero-05.jpg',
 
 		'alt' => 'Marcas que generan confianza',
+
+		'alignment' => 'center',
 
 		'eyebrow' => 'NUESTRO COMPROMISO',
 
@@ -229,40 +240,171 @@ $heroSlides = array(
 
 			<?php foreach ($heroSlides as $slide): ?>
 
+				<?php
+
+				/*
+				 * --------------------------------------------------------------
+				 * ALIGNMENT
+				 * --------------------------------------------------------------
+				 *
+				 * Solo permitimos valores conocidos para evitar que
+				 * información incorrecta termine directamente en una
+				 * clase CSS.
+				 */
+
+				$alignment = !empty($slide['alignment'])
+					? strtolower(trim($slide['alignment']))
+					: 'left';
+
+				$allowedAlignments = array(
+					'left',
+					'center',
+					'right'
+				);
+
+				if (!in_array($alignment, $allowedAlignments, true)) {
+					$alignment = 'left';
+				}
+
+
+				/*
+				 * --------------------------------------------------------------
+				 * CONTENT
+				 * --------------------------------------------------------------
+				 *
+				 * Cada elemento de contenido es opcional.
+				 */
+
+				$hasEyebrow = !empty($slide['eyebrow']);
+				$hasTitle = !empty($slide['title']);
+				$hasDescription = !empty($slide['description']);
+
+				$hasContent = (
+					$hasEyebrow ||
+					$hasTitle ||
+					$hasDescription
+				);
+
+
+				/*
+				 * --------------------------------------------------------------
+				 * SLIDE CLASSES
+				 * --------------------------------------------------------------
+				 *
+				 * Agregamos una clase específica para distinguir entre:
+				 *
+				 * hero__slide--has-content
+				 * hero__slide--image-only
+				 */
+
+				$slideClasses = array(
+					'item',
+					'hero__slide',
+					'hero__slide--' . $alignment
+				);
+
+				if ($hasContent) {
+					$slideClasses[] = 'hero__slide--has-content';
+				} else {
+					$slideClasses[] = 'hero__slide--image-only';
+				}
+
+				if (!empty($slide['active'])) {
+					$slideClasses[] = 'active';
+				}
+
+
+				/*
+				 * --------------------------------------------------------------
+				 * LOADING
+				 * --------------------------------------------------------------
+				 *
+				 * Solo permitimos lazy / eager.
+				 */
+
+				$loading = !empty($slide['loading'])
+					? strtolower(trim($slide['loading']))
+					: 'lazy';
+
+				if (!in_array($loading, array('lazy', 'eager'), true)) {
+					$loading = 'lazy';
+				}
+
+				?>
+
 				<div
-					class="item hero__slide <?php echo !empty($slide['active']) ? 'active' : ''; ?>">
+					class="<?php echo implode(' ', $slideClasses); ?>">
+
+
+					<!--
+					|--------------------------------------------------------------------------
+					| IMAGE
+					|--------------------------------------------------------------------------
+					| La imagen es el único elemento obligatorio del Hero.
+					|--------------------------------------------------------------------------
+					-->
 
 					<img
 						src="<?php echo $themeUrl . $slide['image']; ?>"
-						alt="<?php echo CHtml::encode($slide['alt']); ?>"
+						alt="<?php echo CHtml::encode(isset($slide['alt']) ? $slide['alt'] : ''); ?>"
 						class="hero__image"
-						loading="<?php echo $slide['loading']; ?>">
+						loading="<?php echo $loading; ?>">
 
+
+					<!--
+					|--------------------------------------------------------------------------
+					| OVERLAY
+					|--------------------------------------------------------------------------
+					-->
 
 					<div class="hero__overlay"></div>
 
 
-					<div class="container hero__container">
+					<?php if ($hasContent): ?>
 
-						<div class="hero__content">
+						<!--
+						|--------------------------------------------------------------------------
+						| CONTENT
+						|--------------------------------------------------------------------------
+						-->
 
-							<span class="hero__eyebrow">
-								<?php echo $slide['eyebrow']; ?>
-							</span>
+						<div class="container hero__container">
+
+							<div class="hero__content">
 
 
-							<h2 class="hero__title">
-								<?php echo $slide['title']; ?>
-							</h2>
+								<?php if ($hasEyebrow): ?>
+
+									<span class="hero__eyebrow">
+										<?php echo $slide['eyebrow']; ?>
+									</span>
+
+								<?php endif; ?>
 
 
-							<p class="hero__description">
-								<?php echo $slide['description']; ?>
-							</p>
+								<?php if ($hasTitle): ?>
+
+									<h2 class="hero__title">
+										<?php echo $slide['title']; ?>
+									</h2>
+
+								<?php endif; ?>
+
+
+								<?php if ($hasDescription): ?>
+
+									<p class="hero__description">
+										<?php echo $slide['description']; ?>
+									</p>
+
+								<?php endif; ?>
+
+
+							</div>
 
 						</div>
 
-					</div>
+					<?php endif; ?>
 
 				</div>
 

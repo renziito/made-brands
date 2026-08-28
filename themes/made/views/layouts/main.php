@@ -10,11 +10,32 @@ $themeUrl = Yii::app()->theme->baseUrl;
     <title><?php echo CHtml::encode($this->pageTitle); ?> </title>
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/font-awesome.min.css">
+
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/theme.css">
+
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/variables.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/hero.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/intro.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/business.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/products.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/clients.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/faq.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/footer.css">
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/login.css">
+
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/responsive.css">
 
 </head>
+
+<?php
+$isHome = $this->getRoute() === 'site/index';
+
+$sectionUrl = function ($section) use ($isHome) {
+    return $isHome
+        ? '#' . $section
+        : $this->createUrl('site/index') . '#' . $section;
+};
+?>
 
 <body>
     <header class="site-header">
@@ -24,11 +45,12 @@ $themeUrl = Yii::app()->theme->baseUrl;
             </strong>
             <nav class="site-menu">
                 <a href="<?php echo Yii::app()->homeUrl; ?>">Inicio</a>
-                <a href="#nosotros">Nosotros </a>
-                <a href="#negocios"> Nuestros negocios </a>
-                <a href="#productos"> Productos </a>
-                <a href="#clientes"> Nuestros clientes </a>
-                <a href="#contacto"> Contacto </a>
+                <a href="<?= $sectionUrl('nosotros'); ?>">Nosotros </a>
+                <a href="<?= $sectionUrl('negocios'); ?>"> Nuestros negocios </a>
+                <a href="<?= $sectionUrl('productos'); ?>"> Productos </a>
+                <a href="<?= $sectionUrl('clientes'); ?>"> Nuestros clientes </a>
+                <a href="<?= $sectionUrl('faq'); ?>"> FAQ </a>
+                <a href="<?= $sectionUrl('contacto'); ?>"> Contacto </a>
             </nav>
 
             <button type="button" class="menu-toggle" aria-label="Abrir menú"> <span></span> <span></span> <span></span> </button>

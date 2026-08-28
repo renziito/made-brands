@@ -5,19 +5,157 @@
 |--------------------------------------------------------------------------
 | Institutional section.
 |
-| Contains:
-| - Mission statement
-| - About us block
+| All editable content is centralized in $introContent.
+|
+| This structure is prepared to be replaced later by database content.
 |--------------------------------------------------------------------------
 */
 
+
 $themeUrl = Yii::app()->baseUrl;
+
+
+/*
+|--------------------------------------------------------------------------
+| INTRO CONTENT
+|--------------------------------------------------------------------------
+| All visible content of this section must live here.
+|
+| Future DB structure can replace this array directly.
+|--------------------------------------------------------------------------
+*/
+
+$introContent = array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | MISSION
+    |--------------------------------------------------------------------------
+    */
+
+    'mission' => array(
+
+        'eyebrow' => 'Nuestra misión',
+
+        'title' => 'Llevamos grandes marcas<br>a grandes <em>personas</em>',
+
+        'description' => 'Trabajamos con marcas internacionales de prestigio para ofrecer productos de la más alta calidad, con diseño, innovación y propósito.',
+
+    ),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ABOUT
+    |--------------------------------------------------------------------------
+    */
+
+    'about' => array(
+
+        'eyebrow' => 'Sobre nosotros',
+
+        'title' => 'Construimos relaciones<br>que generan valor',
+
+        'descriptions' => array(
+
+            'Representamos marcas que comparten nuestra visión y las conectamos con consumidores que buscan productos diferentes.',
+
+            'Nuestro trabajo combina experiencia, conocimiento del mercado y una mirada enfocada en construir relaciones de largo plazo.',
+
+        ),
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HIGHLIGHTS
+        |--------------------------------------------------------------------------
+        | Each highlight contains:
+        |
+        | - title
+        | - description
+        |
+        | The number of highlights can be changed freely.
+        |--------------------------------------------------------------------------
+        */
+
+        'highlights' => array(
+
+            array(
+                'title' => '6+',
+                'description' => 'Años en el mercado',
+            ),
+
+            array(
+                'title' => '5+',
+                'description' => 'Socios comerciales',
+            ),
+
+            array(
+                'title' => '5',
+                'description' => 'Categorías de productos',
+            ),
+
+            array(
+                'title' => '#2',
+                'description' => 'Marca de granola en Perú',
+            ),
+
+        ),
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | IMAGE
+        |--------------------------------------------------------------------------
+        */
+
+        'image' => array(
+
+            'src' => '/images/team/team-01.png',
+
+            'alt' => 'Nuestro equipo',
+
+        ),
+
+    ),
+
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| ABOUT HIGHLIGHTS GRID
+|--------------------------------------------------------------------------
+| Determines the ideal number of columns depending on the number
+| of highlights.
+|--------------------------------------------------------------------------
+*/
+
+$aboutHighlightCount = count($introContent['about']['highlights']);
+
+if ($aboutHighlightCount <= 1) {
+
+    $aboutHighlightColumns = 1;
+} elseif ($aboutHighlightCount === 2) {
+
+    $aboutHighlightColumns = 2;
+} elseif ($aboutHighlightCount === 3) {
+
+    $aboutHighlightColumns = 3;
+} elseif ($aboutHighlightCount <= 6) {
+
+    $aboutHighlightColumns = 3;
+} else {
+
+    $aboutHighlightColumns = 4;
+}
+
 ?>
+
 
 <section
     id="nosotros"
-    class="intro"
->
+    class="intro">
 
 
     <!--
@@ -32,28 +170,37 @@ $themeUrl = Yii::app()->baseUrl;
 
             <div class="intro__mission-content">
 
-                <span class="section-label">
-                    Nuestra misión
-                </span>
+
+                <?php if (!empty($introContent['mission']['eyebrow'])): ?>
+
+                    <span class="section-label">
+                        <?php echo CHtml::encode($introContent['mission']['eyebrow']); ?>
+                    </span>
+
+                <?php endif; ?>
 
 
-                <h2 class="intro__mission-title">
+                <?php if (!empty($introContent['mission']['title'])): ?>
 
-                    Llevamos grandes marcas
-                    <br>
+                    <h2 class="intro__mission-title">
 
-                    a grandes <em>personas</em>
+                        <?php echo $introContent['mission']['title']; ?>
 
-                </h2>
+                    </h2>
+
+                <?php endif; ?>
 
 
-                <p class="intro__mission-description">
+                <?php if (!empty($introContent['mission']['description'])): ?>
 
-                    Trabajamos con marcas internacionales de prestigio
-                    para ofrecer productos de la más alta calidad,
-                    con diseño, innovación y propósito.
+                    <p class="intro__mission-description">
 
-                </p>
+                        <?php echo CHtml::encode($introContent['mission']['description']); ?>
+
+                    </p>
+
+                <?php endif; ?>
+
 
             </div>
 
@@ -64,7 +211,7 @@ $themeUrl = Yii::app()->baseUrl;
 
     <!--
     |--------------------------------------------------------------------------
-    | ABOUT US
+    | ABOUT
     |--------------------------------------------------------------------------
     -->
 
@@ -75,59 +222,122 @@ $themeUrl = Yii::app()->baseUrl;
 
             <!--
             |--------------------------------------------------------------------------
-            | TEXT
+            | ABOUT TEXT
             |--------------------------------------------------------------------------
             -->
 
             <div class="intro__about-text">
 
-                <span class="section-label">
-                    Sobre nosotros
-                </span>
+
+                <?php if (!empty($introContent['about']['eyebrow'])): ?>
+
+                    <span class="section-label">
+                        <?php echo CHtml::encode($introContent['about']['eyebrow']); ?>
+                    </span>
+
+                <?php endif; ?>
 
 
-                <h2 class="intro__about-title">
-                    Construimos relaciones
-                    <br>
-                    que generan valor
-                </h2>
+                <?php if (!empty($introContent['about']['title'])): ?>
+
+                    <h2 class="intro__about-title">
+
+                        <?php echo $introContent['about']['title']; ?>
+
+                    </h2>
+
+                <?php endif; ?>
 
 
-                <p class="intro__about-description">
+                <?php if (!empty($introContent['about']['descriptions'])): ?>
 
-                    Representamos marcas que comparten nuestra
-                    visión y las conectamos con consumidores
-                    que buscan productos diferentes.
+                    <?php foreach ($introContent['about']['descriptions'] as $description): ?>
 
-                </p>
+                        <?php if (!empty($description)): ?>
+
+                            <p class="intro__about-description">
+
+                                <?php echo CHtml::encode($description); ?>
+
+                            </p>
+
+                        <?php endif; ?>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
 
 
-                <p class="intro__about-description">
+                <!--
+                |--------------------------------------------------------------------------
+                | ABOUT HIGHLIGHTS
+                |--------------------------------------------------------------------------
+                -->
 
-                    Nuestro trabajo combina experiencia,
-                    conocimiento del mercado y una mirada
-                    enfocada en construir relaciones de largo plazo.
+                <?php if (!empty($introContent['about']['highlights'])): ?>
 
-                </p>
+                    <div
+                        class="intro__about-highlights"
+                        style="--about-highlights-columns: <?php echo $aboutHighlightColumns; ?>;">
+
+                        <?php foreach ($introContent['about']['highlights'] as $highlight): ?>
+
+                            <div class="intro__about-highlight">
+
+
+                                <?php if (!empty($highlight['title'])): ?>
+
+                                    <strong class="intro__about-highlight-title">
+
+                                        <?php echo CHtml::encode($highlight['title']); ?>
+
+                                    </strong>
+
+                                <?php endif; ?>
+
+
+                                <?php if (!empty($highlight['description'])): ?>
+
+                                    <span class="intro__about-highlight-description">
+
+                                        <?php echo CHtml::encode($highlight['description']); ?>
+
+                                    </span>
+
+                                <?php endif; ?>
+
+
+                            </div>
+
+                        <?php endforeach; ?>
+
+                    </div>
+
+                <?php endif; ?>
+
 
             </div>
 
 
             <!--
             |--------------------------------------------------------------------------
-            | IMAGE
+            | ABOUT IMAGE
             |--------------------------------------------------------------------------
             -->
 
-            <div class="intro__about-image">
+            <?php if (!empty($introContent['about']['image']['src'])): ?>
 
-                <img
-                    src="<?php echo $themeUrl; ?>/images/team/team-01.png"
-                    alt="Nuestro equipo"
-                    loading="lazy"
-                >
+                <div class="intro__about-image">
 
-            </div>
+                    <img
+                        src="<?php echo $themeUrl . $introContent['about']['image']['src']; ?>"
+                        alt="<?php echo CHtml::encode($introContent['about']['image']['alt']); ?>"
+                        loading="lazy">
+
+                </div>
+
+            <?php endif; ?>
+
 
         </div>
 

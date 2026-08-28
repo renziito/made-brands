@@ -1,0 +1,39 @@
+/*
+
+* Override Pages default styles or create your own styles here
+
+*/
+
+.form-group-default .form-control {
+  height: 40px;
+  min-height: 40px;
+  margin-top:0;
+}
+
+
+.switchery {
+  width: 70px;
+  height: 40px;
+}
+
+.switchery>small {
+  height: 40px;
+  width: 40px;
+}
+
+.grid-view .filters input, .grid-view .filters select {
+  height:calc(2.25rem + 2px);
+}
+
+.modal-open .select2-container {
+  z-index: 1000;
+}
+
+.social-card.share .card-header .user-pic > img {
+  width: 50px;
+  height: 50px;
+}
+
+.social-card.share .card-header:hover {
+    cursor: initial;
+}

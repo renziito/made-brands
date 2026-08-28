@@ -4,665 +4,282 @@
 |--------------------------------------------------------------------------
 | MADE THEME - RESPONSIVE
 |--------------------------------------------------------------------------
-| Global responsive rules.
-|
-| This file controls:
-| - Global container
-| - Header
-| - Navigation
-| - Footer
-| - Global typography
-| - Global buttons
-|
-| Section-specific responsive styles belong to their own CSS files.
-| Example:
-| - hero.css
-| - products.css
-| - clients.css
-|--------------------------------------------------------------------------
-*/
-
-
-/*
-|--------------------------------------------------------------------------
-| LARGE DESKTOP
+| Global responsive rules only.
+| Section-specific responsive rules stay inside each section CSS.
 |--------------------------------------------------------------------------
 */
 
 @media (min-width: 1440px) {
-
     :root {
         --made-container-padding: 32px;
     }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| DESKTOP
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 1200px) {
-
     :root {
         --made-container-padding: 24px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CONTAINER
-    |--------------------------------------------------------------------------
-    */
-
     .container {
-        width: min(calc(100% - (var(--made-container-padding) * 2)),
-                var(--made-container-width));
+        width: min(
+            calc(100% - (var(--made-container-padding) * 2)),
+            var(--made-container-width)
+        );
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
 
     .site-menu {
         gap: 28px;
     }
 
-
     .site-menu a {
         font-size: 13px;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FOOTER
-    |--------------------------------------------------------------------------
-    */
-
-    .footer-content {
-        gap: var(--made-spacing-lg);
-    }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| TABLET LANDSCAPE
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 1024px) {
-
     :root {
         --made-container-padding: 20px;
-
         --made-spacing-xl: 56px;
         --made-spacing-xxl: 80px;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
 
     .site-menu {
         gap: 20px;
     }
 
-
     .site-menu a {
         font-size: 13px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TYPOGRAPHY
-    |--------------------------------------------------------------------------
-    */
-
     h1 {
-        font-size: clamp(38px,
-                5vw,
-                60px);
+        font-size: clamp(38px, 5vw, 60px);
     }
-
 
     h2 {
-        font-size: clamp(30px,
-                4vw,
-                48px);
+        font-size: clamp(30px, 4vw, 48px);
     }
-
 
     h3 {
-        font-size: clamp(22px,
-                3vw,
-                32px);
+        font-size: clamp(22px, 3vw, 32px);
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FOOTER
-    |--------------------------------------------------------------------------
-    */
-
-    .footer-content {
-        grid-template-columns:
-            minmax(0, 1.25fr) minmax(200px, 1fr);
-
-        gap: var(--made-spacing-lg);
-    }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| TABLET PORTRAIT
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 900px) {
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
-
     .site-menu {
         gap: 14px;
     }
-
 
     .site-menu a {
         font-size: 12px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SECTION HEADING
-    |--------------------------------------------------------------------------
-    */
-
     .section-heading {
         max-width: 650px;
     }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| MOBILE
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 768px) {
-
     :root {
         --made-container-padding: 20px;
-
         --made-header-height: 72px;
-
         --made-spacing-lg: 32px;
         --made-spacing-xl: 48px;
         --made-spacing-xxl: 64px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CONTAINER
-    |--------------------------------------------------------------------------
-    */
-
     .container {
         width: calc(100% - (var(--made-container-padding) * 2));
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
 
     .site-header {
         height: var(--made-header-height);
     }
 
-
-    .site-header>.container {
+    .site-header > .container {
         position: relative;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | LOGO
-    |--------------------------------------------------------------------------
-    */
 
     .site-logo {
         max-width: 200px;
     }
 
-
     .site-logo img {
         max-height: 44px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | MENU TOGGLE
-    |--------------------------------------------------------------------------
-    */
-
     .menu-toggle {
         display: block;
-
-        position: relative;
-
-        width: 44px;
-        height: 44px;
-
-        padding: 0;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOBILE MENU
-    |--------------------------------------------------------------------------
-    */
 
     .site-menu {
         position: absolute;
-
         top: 100%;
         right: 0;
         left: 0;
-
         display: flex;
-
         flex-direction: column;
         align-items: stretch;
-
         gap: 0;
-
         width: 100%;
         max-height: 0;
-
         overflow: hidden;
-
         background: var(--made-color-background);
-
         border-bottom: 1px solid var(--made-color-border);
-
         opacity: 0;
         visibility: hidden;
-
         transition:
             max-height var(--made-transition),
             opacity var(--made-transition),
             visibility var(--made-transition);
     }
 
-
     .site-menu.is-open {
         max-height: calc(100vh - var(--made-header-height));
-
         overflow-y: auto;
-
         opacity: 1;
         visibility: visible;
     }
 
-
     .site-menu a {
         display: flex;
-
         align-items: center;
-
         width: 100%;
         min-height: 56px;
-
-        padding:
-            0 var(--made-container-padding);
-
+        padding: 0 var(--made-container-padding);
         border-bottom: 1px solid var(--made-color-border);
-
         font-size: 14px;
     }
-
 
     .site-menu a:last-child {
         border-bottom: 0;
     }
 
-
     .site-menu a::after {
         display: none;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TYPOGRAPHY
-    |--------------------------------------------------------------------------
-    */
-
     h1 {
-        font-size: clamp(36px,
-                10vw,
-                52px);
+        font-size: clamp(36px, 10vw, 52px);
     }
-
 
     h2 {
-        font-size: clamp(30px,
-                8vw,
-                44px);
+        font-size: clamp(30px, 8vw, 44px);
     }
-
 
     h3 {
-        font-size: clamp(22px,
-                6vw,
-                32px);
+        font-size: clamp(22px, 6vw, 32px);
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SECTION LABEL
-    |--------------------------------------------------------------------------
-    */
 
     .section-label {
         margin-bottom: 12px;
-
         font-size: 11px;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SECTION HEADING
-    |--------------------------------------------------------------------------
-    */
 
     .section-heading {
         margin-bottom: var(--made-spacing-lg);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | BUTTONS
-    |--------------------------------------------------------------------------
-    */
-
     .btn {
         min-height: 48px;
-
-        padding:
-            0 24px;
+        padding: 0 24px;
     }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| SMALL MOBILE
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 480px) {
-
     :root {
         --made-container-padding: 16px;
-
         --made-spacing-md: 20px;
         --made-spacing-lg: 28px;
         --made-spacing-xl: 40px;
         --made-spacing-xxl: 56px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CONTAINER
-    |--------------------------------------------------------------------------
-    */
-
     .container {
         width: calc(100% - (var(--made-container-padding) * 2));
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
 
     .site-logo {
         max-width: 170px;
     }
 
-
     .site-logo img {
         max-height: 40px;
     }
-
 
     .menu-toggle {
         width: 40px;
         height: 40px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOBILE MENU
-    |--------------------------------------------------------------------------
-    */
-
     .site-menu a {
         min-height: 52px;
-
         font-size: 13px;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TYPOGRAPHY
-    |--------------------------------------------------------------------------
-    */
 
     body {
         font-size: 15px;
     }
 
-
-    h1 {
-        font-size: 36px;
-    }
-
-
-    h2 {
-        font-size: 30px;
-    }
-
-
-    h3 {
-        font-size: 24px;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | BUTTONS
-    |--------------------------------------------------------------------------
-    */
+    h1 { font-size: 36px; }
+    h2 { font-size: 30px; }
+    h3 { font-size: 24px; }
 
     .btn {
         width: 100%;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FOOTER
-    |--------------------------------------------------------------------------
-    */
-
-    .footer-brand img {
-        max-width: 160px;
-    }
-
-
-    .footer-bottom p {
-        font-size: 12px;
-    }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| VERY SMALL MOBILE
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 360px) {
-
     :root {
         --made-container-padding: 14px;
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
 
     .site-logo {
         max-width: 150px;
     }
 
-
     .site-logo img {
         max-height: 36px;
     }
-
 
     .menu-toggle {
         width: 38px;
         height: 38px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | MENU
-    |--------------------------------------------------------------------------
-    */
-
     .site-menu a {
         min-height: 50px;
-
-        padding-left: 14px;
         padding-right: 14px;
-
+        padding-left: 14px;
         font-size: 13px;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TYPOGRAPHY
-    |--------------------------------------------------------------------------
-    */
-
-    h1 {
-        font-size: 32px;
-    }
-
-
-    h2 {
-        font-size: 28px;
-    }
-
-
-    h3 {
-        font-size: 22px;
-    }
-
+    h1 { font-size: 32px; }
+    h2 { font-size: 28px; }
+    h3 { font-size: 22px; }
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| MOBILE LANDSCAPE
-|--------------------------------------------------------------------------
-*/
-
 @media (max-width: 768px) and (orientation: landscape) {
-
     .site-menu.is-open {
         max-height: calc(100vh - var(--made-header-height));
-
         overflow-y: auto;
     }
-
 
     .site-menu a {
         min-height: 48px;
     }
-
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| REDUCED MOTION
-|--------------------------------------------------------------------------
-*/
-
 @media (prefers-reduced-motion: reduce) {
-
     html {
         scroll-behavior: auto;
     }
-
 
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
-
         animation-iteration-count: 1 !important;
-
         transition-duration: 0.01ms !important;
     }
-
 }

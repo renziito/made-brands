@@ -5,3 +5,4 @@ protected/runtime/*
 vendor/*
 images/*
 /images/*
+.env
