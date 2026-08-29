@@ -606,6 +606,10 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 	}
 }
 
+ .is-visible{
+ display:block !important
+ }
+
 ');
 ?>
 
@@ -632,21 +636,27 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 
 			<div class="admin-form-card__heading">
 
-				<div class="admin-form-card__icon">
-					<i class="fas fa-plus"></i>
+
+				<div class="admin-form-section__heading">
+
+					<div class="admin-form-section__icon">
+						<i class="fas fa-image"></i>
+					</div>
+
+					<div>
+
+						<h1 class="admin-form-section__title">
+							Información del Slide
+						</h1>
+
+						<p class="admin-form-section__description">
+							Configuración visual y comportamiento del slide.
+						</p>
+
+					</div>
+
 				</div>
 
-				<div>
-
-					<h2 class="admin-form-card__title">
-						Crear Hero Slide
-					</h2>
-
-					<p class="admin-form-card__description">
-						Completa la información del slide y su contenido.
-					</p>
-
-				</div>
 
 			</div>
 
@@ -716,36 +726,13 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 
 			<div class="admin-form-section">
 
-				<div class="admin-form-section__header">
 
-					<div class="admin-form-section__heading">
-
-						<div class="admin-form-section__icon">
-							<i class="fas fa-image"></i>
-						</div>
-
-						<div>
-
-							<h1 class="admin-form-section__title">
-								Información del Slide
-							</h1>
-
-							<p class="admin-form-section__description">
-								Configuración visual y comportamiento del slide.
-							</p>
-
-						</div>
-
-					</div>
-
-				</div>
 
 				<div class="admin-form-fields">
 
 					<!-- IMAGE -->
 
 					<div class="admin-form-field admin-form-field--full">
-
 						<?= $form->labelEx($model, 'image'); ?>
 
 						<div class="admin-form-image-upload">
@@ -760,16 +747,37 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 
 							<div
 								id="hero-slide-image-preview"
-								class="admin-form-image-preview">
-								<img
-									id="hero-slide-image-preview-img"
-									src=""
-									alt="Vista previa">
+								class="admin-form-image-preview<?= $model->image ? ' is-visible' : ''; ?>">
+
+								<?php if ($model->image): ?>
+
+									<img
+										id="hero-slide-image-preview-img"
+										src="<?= CHtml::encode(
+													Yii::app()->baseUrl .
+														'/images/hero-slides/' .
+														$model->image
+												); ?>"
+										alt="Imagen actual">
+
+								<?php else: ?>
+
+									<img
+										id="hero-slide-image-preview-img"
+										src=""
+										alt="Vista previa">
+
+								<?php endif; ?>
+
 							</div>
 
 						</div>
 
 						<span class="hint">
+							<?php if ($model->image): ?>
+								Imagen actual. Si seleccionas una nueva imagen, reemplazará la actual.
+							<?php endif; ?>
+
 							Formatos permitidos: JPG, PNG o WebP.
 							La imagen será optimizada para web manteniendo sus dimensiones originales.
 						</span>
@@ -777,6 +785,7 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 						<?= $form->error($model, 'image'); ?>
 
 					</div>
+
 
 					<!-- ALIGNMENT -->
 
@@ -1108,7 +1117,7 @@ Yii::app()->clientScript->registerCss('admin-form-hero-slides', '
 					type="submit"
 					class="admin-form-button admin-form-button--primary">
 					<i class="fas fa-plus"></i>
-					Crear
+					<?= $model->isNewRecord ? 'Crear' : 'Actualizar'  ?>
 				</button>
 
 			</div>

@@ -40,8 +40,8 @@ class FaqFormFields extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('form_id, name, label, type, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('is_required, sort_order, is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
+			array('form_id, name, label, type, created_at, updated_at', 'required'),
+			array('is_required, sort_order, is_active', 'numerical', 'integerOnly'=>true),
 			array('form_id', 'length', 'max'=>10),
 			array('name', 'length', 'max'=>100),
 			array('label, placeholder', 'length', 'max'=>255),
@@ -116,11 +116,7 @@ class FaqFormFields extends CActiveRecord
 		$criteria->compare('options',$this->options,true);
 		$criteria->compare('is_required',$this->is_required);
 		$criteria->compare('sort_order',$this->sort_order);
-
-		$criteria->order = 'sort_order DESC';
 		$criteria->compare('is_active',$this->is_active);
-
-		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

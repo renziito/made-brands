@@ -80,8 +80,8 @@ class Menu
                     [
                         'name'  => 'Fomularios',
                         'icon'  => ' fas fa-edit',
-                        'class' => self::isActive(['cpanel', ['faq'], '*']),
-                        'link'  => Yii::app()->createurl('cpanel/faq'),
+                        'class' => self::isActive(['cpanel', ['forms'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/forms'),
                     ],
                     [
                         'name'  => 'Contacto',
@@ -124,11 +124,18 @@ class Menu
                         'class' => self::isActive(['cpanel', ['about'], '*']),
                         'link'  => Yii::app()->createurl('cpanel/about'),
                     ],
+
+                    [
+                        'name'  => 'Negocios',
+                        'icon'  => ' fas fa-briefcase',
+                        'class' => self::isActive(['cpanel', ['business'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/business'),
+                    ],
                     [
                         'name'  => 'Clientes',
                         'icon'  => ' fas fa-users',
-                        'class' => self::isActive(['cpanel', ['about'], '*']),
-                        'link'  => Yii::app()->createurl('cpanel/about'),
+                        'class' => self::isActive(['cpanel', ['brands'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/brands'),
                     ],
 
                     [

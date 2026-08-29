@@ -20,8 +20,11 @@ class m260824_235301_firstTable extends CDbMigration
 			'category_translations',
 			'categories',
 			'brands',
+			'brands_section',
 			'business_translations',
 			'businesses',
+			'intro_section_translations',
+			'intro_sections',
 			'about_section_stat_translations',
 			'about_section_stats',
 			'about_section_translations',
@@ -39,8 +42,6 @@ class m260824_235301_firstTable extends CDbMigration
 			'contact_cta_translations',
 			'contact_cta',
 			'social_links',
-			'clients_section_translations',
-			'clients_section',
 			'site_settings',
 			'languages',
 			'users',
@@ -116,6 +117,37 @@ class m260824_235301_firstTable extends CDbMigration
 			'CONSTRAINT `fk_hero_translation_slide` FOREIGN KEY (`hero_slide_id`) REFERENCES `hero_slides` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
 			'CONSTRAINT `fk_hero_translation_language` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+		$this->createTable('intro_sections', array(
+			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
+			'type' => "VARCHAR(30) NOT NULL DEFAULT 'intro'",
+			'sort_order' => 'INT NOT NULL DEFAULT 0',
+			'is_active' => 'TINYINT NOT NULL DEFAULT 1',
+			'created_at' => 'DATETIME NOT NULL',
+			'updated_at' => 'DATETIME NOT NULL',
+			'PRIMARY KEY (`id`)',
+			'KEY `idx_intro_sections_type_active` (`type`, `is_active`, `sort_order`)',
+		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+		$this->createTable('intro_section_translations', array(
+			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
+			'intro_section_id' => 'INT UNSIGNED NOT NULL',
+			'language_id' => 'INT UNSIGNED NOT NULL',
+			'eyebrow' => 'VARCHAR(255) NULL',
+			'eyebrow_size' => 'VARCHAR(20) NULL',
+			'title' => 'TEXT NULL',
+			'title_size' => 'VARCHAR(20) NULL',
+			'text' => 'TEXT NULL',
+			'text_size' => 'VARCHAR(20) NULL',
+			'created_at' => 'DATETIME NOT NULL',
+			'updated_at' => 'DATETIME NOT NULL',
+			'PRIMARY KEY (`id`)',
+			'UNIQUE KEY `uq_intro_section_language` (`intro_section_id`, `language_id`)',
+			'KEY `idx_intro_translation_language` (`language_id`)',
+			'CONSTRAINT `fk_intro_translation_section` FOREIGN KEY (`intro_section_id`) REFERENCES `intro_sections` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+			'CONSTRAINT `fk_intro_translation_language` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE',
+		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
 
 		$this->createTable('about_sections', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
@@ -281,6 +313,17 @@ class m260824_235301_firstTable extends CDbMigration
 			'KEY `idx_brands_featured_active_order` (`is_featured`, `is_active`, `sort_order`)',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
+		$this->createTable('brands_section', array(
+			'id'         => 'pk',
+			'language_id' => 'INT UNSIGNED NOT NULL',
+			'eyebrow'    => 'VARCHAR(255) NOT NULL',
+			'title'      => 'VARCHAR(500) NOT NULL',
+			'text'       => 'TEXT NOT NULL',
+			'image'      => 'VARCHAR(255) DEFAULT NULL',
+			'created_at' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+			'updated_at' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
 		$this->createTable('products', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
 			'brand_id' => 'INT UNSIGNED NOT NULL',
@@ -337,35 +380,6 @@ class m260824_235301_firstTable extends CDbMigration
 			'CONSTRAINT `fk_product_subcategories_subcategory` FOREIGN KEY (`subcategory_id`) REFERENCES `subcategories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-		$this->createTable('clients_section', array(
-			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
-			'image' => 'VARCHAR(255) NULL',
-			'is_active' => 'TINYINT NOT NULL DEFAULT 1',
-			'created_at' => 'DATETIME NOT NULL',
-			'updated_at' => 'DATETIME NOT NULL',
-			'PRIMARY KEY (`id`)',
-		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
-
-		$this->createTable('clients_section_translations', array(
-			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
-			'clients_section_id' => 'INT UNSIGNED NOT NULL',
-			'language_id' => 'INT UNSIGNED NOT NULL',
-			'eyebrow' => 'VARCHAR(255) NULL',
-			'eyebrow_size' => 'VARCHAR(20) NULL',
-			'title' => 'TEXT NULL',
-			'title_size' => 'VARCHAR(20) NULL',
-			'text' => 'TEXT NULL',
-			'text_size' => 'VARCHAR(20) NULL',
-			'brands_label' => 'VARCHAR(255) NULL',
-			'brands_label_size' => 'VARCHAR(20) NULL',
-			'created_at' => 'DATETIME NOT NULL',
-			'updated_at' => 'DATETIME NOT NULL',
-			'PRIMARY KEY (`id`)',
-			'UNIQUE KEY `uq_clients_section_language` (`clients_section_id`, `language_id`)',
-			'KEY `idx_clients_section_translation_language` (`language_id`)',
-			'CONSTRAINT `fk_clients_section_translation_section` FOREIGN KEY (`clients_section_id`) REFERENCES `clients_section` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
-			'CONSTRAINT `fk_clients_section_translation_language` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE',
-		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
 		$this->createTable('faqs', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
@@ -712,13 +726,13 @@ class m260824_235301_firstTable extends CDbMigration
 			array(
 				'name' => 'Consumo masivo',
 				'description' => 'Llevamos productos de calidad a las góndolas de todo el país.',
-				'icon' => 'shopping-cart',
+				'icon' => 'fas fa-shopping-cart',
 				'order' => 1,
 			),
 			array(
 				'name' => 'Soluciones B2B',
 				'description' => 'Soluciones a medida para empresas, instituciones y canales profesionales.',
-				'icon' => 'cutlery',
+				'icon' => 'fas fa-truck-moving',
 				'order' => 2,
 			),
 		);
@@ -847,30 +861,12 @@ class m260824_235301_firstTable extends CDbMigration
 			$brandIds[$brand['name']] = $this->dbConnection->getLastInsertID();
 		}
 
-		// -----------------------------------------------------------------
-		// CLIENTS SECTION
-		// -----------------------------------------------------------------
-		$this->insert('clients_section', array(
-			'image' => null,
-			'is_active' => 1,
-			'created_at' => $now,
-			'updated_at' => $now,
-		));
-		$clientsSectionId = $this->dbConnection->getLastInsertID();
-
-		$this->insert('clients_section_translations', array(
-			'clients_section_id' => $clientsSectionId,
-			'language_id' => 1,
+		$this->insert('brands_section', array(
 			'eyebrow' => 'NUESTROS CLIENTES',
-			'eyebrow_size' => '12',
-			'title' => 'Estamos donde vos estás',
-			'title_size' => '38',
-			'text' => 'Nuestras marcas llegan a miles de puntos de venta en todo el país, acompañando cada momento.',
-			'text_size' => '16',
-			'brands_label' => 'MARCAS DESTACADAS',
-			'brands_label_size' => '12',
-			'created_at' => $now,
-			'updated_at' => $now,
+			'language_id' => 1,
+			'title'   => 'Estamos donde vos estás',
+			'text'    => 'Nuestras marcas llegan a miles de puntos de venta en todo el país, acompañando cada momento.',
+			'image'   => null,
 		));
 
 		// -----------------------------------------------------------------
@@ -930,19 +926,19 @@ class m260824_235301_firstTable extends CDbMigration
 		// -----------------------------------------------------------------
 		$contactItems = array(
 			array(
-				'icon' => 'map-marker',
+				'icon' => 'fas fa-map-marker-alt',
 				'label' => 'Dirección',
 				'value' => "Av. Italia 1234, Oficina 456\nMontevideo, Uruguay",
 				'order' => 1,
 			),
 			array(
-				'icon' => 'phone',
+				'icon' => 'fas fa-phone',
 				'label' => 'Teléfono',
 				'value' => '+598 2628 1234',
 				'order' => 2,
 			),
 			array(
-				'icon' => 'envelope',
+				'icon' => 'far fa-envelope',
 				'label' => 'Email',
 				'value' => 'hola@madebrands.com',
 				'order' => 3,
@@ -972,7 +968,7 @@ class m260824_235301_firstTable extends CDbMigration
 		}
 
 		$this->insert('contact_cta', array(
-			'icon' => 'envelope',
+			'icon' => 'far fa-envelope',
 			'url' => 'mailto:hola@madebrands.com',
 			'is_active' => 1,
 			'created_at' => $now,
@@ -1057,6 +1053,29 @@ class m260824_235301_firstTable extends CDbMigration
 				'updated_at' => $now,
 			));
 		}
+
+		$this->insert('intro_sections', array(
+			'type' => 'intro',
+			'sort_order' => 0,
+			'is_active' => 1,
+			'created_at' => date('Y-m-d H:i:s'),
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
+
+		$introSectionId = $this->getDbConnection()->getLastInsertID();
+
+		$this->insert('intro_section_translations', array(
+			'intro_section_id' => $introSectionId,
+			'language_id' => 1,
+			'eyebrow' => 'NUESTRA MISIÓN',
+			'eyebrow_size' => '14px',
+			'title' => 'Llevamos grandes marcas a grandes personas',
+			'title_size' => '52px',
+			'text' => 'Trabajamos con marcas internacionales de prestigio para ofrecer productos de la más alta calidad, con diseño, innovación y propósito.',
+			'text_size' => '20px',
+			'created_at' => date('Y-m-d H:i:s'),
+			'updated_at' => date('Y-m-d H:i:s'),
+		));
 
 		// -----------------------------------------------------------------
 		// DEMO PRODUCTS

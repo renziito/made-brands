@@ -1,11 +1,11 @@
 <?php
 
 /**
- * This is the model class for table "clients_section_translations".
+ * This is the model class for table "intro_section_translations".
  *
- * The followings are the available columns in table 'clients_section_translations':
+ * The followings are the available columns in table 'intro_section_translations':
  * @property string $id
- * @property string $clients_section_id
+ * @property string $intro_section_id
  * @property string $language_id
  * @property string $eyebrow
  * @property string $eyebrow_size
@@ -13,23 +13,21 @@
  * @property string $title_size
  * @property string $text
  * @property string $text_size
- * @property string $brands_label
- * @property string $brands_label_size
  * @property string $created_at
  * @property string $updated_at
  *
  * The followings are the available model relations:
  * @property Languages $language
- * @property ClientsSection $clientsSection
+ * @property IntroSections $introSection
  */
-class ClientsSectionTranslations extends CActiveRecord
+class IntroSectionTranslations extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'clients_section_translations';
+		return 'intro_section_translations';
 	}
 
 	/**
@@ -40,14 +38,14 @@ class ClientsSectionTranslations extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('clients_section_id, language_id, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('clients_section_id, language_id', 'length', 'max'=>10),
-			array('eyebrow, brands_label', 'length', 'max'=>255),
-			array('eyebrow_size, title_size, text_size, brands_label_size', 'length', 'max'=>20),
+			array('intro_section_id, language_id, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
+			array('intro_section_id, language_id', 'length', 'max'=>10),
+			array('eyebrow', 'length', 'max'=>255),
+			array('eyebrow_size, title_size, text_size', 'length', 'max'=>20),
 			array('title, text', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, clients_section_id, language_id, eyebrow, eyebrow_size, title, title_size, text, text_size, brands_label, brands_label_size, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, intro_section_id, language_id, eyebrow, eyebrow_size, title, title_size, text, text_size, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,7 +58,7 @@ class ClientsSectionTranslations extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'language' => array(self::BELONGS_TO, 'Languages', 'language_id'),
-			'clientsSection' => array(self::BELONGS_TO, 'ClientsSection', 'clients_section_id'),
+			'introSection' => array(self::BELONGS_TO, 'IntroSections', 'intro_section_id'),
 		);
 	}
 
@@ -71,7 +69,7 @@ class ClientsSectionTranslations extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'clients_section_id' => 'Clients Section',
+			'intro_section_id' => 'Intro Section',
 			'language_id' => 'Language',
 			'eyebrow' => 'Eyebrow',
 			'eyebrow_size' => 'Eyebrow Size',
@@ -79,8 +77,6 @@ class ClientsSectionTranslations extends CActiveRecord
 			'title_size' => 'Title Size',
 			'text' => 'Text',
 			'text_size' => 'Text Size',
-			'brands_label' => 'Brands Label',
-			'brands_label_size' => 'Brands Label Size',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
 		);
@@ -105,7 +101,7 @@ class ClientsSectionTranslations extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('clients_section_id',$this->clients_section_id,true);
+		$criteria->compare('intro_section_id',$this->intro_section_id,true);
 		$criteria->compare('language_id',$this->language_id,true);
 		$criteria->compare('eyebrow',$this->eyebrow,true);
 		$criteria->compare('eyebrow_size',$this->eyebrow_size,true);
@@ -113,8 +109,6 @@ class ClientsSectionTranslations extends CActiveRecord
 		$criteria->compare('title_size',$this->title_size,true);
 		$criteria->compare('text',$this->text,true);
 		$criteria->compare('text_size',$this->text_size,true);
-		$criteria->compare('brands_label',$this->brands_label,true);
-		$criteria->compare('brands_label_size',$this->brands_label_size,true);
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
@@ -127,7 +121,7 @@ class ClientsSectionTranslations extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return ClientsSectionTranslations the static model class
+	 * @return IntroSectionTranslations the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

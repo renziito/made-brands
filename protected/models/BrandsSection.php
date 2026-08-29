@@ -1,26 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "clients_section".
+ * This is the model class for table "brands_section".
  *
- * The followings are the available columns in table 'clients_section':
- * @property string $id
+ * The followings are the available columns in table 'brands_section':
+ * @property integer $id
+ * @property string $language_id
+ * @property string $eyebrow
+ * @property string $title
+ * @property string $text
  * @property string $image
- * @property integer $is_active
  * @property string $created_at
  * @property string $updated_at
- *
- * The followings are the available model relations:
- * @property ClientsSectionTranslations[] $clientsSectionTranslations
  */
-class ClientsSection extends CActiveRecord
+class BrandsSection extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'clients_section';
+		return 'brands_section';
 	}
 
 	/**
@@ -31,12 +31,13 @@ class ClientsSection extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
-			array('image', 'length', 'max'=>255),
+			array('language_id, eyebrow, title, text, created_at, updated_at', 'required'),
+			array('language_id', 'length', 'max'=>10),
+			array('eyebrow, image', 'length', 'max'=>255),
+			array('title', 'length', 'max'=>500),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, image, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, language_id, eyebrow, title, text, image, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -48,7 +49,6 @@ class ClientsSection extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'clientsSectionTranslations' => array(self::HAS_MANY, 'ClientsSectionTranslations', 'clients_section_id'),
 		);
 	}
 
@@ -59,8 +59,11 @@ class ClientsSection extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
+			'language_id' => 'Language',
+			'eyebrow' => 'Eyebrow',
+			'title' => 'Title',
+			'text' => 'Text',
 			'image' => 'Image',
-			'is_active' => 'Is Active',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
 		);
@@ -84,11 +87,12 @@ class ClientsSection extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id,true);
+		$criteria->compare('id',$this->id);
+		$criteria->compare('language_id',$this->language_id,true);
+		$criteria->compare('eyebrow',$this->eyebrow,true);
+		$criteria->compare('title',$this->title,true);
+		$criteria->compare('text',$this->text,true);
 		$criteria->compare('image',$this->image,true);
-		$criteria->compare('is_active',$this->is_active);
-
-		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
@@ -101,7 +105,7 @@ class ClientsSection extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return ClientsSection the static model class
+	 * @return BrandsSection the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

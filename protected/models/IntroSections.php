@@ -1,29 +1,27 @@
 <?php
 
 /**
- * This is the model class for table "faq_forms".
+ * This is the model class for table "intro_sections".
  *
- * The followings are the available columns in table 'faq_forms':
+ * The followings are the available columns in table 'intro_sections':
  * @property string $id
- * @property string $title
- * @property string $description
+ * @property string $type
+ * @property integer $sort_order
  * @property integer $is_active
  * @property string $created_at
  * @property string $updated_at
  *
  * The followings are the available model relations:
- * @property FaqFormFields[] $faqFormFields
- * @property FaqFormSubmissions[] $faqFormSubmissions
- * @property Faqs[] $faqs
+ * @property IntroSectionTranslations[] $introSectionTranslations
  */
-class FaqForms extends CActiveRecord
+class IntroSections extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'faq_forms';
+		return 'intro_sections';
 	}
 
 	/**
@@ -34,13 +32,12 @@ class FaqForms extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, created_at, updated_at', 'required'),
-			array('is_active', 'numerical', 'integerOnly'=>true),
-			array('title', 'length', 'max'=>255),
-			array('description', 'safe'),
+			array('created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
+			array('sort_order, is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
+			array('type', 'length', 'max'=>30),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, title, description, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, type, sort_order, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -52,9 +49,7 @@ class FaqForms extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'faqFormFields' => array(self::HAS_MANY, 'FaqFormFields', 'form_id'),
-			'faqFormSubmissions' => array(self::HAS_MANY, 'FaqFormSubmissions', 'form_id'),
-			'faqs' => array(self::HAS_MANY, 'Faqs', 'form_id'),
+			'introSectionTranslations' => array(self::HAS_MANY, 'IntroSectionTranslations', 'intro_section_id'),
 		);
 	}
 
@@ -65,8 +60,8 @@ class FaqForms extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'title' => 'Title',
-			'description' => 'Description',
+			'type' => 'Type',
+			'sort_order' => 'Sort Order',
 			'is_active' => 'Is Active',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
@@ -92,9 +87,13 @@ class FaqForms extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('description',$this->description,true);
+		$criteria->compare('type',$this->type,true);
+		$criteria->compare('sort_order',$this->sort_order);
+
+		$criteria->order = 'sort_order DESC';
 		$criteria->compare('is_active',$this->is_active);
+
+		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
@@ -107,7 +106,7 @@ class FaqForms extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return FaqForms the static model class
+	 * @return IntroSections the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

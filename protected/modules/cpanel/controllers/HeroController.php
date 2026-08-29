@@ -397,20 +397,342 @@ class HeroController extends Controller
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
+	 *
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id)
 	{
 		$model = $this->loadModel($id);
-		$post = Yii::app()->request->getPost('HeroSlides', false);
+
+		$post = Yii::app()->request->getPost(
+			'HeroSlides',
+			false
+		);
+
 		if ($post) {
+
 			$model->attributes = $post;
+
 			$model->updated_at = date('Y-m-d H:i:s');
-			if ($model->save()) {
-				$this->redirect(array('index'));
+
+			// ======================================================
+			// IMAGE
+			// ======================================================
+
+			$image = CUploadedFile::getInstance(
+				$model,
+				'image'
+			);
+
+			$transaction = Yii::app()->db->beginTransaction();
+
+			try {
+
+				// ==================================================
+				// VALIDATE IMAGE
+				// ==================================================
+
+				if ($image) {
+
+					$extension = strtolower(
+						$image->getExtensionName()
+					);
+
+					$allowedExtensions = array(
+						'jpg',
+						'jpeg',
+						'png',
+						'webp',
+					);
+
+					if (!in_array(
+						$extension,
+						$allowedExtensions
+					)) {
+
+						$model->addError(
+							'image',
+							'El formato de imagen no es válido.'
+						);
+
+						throw new Exception(
+							'Formato de imagen no válido.'
+						);
+					}
+
+					// ==================================================
+					// IMAGE INFO
+					// ==================================================
+
+					$imageInfo = @getimagesize(
+						$image->getTempName()
+					);
+
+					if (!$imageInfo) {
+
+						$model->addError(
+							'image',
+							'El archivo seleccionado no es una imagen válida.'
+						);
+
+						throw new Exception(
+							'El archivo seleccionado no es una imagen válida.'
+						);
+					}
+
+					// ==================================================
+					// UPLOAD DIRECTORY
+					// ==================================================
+
+					$uploadDirectory = Yii::getPathOfAlias(
+						'webroot.images'
+					);
+
+					$uploadDirectory .=
+						DIRECTORY_SEPARATOR .
+						'hero-slides';
+
+					if (!is_dir($uploadDirectory)) {
+
+						if (!mkdir(
+							$uploadDirectory,
+							0755,
+							true
+						)) {
+
+							$model->addError(
+								'image',
+								'No se pudo crear el directorio de imágenes.'
+							);
+
+							throw new Exception(
+								'No se pudo crear el directorio de imágenes.'
+							);
+						}
+					}
+
+					// ==================================================
+					// IMAGE NAME
+					// ==================================================
+
+					$fileName =
+						'hero-slide-' .
+						$model->id .
+						'-' .
+						time() .
+						'.' .
+						$extension;
+
+					$filePath =
+						$uploadDirectory .
+						DIRECTORY_SEPARATOR .
+						$fileName;
+
+					// ==================================================
+					// OPTIMIZE IMAGE
+					// ==================================================
+
+					$imageResource = null;
+
+					switch ($extension) {
+
+						case 'jpg':
+						case 'jpeg':
+
+							$imageResource = @imagecreatefromjpeg(
+								$image->getTempName()
+							);
+
+							break;
+
+						case 'png':
+
+							$imageResource = @imagecreatefrompng(
+								$image->getTempName()
+							);
+
+							break;
+
+						case 'webp':
+
+							if (function_exists('imagecreatefromwebp')) {
+
+								$imageResource = @imagecreatefromwebp(
+									$image->getTempName()
+								);
+							}
+
+							break;
+					}
+
+					if (!$imageResource) {
+
+						// If GD cannot process the image,
+						// save the original instead of corrupting it.
+
+						if (!$image->saveAs($filePath)) {
+
+							$model->addError(
+								'image',
+								'No se pudo guardar la imagen.'
+							);
+
+							throw new Exception(
+								'No se pudo guardar la imagen.'
+							);
+						}
+					} else {
+
+						// ==================================================
+						// KEEP ORIGINAL DIMENSIONS
+						// ==================================================
+
+						$width = imagesx($imageResource);
+						$height = imagesy($imageResource);
+
+						// ==================================================
+						// OPTIMIZED OUTPUT
+						// ==================================================
+
+						switch ($extension) {
+
+							case 'jpg':
+							case 'jpeg':
+
+								imageinterlace(
+									$imageResource,
+									true
+								);
+
+								$saved = imagejpeg(
+									$imageResource,
+									$filePath,
+									85
+								);
+
+								break;
+
+							case 'png':
+
+								$saved = imagepng(
+									$imageResource,
+									$filePath,
+									6
+								);
+
+								break;
+
+							case 'webp':
+
+								$saved = false;
+
+								if (function_exists('imagewebp')) {
+
+									$saved = imagewebp(
+										$imageResource,
+										$filePath,
+										85
+									);
+								}
+
+								break;
+
+							default:
+
+								$saved = false;
+						}
+
+						imagedestroy(
+							$imageResource
+						);
+
+						if (!$saved) {
+
+							$model->addError(
+								'image',
+								'No se pudo optimizar y guardar la imagen.'
+							);
+
+							throw new Exception(
+								'No se pudo optimizar y guardar la imagen.'
+							);
+						}
+					}
+
+					// ==================================================
+					// DELETE OLD IMAGE
+					// ==================================================
+
+					if (
+						$model->image &&
+						$model->image !== $fileName
+					) {
+
+						$oldImagePath =
+							$uploadDirectory .
+							DIRECTORY_SEPARATOR .
+							$model->image;
+
+						if (
+							is_file($oldImagePath) &&
+							is_writable($oldImagePath)
+						) {
+
+							@unlink(
+								$oldImagePath
+							);
+						}
+					}
+
+					// ==================================================
+					// UPDATE IMAGE FIELD
+					// ==================================================
+
+					$model->image = $fileName;
+				}
+
+				// ======================================================
+				// SAVE HERO SLIDE
+				// ======================================================
+
+				if (!$model->save()) {
+
+					throw new Exception(
+						'No se pudo actualizar el Hero Slide.'
+					);
+				}
+
+				// ======================================================
+				// COMMIT
+				// ======================================================
+
+				$transaction->commit();
+
+				$this->redirect(
+					array('index')
+				);
+
+				return;
+			} catch (Exception $e) {
+
+				$transaction->rollback();
+
+				if (!$model->hasErrors()) {
+
+					$model->addError(
+						'image',
+						$e->getMessage()
+					);
+				}
 			}
 		}
-		$this->render('update', array('model' => $model));
+
+		$this->render(
+			'update',
+			array(
+				'model' => $model,
+			)
+		);
 	}
 	/**
 	 * Soft deletes a particular model.
@@ -453,5 +775,197 @@ class HeroController extends Controller
 			throw new CHttpException(404, 'La página solicitada no existe.');
 		}
 		return $model;
+	}
+
+	/**
+	 * Creates a translation for an existing hero slide.
+	 * If creation is successful, the browser will be redirected to the 'index' page.
+	 *
+	 * @param integer $id Hero slide ID
+	 * @param integer $language_id Language ID
+	 */
+	public function actionCreateTranslation($id, $language_id)
+	{
+		$heroSlide = HeroSlides::model()->findByPk($id);
+
+		if (!$heroSlide) {
+			throw new CHttpException(
+				404,
+				'El Hero Slide solicitado no existe.'
+			);
+		}
+
+		$language = Languages::model()->findByPk($language_id);
+
+		if (!$language) {
+			throw new CHttpException(
+				404,
+				'El idioma solicitado no existe.'
+			);
+		}
+
+		// ======================================================
+		// CHECK EXISTING TRANSLATION
+		// ======================================================
+
+		$existingTranslation = HeroSlideTranslations::model()->findByAttributes(
+			array(
+				'hero_slide_id' => $heroSlide->id,
+				'language_id' => $language->id,
+			)
+		);
+
+		if ($existingTranslation) {
+			$this->redirect(array(
+				'updateTranslation',
+				'id' => $heroSlide->id,
+				'language_id' => $language->id,
+			));
+			return;
+		}
+
+		// ======================================================
+		// CREATE TRANSLATION
+		// ======================================================
+
+		$translation = new HeroSlideTranslations;
+
+		$translation->hero_slide_id = $heroSlide->id;
+		$translation->language_id = $language->id;
+
+		$now = date('Y-m-d H:i:s');
+
+		$translation->created_at = $now;
+		$translation->updated_at = $now;
+
+		$post = Yii::app()->request->getPost(
+			'HeroSlideTranslations',
+			false
+		);
+
+		if ($post) {
+
+			$translation->attributes = $post;
+
+			// Never allow the request to change the relationship.
+			$translation->hero_slide_id = $heroSlide->id;
+			$translation->language_id = $language->id;
+
+			$translation->updated_at = $now;
+
+			if ($translation->save()) {
+
+				$this->redirect(array('index'));
+
+				return;
+			}
+		}
+
+		// ======================================================
+		// RENDER
+		// ======================================================
+
+		$this->render(
+			'update_translation',
+			array(
+				'model' => $translation,
+				'heroSlide' => $heroSlide,
+				'language' => $language,
+			)
+		);
+	}
+
+	/**
+	 * Updates a translation for an existing hero slide.
+	 * If update is successful, the browser will be redirected to the 'index' page.
+	 *
+	 * @param integer $id Hero slide ID
+	 * @param integer $language_id Language ID
+	 */
+	public function actionUpdateTranslation($id, $language_id)
+	{
+		// ======================================================
+		// HERO SLIDE
+		// ======================================================
+
+		$heroSlide = HeroSlides::model()->findByPk($id);
+
+		if (!$heroSlide) {
+			throw new CHttpException(
+				404,
+				'El Hero Slide solicitado no existe.'
+			);
+		}
+
+		// ======================================================
+		// LANGUAGE
+		// ======================================================
+
+		$language = Languages::model()->findByPk($language_id);
+
+		if (!$language) {
+			throw new CHttpException(
+				404,
+				'El idioma solicitado no existe.'
+			);
+		}
+
+		// ======================================================
+		// TRANSLATION
+		// ======================================================
+
+		$translation = HeroSlideTranslations::model()->findByAttributes(
+			array(
+				'hero_slide_id' => $heroSlide->id,
+				'language_id' => $language->id,
+			)
+		);
+
+		if (!$translation) {
+			throw new CHttpException(
+				404,
+				'No existe una traducción para este Hero Slide en el idioma seleccionado.'
+			);
+		}
+
+		// ======================================================
+		// POST
+		// ======================================================
+
+		$post = Yii::app()->request->getPost(
+			'HeroSlideTranslations',
+			false
+		);
+
+		if ($post) {
+
+			$translation->attributes = $post;
+
+			// Never allow the request to modify the relationship.
+			$translation->hero_slide_id = $heroSlide->id;
+			$translation->language_id = $language->id;
+
+			$translation->updated_at = date('Y-m-d H:i:s');
+
+			if ($translation->save()) {
+
+				$this->redirect(array('index'));
+
+				return;
+			}
+		}
+
+		// ======================================================
+		// RENDER
+		// ======================================================
+
+		$this->render(
+			'update_translation',
+			array(
+				'model' => $translation,
+				'heroSlide' => $heroSlide,
+				'language' => $language,
+			)
+		);
 	}
 }
