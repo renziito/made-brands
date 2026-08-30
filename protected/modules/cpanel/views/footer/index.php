@@ -23,15 +23,13 @@ $renderIconPicker = function ($inputId, $value) {
     <div
         class="admin-icon-picker"
         id="<?php echo CHtml::encode($pickerId); ?>"
-        data-input-id="<?php echo CHtml::encode($inputId); ?>"
-    >
+        data-input-id="<?php echo CHtml::encode($inputId); ?>">
 
         <input
             type="hidden"
             name="icon"
             id="<?php echo CHtml::encode($inputId); ?>"
-            value="<?php echo CHtml::encode($selectedIcon); ?>"
-        >
+            value="<?php echo CHtml::encode($selectedIcon); ?>">
 
 
         <div class="admin-icon-picker__selected">
@@ -40,8 +38,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 <i
                     class="<?php echo CHtml::encode($selectedIcon); ?>"
-                    data-icon-preview
-                ></i>
+                    data-icon-preview></i>
 
             </div>
 
@@ -54,8 +51,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 <span
                     class="admin-icon-picker__selected-value"
-                    data-icon-selected-value
-                >
+                    data-icon-selected-value>
                     <?php
                     echo CHtml::encode(
                         $selectedIcon
@@ -71,8 +67,7 @@ $renderIconPicker = function ($inputId, $value) {
             <button
                 type="button"
                 class="admin-icon-picker__clear"
-                data-icon-clear
-            >
+                data-icon-clear>
                 Limpiar
             </button>
 
@@ -86,22 +81,19 @@ $renderIconPicker = function ($inputId, $value) {
                 class="form-control"
                 placeholder="Buscar icono..."
                 autocomplete="off"
-                data-icon-search
-            >
+                data-icon-search>
 
         </div>
 
 
         <div
             class="admin-icon-picker__grid"
-            data-icon-grid
-        ></div>
+            data-icon-grid></div>
 
 
         <div
             class="admin-icon-picker__empty"
-            data-icon-empty
-        >
+            data-icon-empty>
             No se encontraron iconos.
         </div>
 
@@ -180,8 +172,7 @@ $renderIconPicker = function ($inputId, $value) {
         <form
             method="post"
             action="<?php echo $this->createUrl('saveCta'); ?>"
-            class="footer-general-form"
-        >
+            class="footer-general-form">
 
             <div class="row">
 
@@ -215,10 +206,9 @@ $renderIconPicker = function ($inputId, $value) {
                             name="url"
                             class="form-control"
                             value="<?php
-                            echo CHtml::encode($cta->url);
-                            ?>"
-                            placeholder="https://..."
-                        >
+                                    echo CHtml::encode($cta->url);
+                                    ?>"
+                            placeholder="https://...">
 
                     </div>
 
@@ -243,8 +233,7 @@ $renderIconPicker = function ($inputId, $value) {
                                     echo $cta->is_active
                                         ? 'checked'
                                         : '';
-                                    ?>
-                                >
+                                    ?>>
 
                                 <span class="slider round"></span>
 
@@ -274,8 +263,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 <button
                     type="submit"
-                    class="btn btn-primary"
-                >
+                    class="btn btn-primary">
                     Guardar CTA
                 </button>
 
@@ -294,8 +282,7 @@ $renderIconPicker = function ($inputId, $value) {
 
             <ul
                 class="language-tabs"
-                role="tablist"
-            >
+                role="tablist">
 
                 <?php foreach ($languages as $index => $language): ?>
 
@@ -305,8 +292,8 @@ $renderIconPicker = function ($inputId, $value) {
                         ? $language->code
                         : (
                             isset($language->iso_code)
-                                ? $language->iso_code
-                                : ''
+                            ? $language->iso_code
+                            : ''
                         );
 
                     $languageName = isset($language->name)
@@ -318,17 +305,15 @@ $renderIconPicker = function ($inputId, $value) {
 
                     <li
                         class="<?php
-                        echo $index === 0
-                            ? 'active'
-                            : '';
-                        ?>"
-                    >
+                                echo $index === 0
+                                    ? 'active'
+                                    : '';
+                                ?>">
 
                         <a
                             href="#cta-language-<?php echo (int) $language->id; ?>"
                             class="language-tab-link"
-                            data-tab-target="#cta-language-<?php echo (int) $language->id; ?>"
-                        >
+                            data-tab-target="#cta-language-<?php echo (int) $language->id; ?>">
 
                             <span class="language-code">
 
@@ -380,30 +365,26 @@ $renderIconPicker = function ($inputId, $value) {
                     <div
                         id="cta-language-<?php echo (int) $language->id; ?>"
                         class="tab-pane <?php
-                        echo $index === 0
-                            ? 'active'
-                            : '';
-                        ?>"
-                    >
+                                        echo $index === 0
+                                            ? 'active'
+                                            : '';
+                                        ?>">
 
                         <form
                             method="post"
                             action="<?php echo $this->createUrl('saveCtaTranslation'); ?>"
-                            class="language-form"
-                        >
+                            class="language-form">
 
                             <input
                                 type="hidden"
                                 name="contact_cta_id"
-                                value="<?php echo (int) $cta->id; ?>"
-                            >
+                                value="<?php echo (int) $cta->id; ?>">
 
 
                             <input
                                 type="hidden"
                                 name="language_id"
-                                value="<?php echo (int) $language->id; ?>"
-                            >
+                                value="<?php echo (int) $language->id; ?>">
 
 
 
@@ -422,14 +403,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="title"
                                             class="form-control"
                                             value="<?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->title
-                                                )
-                                                : '';
-                                            ?>"
-                                            placeholder="Título del CTA"
-                                        >
+                                                    echo $translation
+                                                        ? CHtml::encode(
+                                                            $translation->title
+                                                        )
+                                                        : '';
+                                                    ?>"
+                                            placeholder="Título del CTA">
 
                                     </div>
 
@@ -449,14 +429,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="title_size"
                                             class="form-control"
                                             value="<?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->title_size
-                                                )
-                                                : '';
-                                            ?>"
-                                            placeholder="Ej. 32px"
-                                        >
+                                                    echo $translation
+                                                        ? CHtml::encode(
+                                                            $translation->title_size
+                                                        )
+                                                        : '';
+                                                    ?>"
+                                            placeholder="Ej. 32px">
 
                                     </div>
 
@@ -480,14 +459,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="text"
                                             class="form-control"
                                             rows="4"
-                                            placeholder="Texto del CTA"
-                                        ><?php
-                                        echo $translation
-                                            ? CHtml::encode(
-                                                $translation->text
-                                            )
-                                            : '';
-                                        ?></textarea>
+                                            placeholder="Texto del CTA"><?php
+                                                                        echo $translation
+                                                                            ? CHtml::encode(
+                                                                                $translation->text
+                                                                            )
+                                                                            : '';
+                                                                        ?></textarea>
 
                                     </div>
 
@@ -507,14 +485,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="text_size"
                                             class="form-control"
                                             value="<?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->text_size
-                                                )
-                                                : '';
-                                            ?>"
-                                            placeholder="Ej. 16px"
-                                        >
+                                                    echo $translation
+                                                        ? CHtml::encode(
+                                                            $translation->text_size
+                                                        )
+                                                        : '';
+                                                    ?>"
+                                            placeholder="Ej. 16px">
 
                                     </div>
 
@@ -541,14 +518,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="button_text"
                                             class="form-control"
                                             value="<?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->button_text
-                                                )
-                                                : '';
-                                            ?>"
-                                            placeholder="Texto del botón"
-                                        >
+                                                    echo $translation
+                                                        ? CHtml::encode(
+                                                            $translation->button_text
+                                                        )
+                                                        : '';
+                                                    ?>"
+                                            placeholder="Texto del botón">
 
                                     </div>
 
@@ -568,14 +544,13 @@ $renderIconPicker = function ($inputId, $value) {
                                             name="button_text_size"
                                             class="form-control"
                                             value="<?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->button_text_size
-                                                )
-                                                : '';
-                                            ?>"
-                                            placeholder="Ej. 16px"
-                                        >
+                                                    echo $translation
+                                                        ? CHtml::encode(
+                                                            $translation->button_text_size
+                                                        )
+                                                        : '';
+                                                    ?>"
+                                            placeholder="Ej. 16px">
 
                                     </div>
 
@@ -589,15 +564,9 @@ $renderIconPicker = function ($inputId, $value) {
 
                                 <button
                                     type="submit"
-                                    class="btn btn-primary"
-                                >
+                                    class="btn btn-primary">
 
-                                    Guardar
-                                    <?php
-                                    echo CHtml::encode(
-                                        $languageName
-                                    );
-                                    ?>
+                                    Guardar Idioma
 
                                 </button>
 
@@ -661,8 +630,7 @@ $renderIconPicker = function ($inputId, $value) {
             <button
                 type="button"
                 class="btn btn-danger btn-delete-item"
-                data-id="<?php echo (int) $item->id; ?>"
-            >
+                data-id="<?php echo (int) $item->id; ?>">
                 Eliminar
             </button>
 
@@ -680,14 +648,12 @@ $renderIconPicker = function ($inputId, $value) {
             <form
                 method="post"
                 action="<?php echo $this->createUrl('saveItem'); ?>"
-                class="footer-general-form"
-            >
+                class="footer-general-form">
 
                 <input
                     type="hidden"
                     name="id"
-                    value="<?php echo (int) $item->id; ?>"
-                >
+                    value="<?php echo (int) $item->id; ?>">
 
 
                 <div class="row">
@@ -722,9 +688,8 @@ $renderIconPicker = function ($inputId, $value) {
                                 name="sort_order"
                                 class="form-control"
                                 value="<?php
-                                echo (int) $item->sort_order;
-                                ?>"
-                            >
+                                        echo (int) $item->sort_order;
+                                        ?>">
 
                         </div>
 
@@ -749,8 +714,7 @@ $renderIconPicker = function ($inputId, $value) {
                                         echo $item->is_active
                                             ? 'checked'
                                             : '';
-                                        ?>
-                                    >
+                                        ?>>
 
                                     <span class="slider round"></span>
 
@@ -780,8 +744,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                     <button
                         type="submit"
-                        class="btn btn-primary"
-                    >
+                        class="btn btn-primary">
                         Guardar Item
                     </button>
 
@@ -800,8 +763,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 <ul
                     class="language-tabs"
-                    role="tablist"
-                >
+                    role="tablist">
 
                     <?php foreach ($languages as $index => $language): ?>
 
@@ -811,8 +773,8 @@ $renderIconPicker = function ($inputId, $value) {
                             ? $language->code
                             : (
                                 isset($language->iso_code)
-                                    ? $language->iso_code
-                                    : ''
+                                ? $language->iso_code
+                                : ''
                             );
 
                         $languageName = isset($language->name)
@@ -824,17 +786,15 @@ $renderIconPicker = function ($inputId, $value) {
 
                         <li
                             class="<?php
-                            echo $index === 0
-                                ? 'active'
-                                : '';
-                            ?>"
-                        >
+                                    echo $index === 0
+                                        ? 'active'
+                                        : '';
+                                    ?>">
 
                             <a
                                 href="#item-<?php echo (int) $item->id; ?>-language-<?php echo (int) $language->id; ?>"
                                 class="language-tab-link"
-                                data-tab-target="#item-<?php echo (int) $item->id; ?>-language-<?php echo (int) $language->id; ?>"
-                            >
+                                data-tab-target="#item-<?php echo (int) $item->id; ?>-language-<?php echo (int) $language->id; ?>">
 
                                 <span class="language-code">
 
@@ -888,30 +848,26 @@ $renderIconPicker = function ($inputId, $value) {
                         <div
                             id="item-<?php echo (int) $item->id; ?>-language-<?php echo (int) $language->id; ?>"
                             class="tab-pane <?php
-                            echo $index === 0
-                                ? 'active'
-                                : '';
-                            ?>"
-                        >
+                                            echo $index === 0
+                                                ? 'active'
+                                                : '';
+                                            ?>">
 
                             <form
                                 method="post"
                                 action="<?php echo $this->createUrl('saveItemTranslation'); ?>"
-                                class="language-form"
-                            >
+                                class="language-form">
 
                                 <input
                                     type="hidden"
                                     name="contact_item_id"
-                                    value="<?php echo (int) $item->id; ?>"
-                                >
+                                    value="<?php echo (int) $item->id; ?>">
 
 
                                 <input
                                     type="hidden"
                                     name="language_id"
-                                    value="<?php echo (int) $language->id; ?>"
-                                >
+                                    value="<?php echo (int) $language->id; ?>">
 
 
                                 <!-- LABEL -->
@@ -929,14 +885,13 @@ $renderIconPicker = function ($inputId, $value) {
                                                 name="label"
                                                 class="form-control"
                                                 value="<?php
-                                                echo $translation
-                                                    ? CHtml::encode(
-                                                        $translation->label
-                                                    )
-                                                    : '';
-                                                ?>"
-                                                placeholder="Label"
-                                            >
+                                                        echo $translation
+                                                            ? CHtml::encode(
+                                                                $translation->label
+                                                            )
+                                                            : '';
+                                                        ?>"
+                                                placeholder="Label">
 
                                         </div>
 
@@ -956,14 +911,13 @@ $renderIconPicker = function ($inputId, $value) {
                                                 name="label_size"
                                                 class="form-control"
                                                 value="<?php
-                                                echo $translation
-                                                    ? CHtml::encode(
-                                                        $translation->label_size
-                                                    )
-                                                    : '';
-                                                ?>"
-                                                placeholder="Ej. 14px"
-                                            >
+                                                        echo $translation
+                                                            ? CHtml::encode(
+                                                                $translation->label_size
+                                                            )
+                                                            : '';
+                                                        ?>"
+                                                placeholder="Ej. 14px">
 
                                         </div>
 
@@ -987,14 +941,13 @@ $renderIconPicker = function ($inputId, $value) {
                                                 name="value"
                                                 class="form-control"
                                                 rows="3"
-                                                placeholder="Valor"
-                                            ><?php
-                                            echo $translation
-                                                ? CHtml::encode(
-                                                    $translation->value
-                                                )
-                                                : '';
-                                            ?></textarea>
+                                                placeholder="Valor"><?php
+                                                                    echo $translation
+                                                                        ? CHtml::encode(
+                                                                            $translation->value
+                                                                        )
+                                                                        : '';
+                                                                    ?></textarea>
 
                                         </div>
 
@@ -1014,14 +967,13 @@ $renderIconPicker = function ($inputId, $value) {
                                                 name="value_size"
                                                 class="form-control"
                                                 value="<?php
-                                                echo $translation
-                                                    ? CHtml::encode(
-                                                        $translation->value_size
-                                                    )
-                                                    : '';
-                                                ?>"
-                                                placeholder="Ej. 16px"
-                                            >
+                                                        echo $translation
+                                                            ? CHtml::encode(
+                                                                $translation->value_size
+                                                            )
+                                                            : '';
+                                                        ?>"
+                                                placeholder="Ej. 16px">
 
                                         </div>
 
@@ -1035,15 +987,9 @@ $renderIconPicker = function ($inputId, $value) {
 
                                     <button
                                         type="submit"
-                                        class="btn btn-primary"
-                                    >
+                                        class="btn btn-primary">
 
-                                        Guardar
-                                        <?php
-                                        echo CHtml::encode(
-                                            $languageName
-                                        );
-                                        ?>
+                                        Guardar Idioma
 
                                     </button>
 
@@ -1092,8 +1038,7 @@ $renderIconPicker = function ($inputId, $value) {
 
         <form
             method="post"
-            action="<?php echo $this->createUrl('createItem'); ?>"
-        >
+            action="<?php echo $this->createUrl('createItem'); ?>">
 
 
             <div class="row">
@@ -1127,8 +1072,7 @@ $renderIconPicker = function ($inputId, $value) {
                             type="number"
                             name="sort_order"
                             class="form-control"
-                            value="0"
-                        >
+                            value="0">
 
                     </div>
 
@@ -1149,8 +1093,7 @@ $renderIconPicker = function ($inputId, $value) {
                                     type="checkbox"
                                     name="is_active"
                                     value="1"
-                                    checked
-                                >
+                                    checked>
 
                                 <span class="slider round"></span>
 
@@ -1174,8 +1117,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 <button
                     type="submit"
-                    class="btn btn-primary"
-                >
+                    class="btn btn-primary">
                     Crear Contact Item
                 </button>
 
@@ -1190,7 +1132,6 @@ $renderIconPicker = function ($inputId, $value) {
 
 
 <style>
-
     /*
      * ============================================================
      * FOOTER CARDS
@@ -1452,7 +1393,7 @@ $renderIconPicker = function ($inputId, $value) {
     }
 
 
-    .footer-switch > span {
+    .footer-switch>span {
         font-size: 13px;
         color: #555;
     }
@@ -1497,12 +1438,12 @@ $renderIconPicker = function ($inputId, $value) {
     }
 
 
-    .switch input:checked + .slider {
+    .switch input:checked+.slider {
         background-color: #222;
     }
 
 
-    .switch input:checked + .slider:before {
+    .switch input:checked+.slider:before {
         transform: translateX(20px);
     }
 
@@ -1730,14 +1671,12 @@ $renderIconPicker = function ($inputId, $value) {
         }
 
     }
-
 </style>
 
 
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
 
         /*
@@ -1747,8 +1686,8 @@ $renderIconPicker = function ($inputId, $value) {
          */
 
         var fontAwesomeIcons = <?php
-            echo CJSON::encode($fontAwesomeIcons);
-        ?>;
+                                echo CJSON::encode($fontAwesomeIcons);
+                                ?>;
 
 
         /*
@@ -1759,7 +1698,7 @@ $renderIconPicker = function ($inputId, $value) {
 
         $('.language-tab-link').on(
             'click',
-            function (e) {
+            function(e) {
 
                 e.preventDefault();
 
@@ -1827,7 +1766,7 @@ $renderIconPicker = function ($inputId, $value) {
          */
 
         $('.language-section').each(
-            function () {
+            function() {
 
                 var $section = $(this);
 
@@ -2065,7 +2004,7 @@ $renderIconPicker = function ($inputId, $value) {
                             '.admin-icon-picker__item'
                         )
                         .filter(
-                            function () {
+                            function() {
 
                                 return $(this).attr(
                                     'data-icon'
@@ -2086,8 +2025,8 @@ $renderIconPicker = function ($inputId, $value) {
             function renderIcons(filter) {
 
                 var search = (
-                    filter || ''
-                )
+                        filter || ''
+                    )
                     .toLowerCase()
                     .trim();
 
@@ -2100,7 +2039,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 $.each(
                     fontAwesomeIcons,
-                    function (
+                    function(
                         index,
                         icon
                     ) {
@@ -2133,8 +2072,7 @@ $renderIconPicker = function ($inputId, $value) {
                         var $item =
                             $('<button>', {
                                 type: 'button',
-                                class:
-                                    'admin-icon-picker__item'
+                                class: 'admin-icon-picker__item'
                             });
 
 
@@ -2146,18 +2084,15 @@ $renderIconPicker = function ($inputId, $value) {
 
                         var $icon =
                             $('<i>', {
-                                class:
-                                    'admin-icon-picker__item-icon ' +
+                                class: 'admin-icon-picker__item-icon ' +
                                     data.className
                             });
 
 
                         var $name =
                             $('<span>', {
-                                class:
-                                    'admin-icon-picker__item-name',
-                                text:
-                                    data.name
+                                class: 'admin-icon-picker__item-name',
+                                text: data.name
                             });
 
 
@@ -2206,7 +2141,7 @@ $renderIconPicker = function ($inputId, $value) {
 
             $search.on(
                 'input',
-                function () {
+                function() {
 
                     renderIcons(
                         $(this).val()
@@ -2220,7 +2155,7 @@ $renderIconPicker = function ($inputId, $value) {
             $grid.on(
                 'click',
                 '.admin-icon-picker__item',
-                function () {
+                function() {
 
                     var iconClass =
                         $(this).attr(
@@ -2256,7 +2191,7 @@ $renderIconPicker = function ($inputId, $value) {
                 '[data-icon-clear]'
             ).on(
                 'click',
-                function () {
+                function() {
 
                     $input.val('');
 
@@ -2279,7 +2214,7 @@ $renderIconPicker = function ($inputId, $value) {
          */
 
         $('.admin-icon-picker').each(
-            function () {
+            function() {
 
                 renderIconPicker(
                     $(this)
@@ -2298,7 +2233,7 @@ $renderIconPicker = function ($inputId, $value) {
 
         $('.btn-delete-item').on(
             'click',
-            function () {
+            function() {
 
                 var itemId =
                     $(this).data('id');
@@ -2322,8 +2257,7 @@ $renderIconPicker = function ($inputId, $value) {
 
                 var form = $('<form>', {
                     method: 'POST',
-                    action:
-                        '<?php echo $this->createUrl('deleteItem'); ?>/' +
+                    action: '<?php echo $this->createUrl('deleteItem'); ?>/' +
                         itemId
                 });
 
@@ -2337,5 +2271,4 @@ $renderIconPicker = function ($inputId, $value) {
         );
 
     });
-
 </script>

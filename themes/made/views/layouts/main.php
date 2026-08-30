@@ -9,7 +9,7 @@ $themeUrl = Yii::app()->theme->baseUrl;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo CHtml::encode($this->pageTitle); ?> </title>
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/font-awesome.min.css">
+    <link href="<?= Yii::app()->getBaseUrl() ?>/bin/fonts/font-awesome/css/all.min.css" rel="stylesheet" type="text/css" />
 
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/theme.css">
 

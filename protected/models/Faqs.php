@@ -6,7 +6,6 @@
  * The followings are the available columns in table 'faqs':
  * @property string $id
  * @property string $icon
- * @property string $form_id
  * @property integer $sort_order
  * @property integer $is_active
  * @property string $created_at
@@ -14,7 +13,6 @@
  *
  * The followings are the available model relations:
  * @property FaqTranslations[] $faqTranslations
- * @property FaqForms $form
  */
 class Faqs extends CActiveRecord
 {
@@ -34,13 +32,12 @@ class Faqs extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('sort_order, is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
+			array('created_at, updated_at', 'required'),
+			array('sort_order, is_active', 'numerical', 'integerOnly'=>true),
 			array('icon', 'length', 'max'=>100),
-			array('form_id', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, icon, form_id, sort_order, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, icon, sort_order, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,7 +50,6 @@ class Faqs extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'faqTranslations' => array(self::HAS_MANY, 'FaqTranslations', 'faq_id'),
-			'form' => array(self::BELONGS_TO, 'FaqForms', 'form_id'),
 		);
 	}
 
@@ -65,7 +61,6 @@ class Faqs extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'icon' => 'Icon',
-			'form_id' => 'Form',
 			'sort_order' => 'Sort Order',
 			'is_active' => 'Is Active',
 			'created_at' => 'Created At',
@@ -93,13 +88,8 @@ class Faqs extends CActiveRecord
 
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('icon',$this->icon,true);
-		$criteria->compare('form_id',$this->form_id,true);
 		$criteria->compare('sort_order',$this->sort_order);
-
-		$criteria->order = 'sort_order DESC';
 		$criteria->compare('is_active',$this->is_active);
-
-		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

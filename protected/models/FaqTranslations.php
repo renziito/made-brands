@@ -6,11 +6,11 @@
  * The followings are the available columns in table 'faq_translations':
  * @property string $id
  * @property string $faq_id
+ * @property string $form_text
+ * @property string $form_id
  * @property string $language_id
  * @property string $question
- * @property string $question_size
  * @property string $answer
- * @property string $answer_size
  * @property string $created_at
  * @property string $updated_at
  *
@@ -36,12 +36,12 @@ class FaqTranslations extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('faq_id, language_id, question, answer, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('faq_id, language_id', 'length', 'max'=>10),
-			array('question_size, answer_size', 'length', 'max'=>20),
+			array('faq_id, language_id, question, answer, created_at, updated_at', 'required'),
+			array('faq_id, form_id, language_id', 'length', 'max'=>10),
+			array('form_text', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, faq_id, language_id, question, question_size, answer, answer_size, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, faq_id, form_text, form_id, language_id, question, answer, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -66,11 +66,11 @@ class FaqTranslations extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'faq_id' => 'Faq',
+			'form_text' => 'Form Text',
+			'form_id' => 'Form',
 			'language_id' => 'Language',
 			'question' => 'Question',
-			'question_size' => 'Question Size',
 			'answer' => 'Answer',
-			'answer_size' => 'Answer Size',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
 		);
@@ -96,11 +96,11 @@ class FaqTranslations extends CActiveRecord
 
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('faq_id',$this->faq_id,true);
+		$criteria->compare('form_text',$this->form_text,true);
+		$criteria->compare('form_id',$this->form_id,true);
 		$criteria->compare('language_id',$this->language_id,true);
 		$criteria->compare('question',$this->question,true);
-		$criteria->compare('question_size',$this->question_size,true);
 		$criteria->compare('answer',$this->answer,true);
-		$criteria->compare('answer_size',$this->answer_size,true);
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

@@ -1,38 +1,7 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| INTRO / ABOUT
-|--------------------------------------------------------------------------
-| Institutional section.
-|
-| All editable content is centralized in $introContent.
-|
-| This structure is prepared to be replaced later by database content.
-|--------------------------------------------------------------------------
-*/
-
-
 $themeUrl = Yii::app()->baseUrl;
-
-
 /*
-|--------------------------------------------------------------------------
-| INTRO CONTENT
-|--------------------------------------------------------------------------
-| All visible content of this section must live here.
-|
-| Future DB structure can replace this array directly.
-|--------------------------------------------------------------------------
-*/
-
 $introContent = array(
-
-    /*
-    |--------------------------------------------------------------------------
-    | MISSION
-    |--------------------------------------------------------------------------
-    */
-
     'mission' => array(
 
         'eyebrow' => 'Nuestra misión',
@@ -42,13 +11,6 @@ $introContent = array(
         'description' => 'Trabajamos con marcas internacionales de prestigio para ofrecer productos de la más alta calidad, con diseño, innovación y propósito.',
 
     ),
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ABOUT
-    |--------------------------------------------------------------------------
-    */
 
     'about' => array(
 
@@ -63,20 +25,6 @@ $introContent = array(
             'Nuestro trabajo combina experiencia, conocimiento del mercado y una mirada enfocada en construir relaciones de largo plazo.',
 
         ),
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | HIGHLIGHTS
-        |--------------------------------------------------------------------------
-        | Each highlight contains:
-        |
-        | - title
-        | - description
-        |
-        | The number of highlights can be changed freely.
-        |--------------------------------------------------------------------------
-        */
 
         'highlights' => array(
 
@@ -102,13 +50,6 @@ $introContent = array(
 
         ),
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMAGE
-        |--------------------------------------------------------------------------
-        */
-
         'image' => array(
 
             'src' => '/images/team/team-01.png',
@@ -121,7 +62,7 @@ $introContent = array(
 
 );
 
-
+*/
 /*
 |--------------------------------------------------------------------------
 | ABOUT HIGHLIGHTS GRID

@@ -384,14 +384,12 @@ class m260824_235301_firstTable extends CDbMigration
 		$this->createTable('faqs', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
 			'icon' => 'VARCHAR(100) NULL',
-			'form_id' => 'INT UNSIGNED NULL',
 			'sort_order' => 'INT NOT NULL DEFAULT 0',
 			'is_active' => 'TINYINT NOT NULL DEFAULT 1',
 			'created_at' => 'DATETIME NOT NULL',
 			'updated_at' => 'DATETIME NOT NULL',
 			'PRIMARY KEY (`id`)',
-			'KEY `idx_faqs_active_order` (`is_active`, `sort_order`)',
-			'KEY `idx_faqs_form` (`form_id`)',
+			'KEY `idx_faqs_active_order` (`is_active`, `sort_order`)'
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
 
@@ -405,7 +403,6 @@ class m260824_235301_firstTable extends CDbMigration
 			'PRIMARY KEY (`id`)',
 			'KEY `idx_faq_forms_active` (`is_active`)',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
-
 
 		$this->createTable('faq_form_fields', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
@@ -428,25 +425,14 @@ class m260824_235301_firstTable extends CDbMigration
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
 
-		$this->addForeignKey(
-			'fk_faq_form',
-			'faqs',
-			'form_id',
-			'faq_forms',
-			'id',
-			'SET NULL',
-			'CASCADE'
-		);
-
-
 		$this->createTable('faq_translations', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
 			'faq_id' => 'INT UNSIGNED NOT NULL',
+			'form_text' => 'TEXT NULL',
+			'form_id' => 'INT UNSIGNED NULL',
 			'language_id' => 'INT UNSIGNED NOT NULL',
 			'question' => 'TEXT NOT NULL',
-			'question_size' => 'VARCHAR(20) NULL',
 			'answer' => 'LONGTEXT NOT NULL',
-			'answer_size' => 'VARCHAR(20) NULL',
 			'created_at' => 'DATETIME NOT NULL',
 			'updated_at' => 'DATETIME NOT NULL',
 			'PRIMARY KEY (`id`)',
@@ -874,27 +860,27 @@ class m260824_235301_firstTable extends CDbMigration
 		// -----------------------------------------------------------------
 		$faqs = array(
 			array(
-				'icon' => 'map-marker',
+				'icon' => 'fas fa-map-marker-alt',
 				'question' => '¿Dónde puedo comprar nuestros productos?',
-				'answer' => '<p>Puedes encontrar nuestros productos en los principales puntos de venta y canales de distribución donde están presentes nuestras marcas.</p>',
+				'answer' => 'Puedes encontrar nuestros productos en los principales puntos de venta y canales de distribución donde están presentes nuestras marcas.',
 				'order' => 1,
 			),
 			array(
-				'icon' => 'thumbs-up',
+				'icon' => 'fas fa-thumbs-up',
 				'question' => '¿Quieres vender nuestras marcas?',
-				'answer' => '<p>Si estás interesado en comercializar nuestras marcas, contáctanos y conversemos sobre las oportunidades disponibles para tu negocio.</p>',
+				'answer' => 'Si estás interesado en comercializar nuestras marcas, contáctanos y conversemos sobre las oportunidades disponibles para tu negocio.',
 				'order' => 2,
 			),
 			array(
-				'icon' => 'cube',
+				'icon' => 'fas fa-cube',
 				'question' => '¿Tienes una marca? Hagámosla crecer en Uruguay',
-				'answer' => '<p>Trabajamos con marcas que buscan crecer y llegar a nuevos consumidores. Cuéntanos sobre tu marca y evaluemos juntos las oportunidades.</p>',
+				'answer' => 'Trabajamos con marcas que buscan crecer y llegar a nuevos consumidores. Cuéntanos sobre tu marca y evaluemos juntos las oportunidades.',
 				'order' => 3,
 			),
 			array(
-				'icon' => 'plane',
+				'icon' => 'fas fa-plane',
 				'question' => '¿Quieres exportar y distribuir tu marca en Uruguay?',
-				'answer' => '<p>Contamos con experiencia en distribución y comercialización para conectar marcas con nuevos mercados y oportunidades.</p>',
+				'answer' => 'Contamos con experiencia en distribución y comercialización para conectar marcas con nuevos mercados y oportunidades.',
 				'order' => 4,
 			),
 		);
@@ -913,9 +899,7 @@ class m260824_235301_firstTable extends CDbMigration
 				'faq_id' => $faqId,
 				'language_id' => 1,
 				'question' => $faq['question'],
-				'question_size' => '16',
 				'answer' => $faq['answer'],
-				'answer_size' => '14',
 				'created_at' => $now,
 				'updated_at' => $now,
 			));

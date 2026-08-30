@@ -4,8 +4,21 @@ class SiteController extends Controller
 {
 	public function actionIndex()
 	{
-		$this->render('index');
+		$languageCode = Yii::app()->session->get('language', 'es');
+		$language = Languages::model()->find('code = :code', array(':code' => $languageCode));
+		$languageId = $language ? $language->id : null;
+
+		$heroSlides = WebUtils::getHero($languageId);
+		$introContent = WebUtils::getIntro($languageId);
+		$businesses = WebUtils::getBusinesses($languageId);
+
+		$this->render('index', array(
+			'heroSlides' => $heroSlides,
+			'introContent' => $introContent,
+			'businesses' => $businesses,
+		));
 	}
+
 
 	/**
 	 * This is the action to handle external exceptions.

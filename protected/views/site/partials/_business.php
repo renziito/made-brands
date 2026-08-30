@@ -34,7 +34,9 @@ $themeUrl = Yii::app()->baseUrl;
 |--------------------------------------------------------------------------
 */
 
-$businesses = array(
+
+
+$businesses2 = array(
 
 	array(
 		'id' => 1,
@@ -80,6 +82,7 @@ $businesses = array(
 	)
 
 );
+
 
 
 /*
@@ -178,7 +181,7 @@ usort(
 						<div class="business-card__icon">
 
 							<i
-								class="fa <?php echo CHtml::encode($business['icon']); ?>"
+								class="<?php echo CHtml::encode($business['icon']); ?>"
 								aria-hidden="true"></i>
 
 						</div>

@@ -1,4 +1,5 @@
 <?php
+
 class HeroController extends Controller
 {
 	/**
@@ -394,6 +395,7 @@ class HeroController extends Controller
 			'translation' => $translation,
 		));
 	}
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
@@ -411,7 +413,39 @@ class HeroController extends Controller
 
 		if ($post) {
 
+			// ======================================================
+			// PRESERVE CURRENT IMAGE
+			// ======================================================
+			//
+			// The image must never be overwritten by the value
+			// sent by the form.
+			//
+			// The image field will only be changed if a new
+			// uploaded file is actually provided.
+			// ======================================================
+
+			$currentImage = $model->image;
+
+			// ======================================================
+			// REMOVE IMAGE FROM MASS ASSIGNMENT
+			// ======================================================
+			//
+			// The form may send image="" when no new image
+			// was selected. We do not want that empty value
+			// to overwrite the existing database value.
+			// ======================================================
+
+			if (isset($post['image'])) {
+				unset($post['image']);
+			}
+
 			$model->attributes = $post;
+
+			// ======================================================
+			// RESTORE CURRENT IMAGE
+			// ======================================================
+
+			$model->image = $currentImage;
 
 			$model->updated_at = date('Y-m-d H:i:s');
 
@@ -664,14 +698,14 @@ class HeroController extends Controller
 					// ==================================================
 
 					if (
-						$model->image &&
-						$model->image !== $fileName
+						$currentImage &&
+						$currentImage !== $fileName
 					) {
 
 						$oldImagePath =
 							$uploadDirectory .
 							DIRECTORY_SEPARATOR .
-							$model->image;
+							$currentImage;
 
 						if (
 							is_file($oldImagePath) &&
@@ -715,7 +749,11 @@ class HeroController extends Controller
 				return;
 			} catch (Exception $e) {
 
-				$transaction->rollback();
+				try {
+					$transaction->rollback();
+				} catch (Exception $rollbackException) {
+					// Ignore rollback exception.
+				}
 
 				if (!$model->hasErrors()) {
 
@@ -734,36 +772,54 @@ class HeroController extends Controller
 			)
 		);
 	}
+
 	/**
 	 * Soft deletes a particular model.
 	 * Instead of physically deleting the record, all tinyint fields are set to 0.
 	 * If the update is successful, the browser will be redirected to the 'index' page.
+	 *
 	 * @param integer $id the ID of the model to be deleted
 	 */
 	public function actionDelete($id)
 	{
 		$model = $this->loadModel($id);
+
 		$model->is_active = 0;
+
 		if ($model->save()) {
 			$this->redirect(array('index'));
 		}
 	}
+
 	/**
 	 * Manages all models.
 	 */
 	public function actionIndex()
 	{
 		$model = new HeroSlides('search');
+
 		$model->unsetAttributes();
-		$attributes = Yii::app()->request->getQuery('HeroSlides', false);
+
+		$attributes = Yii::app()->request->getQuery(
+			'HeroSlides',
+			false
+		);
+
 		if ($attributes) {
 			$model->attributes = $attributes;
 		}
-		$this->render('index', array('model' => $model));
+
+		$this->render(
+			'index',
+			array(
+				'model' => $model,
+			)
+		);
 	}
+
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
+	 *
 	 * @param integer $id the ID of the model to be loaded
 	 * @return HeroSlides the loaded model
 	 * @throws CHttpException
@@ -771,9 +827,15 @@ class HeroController extends Controller
 	public function loadModel($id)
 	{
 		$model = HeroSlides::model()->findByPk($id);
+
 		if ($model === null) {
-			throw new CHttpException(404, 'La página solicitada no existe.');
+
+			throw new CHttpException(
+				404,
+				'La página solicitada no existe.'
+			);
 		}
+
 		return $model;
 	}
 
@@ -789,6 +851,7 @@ class HeroController extends Controller
 		$heroSlide = HeroSlides::model()->findByPk($id);
 
 		if (!$heroSlide) {
+
 			throw new CHttpException(
 				404,
 				'El Hero Slide solicitado no existe.'
@@ -798,6 +861,7 @@ class HeroController extends Controller
 		$language = Languages::model()->findByPk($language_id);
 
 		if (!$language) {
+
 			throw new CHttpException(
 				404,
 				'El idioma solicitado no existe.'
@@ -816,11 +880,13 @@ class HeroController extends Controller
 		);
 
 		if ($existingTranslation) {
+
 			$this->redirect(array(
 				'updateTranslation',
 				'id' => $heroSlide->id,
 				'language_id' => $language->id,
 			));
+
 			return;
 		}
 
@@ -891,6 +957,7 @@ class HeroController extends Controller
 		$heroSlide = HeroSlides::model()->findByPk($id);
 
 		if (!$heroSlide) {
+
 			throw new CHttpException(
 				404,
 				'El Hero Slide solicitado no existe.'
@@ -904,6 +971,7 @@ class HeroController extends Controller
 		$language = Languages::model()->findByPk($language_id);
 
 		if (!$language) {
+
 			throw new CHttpException(
 				404,
 				'El idioma solicitado no existe.'
@@ -922,6 +990,7 @@ class HeroController extends Controller
 		);
 
 		if (!$translation) {
+
 			throw new CHttpException(
 				404,
 				'No existe una traducción para este Hero Slide en el idioma seleccionado.'

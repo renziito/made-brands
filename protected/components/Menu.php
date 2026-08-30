@@ -66,36 +66,16 @@ class Menu
                 ]
             ],
             [
-                'name'  => 'Extras',
-                'link'  => 'javascript:;',
-                'icon'  => 'fas fa-plus-square',
-                'class' => self::isActive(['cpanel', ['social'], '*']),
-                'sub'   => [
-                    [
-                        'name'  => 'Redes',
-                        'link'  =>  Yii::app()->createurl('cpanel/social'),
-                        'icon'  => 'fas fa-share-alt',
-                        'class' => self::isActive(['cpanel', ['social'], '*'])
-                    ],
-                    [
-                        'name'  => 'Fomularios',
-                        'icon'  => ' fas fa-edit',
-                        'class' => self::isActive(['cpanel', ['forms'], '*']),
-                        'link'  => Yii::app()->createurl('cpanel/forms'),
-                    ],
-                    [
-                        'name'  => 'Contacto',
-                        'link'  =>  Yii::app()->createurl('cpanel/contact'),
-                        'icon'  => ' fas fa-id-badge',
-                        'class' => self::isActive(['cpanel', ['contact'], '*'])
-                    ],
-                    [
-                        'name'  => 'CTA',
-                        'link'  =>  Yii::app()->createurl('cpanel/cta'),
-                        'icon'  => 'fas fa-external-link-square-alt',
-                        'class' => self::isActive(['cpanel', ['cta'], '*'])
-                    ],
-                ]
+                'name'  => 'Redes',
+                'link'  =>  Yii::app()->createurl('cpanel/social'),
+                'icon'  => 'fas fa-share-alt',
+                'class' => self::isActive(['cpanel', ['social'], '*'])
+            ],
+            [
+                'name'  => 'Fomularios',
+                'icon'  => ' fas fa-edit',
+                'class' => self::isActive(['cpanel', ['forms'], '*']),
+                'link'  => Yii::app()->createurl('cpanel/forms'),
             ],
 
             [
@@ -130,12 +110,6 @@ class Menu
                         'icon'  => ' fas fa-briefcase',
                         'class' => self::isActive(['cpanel', ['business'], '*']),
                         'link'  => Yii::app()->createurl('cpanel/business'),
-                    ],
-                    [
-                        'name'  => 'Clientes',
-                        'icon'  => ' fas fa-users',
-                        'class' => self::isActive(['cpanel', ['brands'], '*']),
-                        'link'  => Yii::app()->createurl('cpanel/brands'),
                     ],
 
                     [

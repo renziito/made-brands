@@ -34,167 +34,30 @@ $themeUrl = Yii::app()->baseUrl;
 |--------------------------------------------------------------------------
 */
 
-$heroSlides = array(
+$heroSlides = array();
 
-	array(
-		'id' => 1,
+foreach ($heroSlidesModels as $index => $slide) {
 
-		'image' => '/images/hero/hero-01.jpg',
+	$translation = null;
 
-		'alt' => 'Representamos marcas que inspiran confianza',
+	if (!empty($slide->heroSlideTranslations)) {
+		$translation = $slide->heroSlideTranslations[0];
+	}
 
-		'alignment' => 'left',
+	$isFirstSlide = ($index === 0);
 
-		'eyebrow' => 'CONECTAMOS MARCAS CON MERCADOS',
-
-		'title' => '
-			Representamos
-			<br>
-			marcas que
-			<em>inspiran</em>
-			<br>
-			confianza
-		',
-
-		'description' => '
-			Llevamos grandes marcas a más personas,
-			<br>
-			creando experiencias memorables y resultados reales.
-		',
-
-		'active' => true,
-
-		'loading' => 'eager'
-	),
-
-
-	array(
-		'id' => 2,
-
-		'image' => '/images/hero/hero-02.jpg',
-
-		'alt' => 'Productos que inspiran experiencias',
-
-		'alignment' => 'center',
-
-		'eyebrow' => 'CONECTAMOS MARCAS CON MERCADOS',
-
-		'title' => '
-			Llevamos
-			<br>
-			productos que
-			<em>inspiran</em>
-			<br>
-			experiencias
-		',
-
-		'description' => '
-			Creamos conexiones entre grandes marcas
-			<br>
-			y las personas que las eligen.
-		',
-
-		'active' => false,
-
-		'loading' => 'lazy'
-	),
-
-
-	array(
-		'id' => 3,
-
-		'image' => '/images/hero/hero-03.jpg',
-
-		'alt' => 'Marcas que trascienden',
-
-		'alignment' => 'right',
-
-		'eyebrow' => 'MARCAS QUE TRASCIENDEN',
-
-		'title' => '
-			Construimos
-			<br>
-			marcas que
-			<em>conectan</em>
-			<br>
-			con las personas
-		',
-
-		'description' => '
-			Representación, distribución y crecimiento
-			<br>
-			para marcas con visión de futuro.
-		',
-
-		'active' => false,
-
-		'loading' => 'lazy'
-	),
-
-
-	array(
-		'id' => 4,
-
-		'image' => '/images/hero/hero-04.jpg',
-
-		'alt' => 'Experiencias que dejan huella',
-
-		'alignment' => 'left',
-
-		'eyebrow' => 'EXPERIENCIAS QUE DEJAN HUELLA',
-
-		'title' => '
-			Más que
-			<br>
-			productos,
-			<em>creamos</em>
-			<br>
-			experiencias
-		',
-
-		'description' => '
-			Acercamos marcas relevantes a nuevos
-			<br>
-			mercados y consumidores.
-		',
-
-		'active' => false,
-
-		'loading' => 'lazy'
-	),
-
-
-	array(
-		'id' => 5,
-
-		'image' => '/images/hero/hero-05.jpg',
-
-		'alt' => 'Marcas que generan confianza',
-
-		'alignment' => 'center',
-
-		'eyebrow' => 'NUESTRO COMPROMISO',
-
-		'title' => '
-			Marcas que
-			<br>
-			generan
-			<em>confianza</em>
-		',
-
-		'description' => '
-			Trabajamos para construir relaciones
-			<br>
-			duraderas y resultados reales.
-		',
-
-		'active' => false,
-
-		'loading' => 'lazy'
-	)
-
-);
-
+	$heroSlides[] = array(
+		'id' => $slide->id,
+		'image' => '/images/hero-slides/' . $slide->image,
+		'alt' => '',
+		'alignment' => $slide->alignment,
+		'eyebrow' => $translation ? $translation->eyebrow : '',
+		'title' => $translation ? $translation->title : '',
+		'description' => $translation ? $translation->text : '',
+		'active' => $isFirstSlide,
+		'loading' => $isFirstSlide ? 'eager' : 'lazy',
+	);
+}
 ?>
 
 <section

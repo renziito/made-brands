@@ -14,7 +14,6 @@
  * The followings are the available model relations:
  * @property FaqFormFields[] $faqFormFields
  * @property FaqFormSubmissions[] $faqFormSubmissions
- * @property Faqs[] $faqs
  */
 class FaqForms extends CActiveRecord
 {
@@ -54,7 +53,6 @@ class FaqForms extends CActiveRecord
 		return array(
 			'faqFormFields' => array(self::HAS_MANY, 'FaqFormFields', 'form_id'),
 			'faqFormSubmissions' => array(self::HAS_MANY, 'FaqFormSubmissions', 'form_id'),
-			'faqs' => array(self::HAS_MANY, 'Faqs', 'form_id'),
 		);
 	}
 
