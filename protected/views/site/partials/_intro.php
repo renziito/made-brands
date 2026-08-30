@@ -1,76 +1,5 @@
 <?php
 $themeUrl = Yii::app()->baseUrl;
-/*
-$introContent = array(
-    'mission' => array(
-
-        'eyebrow' => 'Nuestra misión',
-
-        'title' => 'Llevamos grandes marcas<br>a grandes <em>personas</em>',
-
-        'description' => 'Trabajamos con marcas internacionales de prestigio para ofrecer productos de la más alta calidad, con diseño, innovación y propósito.',
-
-    ),
-
-    'about' => array(
-
-        'eyebrow' => 'Sobre nosotros',
-
-        'title' => 'Construimos relaciones<br>que generan valor',
-
-        'descriptions' => array(
-
-            'Representamos marcas que comparten nuestra visión y las conectamos con consumidores que buscan productos diferentes.',
-
-            'Nuestro trabajo combina experiencia, conocimiento del mercado y una mirada enfocada en construir relaciones de largo plazo.',
-
-        ),
-
-        'highlights' => array(
-
-            array(
-                'title' => '6+',
-                'description' => 'Años en el mercado',
-            ),
-
-            array(
-                'title' => '5+',
-                'description' => 'Socios comerciales',
-            ),
-
-            array(
-                'title' => '5',
-                'description' => 'Categorías de productos',
-            ),
-
-            array(
-                'title' => '#2',
-                'description' => 'Marca de granola en Perú',
-            ),
-
-        ),
-
-        'image' => array(
-
-            'src' => '/images/team/team-01.png',
-
-            'alt' => 'Nuestro equipo',
-
-        ),
-
-    ),
-
-);
-
-*/
-/*
-|--------------------------------------------------------------------------
-| ABOUT HIGHLIGHTS GRID
-|--------------------------------------------------------------------------
-| Determines the ideal number of columns depending on the number
-| of highlights.
-|--------------------------------------------------------------------------
-*/
 
 $aboutHighlightCount = count($introContent['about']['highlights']);
 
@@ -109,12 +38,12 @@ if ($aboutHighlightCount <= 1) {
 
         <div class="container">
 
-            <div class="intro__mission-content">
+            <div class="intro__mission-content" style="background-color:<?= WebUtils::getSiteSetting('section_alt_background_color') ?>">
 
 
                 <?php if (!empty($introContent['mission']['eyebrow'])): ?>
 
-                    <span class="section-label">
+                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
                         <?php echo CHtml::encode($introContent['mission']['eyebrow']); ?>
                     </span>
 
@@ -123,7 +52,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['mission']['title'])): ?>
 
-                    <h2 class="intro__mission-title">
+                    <h2 class="intro__mission-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 
                         <?php echo $introContent['mission']['title']; ?>
 
@@ -134,7 +63,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['mission']['description'])): ?>
 
-                    <p class="intro__mission-description">
+                    <p class="intro__mission-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 
                         <?php echo CHtml::encode($introContent['mission']['description']); ?>
 
@@ -156,7 +85,7 @@ if ($aboutHighlightCount <= 1) {
     |--------------------------------------------------------------------------
     -->
 
-    <div class="intro__about">
+    <div class="intro__about" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
 
         <div class="intro__about-content">
 
@@ -172,7 +101,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['about']['eyebrow'])): ?>
 
-                    <span class="section-label">
+                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
                         <?php echo CHtml::encode($introContent['about']['eyebrow']); ?>
                     </span>
 
@@ -181,7 +110,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['about']['title'])): ?>
 
-                    <h2 class="intro__about-title">
+                    <h2 class="intro__about-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 
                         <?php echo $introContent['about']['title']; ?>
 
@@ -196,7 +125,7 @@ if ($aboutHighlightCount <= 1) {
 
                         <?php if (!empty($description)): ?>
 
-                            <p class="intro__about-description">
+                            <p class="intro__about-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 
                                 <?php echo CHtml::encode($description); ?>
 
@@ -228,7 +157,7 @@ if ($aboutHighlightCount <= 1) {
 
                                 <?php if (!empty($highlight['title'])): ?>
 
-                                    <strong class="intro__about-highlight-title">
+                                    <strong class="intro__about-highlight-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 
                                         <?php echo CHtml::encode($highlight['title']); ?>
 
@@ -239,7 +168,7 @@ if ($aboutHighlightCount <= 1) {
 
                                 <?php if (!empty($highlight['description'])): ?>
 
-                                    <span class="intro__about-highlight-description">
+                                    <span class="intro__about-highlight-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 
                                         <?php echo CHtml::encode($highlight['description']); ?>
 

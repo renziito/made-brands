@@ -1,222 +1,23 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| PRODUCTS / CATEGORÍAS
-|--------------------------------------------------------------------------
-| Product categories / featured products section.
-|
-| Todo el contenido editable está definido arriba.
-| Posteriormente estos datos pueden reemplazarse directamente
-| por información proveniente de la base de datos.
-|--------------------------------------------------------------------------
-*/
-
 $themeUrl = Yii::app()->baseUrl;
 
-
-/*
-|--------------------------------------------------------------------------
-| SECTION CONTENT
-|--------------------------------------------------------------------------
-*/
-
 $productsSection = array(
-
-	'title' => 'Nuestras categorías',
-
-	'button_text' => 'Ver todos los productos',
-
-	'button_url' => 'product/index'
-
-);
-
-
-/*
-|--------------------------------------------------------------------------
-| PRODUCT CATEGORIES
-|--------------------------------------------------------------------------
-|
-| Campos:
-|
-| id          => Identificador de la categoría
-| name        => Nombre visible
-| slug        => Identificador utilizado en la URL
-| image       => Imagen de la categoría
-| alt         => Texto alternativo
-| status      => 1 activo / 0 inactivo
-| featured    => 1 destacada / 0 no destacada
-| sort_order  => Orden de aparición
-|--------------------------------------------------------------------------
-*/
-
-$productCategories = array(
-
-	array(
-		'id' => 1,
-
-		'name' => 'Chocolates',
-
-		'slug' => 'chocolates',
-
-		'image' => '/images/categories/chocolate.png',
-
-		'alt' => 'Chocolates',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 1
-	),
-
-
-	array(
-		'id' => 2,
-
-		'name' => 'Salsas',
-
-		'slug' => 'salsas',
-
-		'image' => '/images/categories/salsas.png',
-
-		'alt' => 'Salsas',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 2
-	),
-
-
-	array(
-		'id' => 3,
-
-		'name' => 'Galletas',
-
-		'slug' => 'galletas',
-
-		'image' => '/images/categories/galletas.png',
-
-		'alt' => 'Galletas',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 3
-	),
-
-
-	array(
-		'id' => 4,
-
-		'name' => 'Hogar',
-
-		'slug' => 'hogar',
-
-		'image' => '/images/categories/hogar.png',
-
-		'alt' => 'Hogar',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 4
-	),
-
-
-	array(
-		'id' => 5,
-
-		'name' => 'Snacks',
-
-		'slug' => 'snacks',
-
-		'image' => '/images/categories/snacks.png',
-
-		'alt' => 'Snacks',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 5
-	),
-
-
-	array(
-		'id' => 6,
-
-		'name' => 'Cuidado personal',
-
-		'slug' => 'cuidado-personal',
-
-		'image' => '/images/categories/cuidado.png',
-
-		'alt' => 'Cuidado personal',
-
-		'status' => 1,
-
-		'featured' => 1,
-
-		'sort_order' => 6
-	)
-
-);
-
-
-/*
-|--------------------------------------------------------------------------
-| FILTER CATEGORIES
-|--------------------------------------------------------------------------
-| Only active and featured categories are displayed in this section.
-|--------------------------------------------------------------------------
-*/
-
-$featuredCategories = array_filter(
-	$productCategories,
-	function ($category) {
-
-		return !empty($category['status'])
-			&& !empty($category['featured']);
-	}
-);
-
-
-/*
-|--------------------------------------------------------------------------
-| SORT CATEGORIES
-|--------------------------------------------------------------------------
-*/
-
-usort(
-	$featuredCategories,
-	function ($a, $b) {
-
-		return $a['sort_order'] - $b['sort_order'];
-	}
+	'title' =>  WebUtils::getMenuItemByKey('our_categories', $languageId)['label'],
+	'button_text' => WebUtils::getMenuItemByKey('view_all_products', $languageId)['label'],
+	'button_url' => 'productos'
 );
 
 ?>
 
 <section
 	id="productos"
-	class="products">
+	class="products" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
 
 	<div class="container">
 
-
-		<!--
-		|--------------------------------------------------------------------------
-		| SECTION HEADER
-		|--------------------------------------------------------------------------
-		-->
-
 		<div class="products__header">
 
-			<h2 class="products__title">
+			<h2 class="products__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 				<?php echo CHtml::encode($productsSection['title']); ?>
 			</h2>
 
@@ -240,9 +41,9 @@ usort(
 
 					<a
 						href="<?php echo $this->createUrl(
-									'product/index',
+									'productos',
 									array(
-										'category' => $category['slug']
+										'categoria' => strtolower($category['name'])
 									)
 								); ?>"
 						class="product-card">
@@ -257,7 +58,7 @@ usort(
 						<div class="product-card__image">
 
 							<img
-								src="<?php echo $themeUrl . $category['image']; ?>"
+								src="<?php echo $themeUrl . '/' .  $category['image']; ?>"
 								alt="<?php echo CHtml::encode($category['alt']); ?>"
 								loading="lazy">
 
@@ -270,7 +71,7 @@ usort(
 						|--------------------------------------------------------------------------
 						-->
 
-						<div class="product-card__name">
+						<div class="product-card__name" style="background-color:<?= WebUtils::getSiteSetting('category_button_background_color') ?>!important ;color:<?= WebUtils::getSiteSetting('category_button_text_color') ?> !important;font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 
 							<?php echo CHtml::encode($category['name']); ?>
 
@@ -297,7 +98,7 @@ usort(
 				href="<?php echo $this->createUrl(
 							$productsSection['button_url']
 						); ?>"
-				class="products__button">
+				class="products__button"  style="font-family:<?= WebUtils::getSiteSetting('button_font_family') ?>">
 
 				<?php echo CHtml::encode(
 					$productsSection['button_text']

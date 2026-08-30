@@ -1,97 +1,6 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| NUESTROS CLIENTES
-|--------------------------------------------------------------------------
-| Client / retail presence section.
-|--------------------------------------------------------------------------
-*/
 
 $themeUrl = Yii::app()->baseUrl;
-
-
-/*
-|--------------------------------------------------------------------------
-| FEATURED BRANDS
-|--------------------------------------------------------------------------
-| These are the brands shown in the featured brands cards.
-|--------------------------------------------------------------------------
-*/
-
-$featuredBrands = array(
-
-	array(
-		'name' => 'La Tradición Molienda',
-		'image' => 'molienda.png'
-	),
-
-	array(
-		'name' => 'Mercado Verde',
-		'image' => 'mercado-verde.png'
-	),
-
-	array(
-		'name' => 'Disco',
-		'image' => 'disco.png'
-	)
-
-);
-
-
-/*
-|--------------------------------------------------------------------------
-| ALL CLIENT / BRAND LOGOS
-|--------------------------------------------------------------------------
-| The carousel automatically creates one slide per 5 brands.
-|--------------------------------------------------------------------------
-*/
-
-$brands = array(
-
-	array(
-		'name' => 'Devoto',
-		'image' => 'devoto.png'
-	),
-
-	array(
-		'name' => 'Ta-Ta',
-		'image' => 'ta-ta.png'
-	),
-
-	array(
-		'name' => 'Géant',
-		'image' => 'geant.png'
-	),
-
-	array(
-		'name' => 'Macro Mercado',
-		'image' => 'macro-mercado.png'
-	),
-
-	array(
-		'name' => 'PedidosYa',
-		'image' => 'pedidos-ya.png'
-	),
-
-	array(
-		'name' => 'Club del Este',
-		'image' => 'club-del-este.png'
-	),
-
-	array(
-		'name' => 'Radisson',
-		'image' => 'radisson.png'
-	)
-);
-
-
-/*
-|--------------------------------------------------------------------------
-| CREATE CAROUSEL PAGES
-|--------------------------------------------------------------------------
-| 5 brands per page.
-|--------------------------------------------------------------------------
-*/
 
 $brandPagesDesktop = array_chunk(
 	$brands,
@@ -106,29 +15,15 @@ $brandPagesMobile = array_chunk(
 
 <section
 	id="clientes"
-	class="clients">
-
-
-	<!--
-    |--------------------------------------------------------------------------
-    | MAIN CONTENT
-    |--------------------------------------------------------------------------
-    -->
+	class="clients" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
 
 	<div class="clients__content">
-
-
-		<!--
-        |--------------------------------------------------------------------------
-        | IMAGE
-        |--------------------------------------------------------------------------
-        -->
 
 		<div class="clients__image">
 
 			<img
-				src="<?php echo $themeUrl; ?>/images/team/clientes-collage.png"
-				alt="Nuestros clientes"
+				src="<?= Yii::app()->getBaseUrl() . $brandSection['image']   ?>"
+				alt="<?= $brandSection['eyebrow'] ?>"
 				loading="lazy">
 
 		</div>
@@ -144,43 +39,11 @@ $brandPagesMobile = array_chunk(
 
 			<div class="clients__info-inner">
 
+				<span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>"><?= $brandSection['eyebrow'] ?></span>
 
-				<!--
-                |--------------------------------------------------------------------------
-                | EYEBROW
-                |--------------------------------------------------------------------------
-                -->
+				<h2 class="clients__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>"><?= $brandSection['title'] ?></h2>
 
-				<span class="section-label">
-					Nuestros clientes
-				</span>
-
-
-				<!--
-                |--------------------------------------------------------------------------
-                | TITLE
-                |--------------------------------------------------------------------------
-                -->
-
-				<h2 class="clients__title">
-					Estamos donde
-					<br>
-					vos estás
-				</h2>
-
-
-				<!--
-                |--------------------------------------------------------------------------
-                | DESCRIPTION
-                |--------------------------------------------------------------------------
-                -->
-
-				<p class="clients__description">
-
-					Nuestras marcas llegan a miles de puntos de venta
-					en todo el país, acompañando cada momento.
-
-				</p>
+				<p class="clients__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>"><?= $brandSection['text'] ?></p>
 
 
 				<!--
@@ -193,25 +56,46 @@ $brandPagesMobile = array_chunk(
 
 
 					<span class="clients__featured-label">
-						Marcas destacadas
+						<?= $brandSection['featuredText'] ?>
 					</span>
 
 
 					<div class="clients__featured-grid">
 
-						<?php foreach (
-							$featuredBrands
-							as $brand
-						): ?>
+						<?php foreach ($featuredBrands as $brand): ?>
 
-							<div class="client-brand">
+							<?php $brandUrl = trim($brand['website_url']);
+							if ($brandUrl && !preg_match('#^https?://#i', $brandUrl)) {
+								$brandUrl = 'https://' . ltrim($brandUrl, '/');
+							} ?>
 
-								<img
-									src="<?php echo $themeUrl; ?>/images/brands/<?php echo CHtml::encode($brand['image']); ?>"
-									alt="<?php echo CHtml::encode($brand['name']); ?>"
-									loading="lazy">
+							<?php if ($brandUrl): ?>
 
-							</div>
+								<a
+									href="<?php echo CHtml::encode($brandUrl); ?>"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="client-brand">
+
+									<img
+										src="<?php echo $themeUrl . '/' . CHtml::encode($brand['image']); ?>"
+										alt="<?php echo CHtml::encode($brand['name']); ?>"
+										loading="lazy">
+
+								</a>
+
+							<?php else: ?>
+
+								<div class="client-brand">
+
+									<img
+										src="<?php echo $themeUrl . '/' . CHtml::encode($brand['image']); ?>"
+										alt="<?php echo CHtml::encode($brand['name']); ?>"
+										loading="lazy">
+
+								</div>
+
+							<?php endif; ?>
 
 						<?php endforeach; ?>
 
@@ -328,8 +212,8 @@ $brandPagesMobile = array_chunk(
 							aria-hidden="true"></span>
 
 						<span class="sr-only">
-							Anterior
-						</span>
+							<
+								</span>
 
 					</a>
 
@@ -345,7 +229,7 @@ $brandPagesMobile = array_chunk(
 							aria-hidden="true"></span>
 
 						<span class="sr-only">
-							Siguiente
+							>
 						</span>
 
 					</a>
@@ -439,8 +323,8 @@ $brandPagesMobile = array_chunk(
 							aria-hidden="true"></span>
 
 						<span class="sr-only">
-							Anterior
-						</span>
+							<
+								</span>
 
 					</a>
 
@@ -456,7 +340,7 @@ $brandPagesMobile = array_chunk(
 							aria-hidden="true"></span>
 
 						<span class="sr-only">
-							Siguiente
+							>
 						</span>
 
 					</a>

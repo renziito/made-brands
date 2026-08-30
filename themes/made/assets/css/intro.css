@@ -132,7 +132,7 @@
     left: 0;
     display: block;
     width: 48px;
-    height: 3px;
+    height: 2px;
     background: var(--made-color-primary);
     content: "";
 }

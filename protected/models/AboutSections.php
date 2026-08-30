@@ -5,7 +5,6 @@
  *
  * The followings are the available columns in table 'about_sections':
  * @property string $id
- * @property string $type
  * @property string $image
  * @property integer $sort_order
  * @property integer $is_active
@@ -34,13 +33,12 @@ class AboutSections extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
-			array('sort_order, is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
-			array('type', 'length', 'max'=>30),
+			array('created_at, updated_at', 'required'),
+			array('sort_order, is_active', 'numerical', 'integerOnly'=>true),
 			array('image', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, type, image, sort_order, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, image, sort_order, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -64,7 +62,6 @@ class AboutSections extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'type' => 'Type',
 			'image' => 'Image',
 			'sort_order' => 'Sort Order',
 			'is_active' => 'Is Active',
@@ -92,14 +89,9 @@ class AboutSections extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('type',$this->type,true);
 		$criteria->compare('image',$this->image,true);
 		$criteria->compare('sort_order',$this->sort_order);
-
-		$criteria->order = 'sort_order DESC';
 		$criteria->compare('is_active',$this->is_active);
-
-		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

@@ -3,7 +3,7 @@
 class AboutController extends Controller
 {
     /**
-     * Displays the current About/Intro configuration.
+     * Displays the current About configuration.
      *
      * The index page is also the create form when there is no active
      * About section.
@@ -18,7 +18,6 @@ class AboutController extends Controller
 
             $model = new AboutSections();
 
-            $model->type = 'about';
             $model->is_active = 1;
             $model->sort_order = 0;
         }
@@ -179,8 +178,6 @@ class AboutController extends Controller
 			 */
 
             $model = new AboutSections();
-
-            $model->type = 'about';
 
             $model->image = $imagePath;
 
@@ -488,7 +485,7 @@ class AboutController extends Controller
             Yii::log(
                 $e->getMessage(),
                 CLogger::LEVEL_ERROR,
-                'intro'
+                'about'
             );
 
 
@@ -821,7 +818,7 @@ class AboutController extends Controller
 		 * ---------------------------------------------------------
 		 */
 
-        $basePath = Yii::getPathOfAlias('webroot') . '/images/intro';
+        $basePath = Yii::getPathOfAlias('webroot') . '/images/about';
 
 
         if (!is_dir($basePath)) {
@@ -832,7 +829,7 @@ class AboutController extends Controller
                 imagedestroy($destination);
 
                 throw new Exception(
-                    'No se pudo crear el directorio de imágenes del Intro.'
+                    'No se pudo crear el directorio de imágenes del About.'
                 );
             }
         }
@@ -844,7 +841,7 @@ class AboutController extends Controller
             imagedestroy($destination);
 
             throw new Exception(
-                'El directorio de imágenes del Intro no tiene permisos de escritura.'
+                'El directorio de imágenes del About no tiene permisos de escritura.'
             );
         }
 
@@ -856,7 +853,7 @@ class AboutController extends Controller
 		 */
 
         $fileName =
-            'intro_' .
+            'about_' .
             date('YmdHis') .
             '_' .
             uniqid() .
@@ -904,7 +901,7 @@ class AboutController extends Controller
 		 * ---------------------------------------------------------
 		 */
 
-        return '/images/intro/' . $fileName;
+        return '/images/about/' . $fileName;
     }
 
 
@@ -916,10 +913,7 @@ class AboutController extends Controller
     protected function getCurrentAbout()
     {
         return AboutSections::model()->find(
-            'type = :type AND is_active = 1',
-            array(
-                ':type' => 'about',
-            )
+            'is_active = 1'
         );
     }
 

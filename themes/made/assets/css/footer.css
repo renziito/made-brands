@@ -78,73 +78,217 @@
     text-decoration: none;
 }
 
+/*
+|--------------------------------------------------------------------------
+| CONTACT CTA
+|--------------------------------------------------------------------------
+*/
+
 .footer-contact__cta {
     display: flex;
     justify-content: flex-end;
 }
 
 .footer-contact__button {
+    position: relative;
     display: flex;
     align-items: center;
+
     width: 100%;
-    max-width: 400px;
-    min-height: 132px;
-    padding: 24px 38px;
-    border-radius: var(--made-radius-sm);
+    max-width: 280px;
+    min-height: 118px;
+
+    padding: 24px 72px 24px 24px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+
     background: var(--made-color-secondary);
+
     color: var(--made-color-white);
     text-decoration: none;
+
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.10);
+
+    transform: translateY(0);
+
     transition:
-        background-color var(--made-transition-fast),
-        transform var(--made-transition-fast);
+        transform 300ms ease,
+        box-shadow 300ms ease,
+        border-color 300ms ease;
 }
+
+/*
+|--------------------------------------------------------------------------
+| CTA SHINE
+|--------------------------------------------------------------------------
+*/
+
+.footer-contact__button::before {
+    position: absolute;
+    top: 0;
+    left: -120%;
+
+    width: 70%;
+    height: 100%;
+
+    background: linear-gradient(100deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.03) 35%,
+            rgba(255, 255, 255, 0.18) 50%,
+            rgba(255, 255, 255, 0.03) 65%,
+            transparent 100%);
+
+    content: "";
+
+    transform: skewX(-20deg);
+
+    pointer-events: none;
+}
+
+/*
+|--------------------------------------------------------------------------
+| CTA HOVER
+|--------------------------------------------------------------------------
+*/
 
 .footer-contact__button:hover {
-    background: var(--made-color-secondary-dark);
+    border-color: rgba(255, 255, 255, 0.32);
+
     color: var(--made-color-white);
     text-decoration: none;
-    transform: translateY(-2px);
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 18px 32px rgba(0, 0, 0, 0.16);
 }
 
+.footer-contact__button:hover::before {
+    animation: footerCtaShine 900ms ease forwards;
+}
+
+.footer-contact__button:hover::after {
+    border-color: var(--made-color-white);
+
+    background: var(--made-color-white);
+    color: var(--made-color-secondary);
+
+    transform: translateY(-50%) translateX(4px);
+}
+
+@keyframes footerCtaShine {
+    0% {
+        left: -120%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| CTA ICON
+|--------------------------------------------------------------------------
+*/
+
 .footer-contact__button-icon {
+    position: relative;
+    z-index: 2;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 58px;
     min-width: 58px;
+    height: 58px;
+
     margin-right: 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.08);
+
     color: var(--made-color-white);
-    font-size: 42px;
+    font-size: 35px;
+
+    transform: translateY(0);
+
+    transition:
+        background-color 250ms ease,
+        border-color 250ms ease,
+        transform 250ms ease;
 }
 
 .footer-contact__button-icon i {
     line-height: 1;
 }
 
+.footer-contact__button:hover .footer-contact__button-icon {
+    border-color: rgba(255, 255, 255, 0.40);
+
+    background: rgba(255, 255, 255, 0.14);
+
+    transform: translateY(-2px);
+}
+
+/*
+|--------------------------------------------------------------------------
+| CTA CONTENT
+|--------------------------------------------------------------------------
+*/
+
 .footer-contact__button-content {
+    position: relative;
+    z-index: 2;
+
     display: flex;
     flex-direction: column;
+
     gap: 5px;
 }
 
 .footer-contact__button-content strong {
     color: var(--made-color-white);
+
     font-size: 18px;
     font-weight: 700;
+
     letter-spacing: 0.02em;
+    line-height: 1.2;
+
     text-transform: uppercase;
 }
 
 .footer-contact__button-content small {
-    color: var(--made-color-white);
+    max-width: 190px;
+
+    color: rgba(255, 255, 255, 0.88);
+
     font-size: 12px;
     font-weight: 600;
+
+    line-height: 1.45;
 }
+
+/*
+|--------------------------------------------------------------------------
+| FOOTER BOTTOM
+|--------------------------------------------------------------------------
+*/
 
 .footer-bottom {
     width: 100%;
     padding: 18px 0;
+
     background: var(--made-color-dark);
+
     color: var(--made-color-white);
 }
 
@@ -180,10 +324,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
     gap: 3px;
+
     color: var(--made-color-white);
+
     font-size: 11px;
     line-height: 1.3;
+
     text-align: center;
 }
 
@@ -191,6 +339,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+
     gap: 34px;
 }
 
@@ -198,11 +347,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 34px;
     height: 34px;
+
     color: var(--made-color-white);
+
     font-size: 30px;
+
     text-decoration: none;
+
     transition:
         opacity var(--made-transition-fast),
         transform var(--made-transition-fast);
@@ -210,20 +364,45 @@
 
 .footer-bottom__social a:hover {
     color: var(--made-color-white);
+
     opacity: 0.75;
+
     text-decoration: none;
+
     transform: translateY(-2px);
 }
 
+/*
+|--------------------------------------------------------------------------
+| TABLET
+|--------------------------------------------------------------------------
+*/
+
 @media (max-width: 992px) {
+
     .footer-contact__content {
         gap: 35px;
     }
 
     .footer-contact__button {
         max-width: 360px;
-        min-height: 120px;
-        padding: 20px 28px;
+        min-height: 116px;
+
+        padding: 22px 64px 22px 22px;
+    }
+
+    .footer-contact__button-icon {
+        width: 54px;
+        min-width: 54px;
+        height: 54px;
+
+        margin-right: 16px;
+
+        font-size: 33px;
+    }
+
+    .footer-contact__button-content strong {
+        font-size: 17px;
     }
 
     .footer-bottom__social {
@@ -231,7 +410,14 @@
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| MOBILE
+|--------------------------------------------------------------------------
+*/
+
 @media (max-width: 767px) {
+
     .footer-contact {
         padding: 44px 0;
     }
@@ -248,6 +434,17 @@
     .footer-contact__button {
         max-width: none;
         min-height: 110px;
+
+        padding: 20px 62px 20px 20px;
+
+        border-radius: 15px;
+    }
+
+    .footer-contact__button::after {
+        right: 18px;
+
+        width: 40px;
+        height: 40px;
     }
 
     .footer-bottom {
@@ -256,7 +453,9 @@
 
     .footer-bottom__content {
         grid-template-columns: 1fr;
+
         gap: 24px;
+
         text-align: center;
     }
 
@@ -270,12 +469,21 @@
 
     .footer-bottom__social {
         justify-content: center;
+
         gap: 28px;
+
         order: 2;
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| SMALL MOBILE
+|--------------------------------------------------------------------------
+*/
+
 @media (max-width: 480px) {
+
     .footer-contact {
         padding: 36px 0;
     }
@@ -283,11 +491,13 @@
     .footer-contact__icon {
         width: 42px;
         min-width: 42px;
+
         font-size: 24px;
     }
 
     .footer-contact__text {
         margin-left: 10px;
+
         font-size: 12px;
     }
 
@@ -296,18 +506,46 @@
     }
 
     .footer-contact__button {
-        padding: 20px 22px;
+        min-height: 104px;
+
+        padding: 18px 56px 18px 18px;
+
+        border-radius: 14px;
     }
 
     .footer-contact__button-icon {
         width: 48px;
         min-width: 48px;
-        margin-right: 15px;
-        font-size: 34px;
+        height: 48px;
+
+        margin-right: 14px;
+
+        border-radius: 10px;
+
+        font-size: 30px;
+    }
+
+    .footer-contact__button-content {
+        gap: 4px;
     }
 
     .footer-contact__button-content strong {
-        font-size: 16px;
+        font-size: 15px;
+    }
+
+    .footer-contact__button-content small {
+        max-width: 150px;
+
+        font-size: 11px;
+    }
+
+    .footer-contact__button::after {
+        right: 14px;
+
+        width: 36px;
+        height: 36px;
+
+        font-size: 19px;
     }
 
     .footer-bottom__social {

@@ -77,6 +77,12 @@ class Menu
                 'class' => self::isActive(['cpanel', ['forms'], '*']),
                 'link'  => Yii::app()->createurl('cpanel/forms'),
             ],
+            [
+                'name'  => 'Extras',
+                'icon'  => ' fas fa-folder-plus',
+                'class' => self::isActive(['cpanel', ['extras'], '*']),
+                'link'  => Yii::app()->createurl('cpanel/extras'),
+            ],
 
             [
                 'name'  => 'Secciones',

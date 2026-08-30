@@ -1,27 +1,24 @@
 <?php
 
 /**
- * This is the model class for table "brands_section".
+ * This is the model class for table "menu_item_translations".
  *
- * The followings are the available columns in table 'brands_section':
+ * The followings are the available columns in table 'menu_item_translations':
  * @property integer $id
- * @property string $language_id
- * @property string $eyebrow
- * @property string $title
- * @property string $text
- * @property string $featured_label
- * @property string $image
+ * @property integer $menu_item_id
+ * @property integer $language_id
+ * @property string $label
  * @property string $created_at
  * @property string $updated_at
  */
-class BrandsSection extends CActiveRecord
+class MenuItemTranslations extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'brands_section';
+		return 'menu_item_translations';
 	}
 
 	/**
@@ -32,13 +29,13 @@ class BrandsSection extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('language_id, eyebrow, title, text, featured_label, created_at, updated_at', 'required'),
-			array('language_id', 'length', 'max'=>10),
-			array('eyebrow, image', 'length', 'max'=>255),
-			array('title', 'length', 'max'=>500),
+			array('menu_item_id, language_id, label, created_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
+			array('menu_item_id, language_id', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
+			array('label', 'length', 'max'=>255),
+			array('updated_at', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, language_id, eyebrow, title, text, featured_label, image, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, menu_item_id, language_id, label, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,12 +57,9 @@ class BrandsSection extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
+			'menu_item_id' => 'Menu Item',
 			'language_id' => 'Language',
-			'eyebrow' => 'Eyebrow',
-			'title' => 'Title',
-			'text' => 'Text',
-			'featured_label' => 'Featured Label',
-			'image' => 'Image',
+			'label' => 'Label',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
 		);
@@ -90,12 +84,9 @@ class BrandsSection extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('language_id',$this->language_id,true);
-		$criteria->compare('eyebrow',$this->eyebrow,true);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('text',$this->text,true);
-		$criteria->compare('featured_label',$this->featured_label,true);
-		$criteria->compare('image',$this->image,true);
+		$criteria->compare('menu_item_id',$this->menu_item_id);
+		$criteria->compare('language_id',$this->language_id);
+		$criteria->compare('label',$this->label,true);
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
@@ -108,7 +99,7 @@ class BrandsSection extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return BrandsSection the static model class
+	 * @return MenuItemTranslations the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

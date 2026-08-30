@@ -1,18 +1,27 @@
 <?php
-/* @var $this BrandsController */
-/* @var $model Brands */
+/* @var $this ExtrasController */
+/* @var $model MenuItems */
 /* @var $form CActiveForm */
 ?>
 <?php
-Yii::app()->clientScript->registerCss('admin-form-brands', '
+Yii::app()->clientScript->registerCss('admin-form-menu-items', '
+/* ==========================================================
+   PAGE
+   ========================================================== */
 .admin-form-page {
 	width: 100%;
 	max-width: 1100px;
 	margin: 0 auto;
 }
+/* ==========================================================
+   FORM
+   ========================================================== */
 .admin-form {
 	margin-top: 28px;
 }
+/* ==========================================================
+   CARD
+   ========================================================== */
 .admin-form-card {
 	overflow: hidden;
 	background: #fff;
@@ -20,6 +29,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	border-radius: 10px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
 }
+/* ==========================================================
+   CARD HEADER
+   ========================================================== */
 .admin-form-card__header {
 	display: flex;
 	align-items: center;
@@ -59,6 +71,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	font-size: 12px;
 	line-height: 1.4;
 }
+/* ==========================================================
+   STATUS
+   ========================================================== */
 .admin-form-status {
 	display: flex;
 	align-items: center;
@@ -86,6 +101,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	font-size: 11px;
 	line-height: 1.3;
 }
+/* ==========================================================
+   SWITCH
+   ========================================================== */
 .admin-form-switch {
 	position: relative;
 	display: inline-flex;
@@ -98,7 +116,6 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	position: absolute;
 	width: 1px;
 	height: 1px;
-	margin: 0;
 	opacity: 0;
 }
 .admin-form-switch__track {
@@ -109,7 +126,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	border-radius: 999px;
 	background: #d1d5db;
 	cursor: pointer;
-	transition: background-color .15s ease, box-shadow .15s ease;
+	transition:
+		background-color .15s ease,
+		box-shadow .15s ease;
 }
 .admin-form-switch__track::after {
 	position: absolute;
@@ -132,9 +151,30 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 .admin-form-switch input:focus + .admin-form-switch__track {
 	box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
 }
+/* ==========================================================
+   BODY
+   ========================================================== */
 .admin-form-card__body {
 	padding: 24px 20px;
 }
+/* ==========================================================
+   REQUIRED NOTE
+   ========================================================== */
+.admin-form-required-note {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0 0 22px;
+	color: #6b7280;
+	font-size: 12px;
+}
+.admin-form-required-note .required {
+	color: #dc2626;
+	font-weight: 700;
+}
+/* ==========================================================
+   ERROR SUMMARY
+   ========================================================== */
 .admin-form-card .errorSummary {
 	margin: 0 0 22px;
 	padding: 14px 16px;
@@ -155,6 +195,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 .admin-form-card .errorSummary a {
 	color: #991b1b;
 }
+/* ==========================================================
+   FIELDS
+   ========================================================== */
 .admin-form-fields {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -179,6 +222,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	color: #dc2626;
 	font-weight: 700;
 }
+/* ==========================================================
+   INPUTS
+   ========================================================== */
 .admin-form-field input[type="text"],
 .admin-form-field input[type="password"],
 .admin-form-field input[type="email"],
@@ -190,7 +236,6 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 .admin-form-field input[type="datetime-local"],
 .admin-form-field input[type="time"],
 .admin-form-field input[type="search"],
-.admin-form-field input[type="file"],
 .admin-form-field select,
 .admin-form-field textarea {
 	display: block;
@@ -205,7 +250,10 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	font-family: inherit;
 	font-size: 13px;
 	line-height: 1.5;
-	transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+	transition:
+		border-color .15s ease,
+		box-shadow .15s ease,
+		background-color .15s ease;
 }
 .admin-form-field input[type="text"],
 .admin-form-field input[type="password"],
@@ -218,19 +266,25 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 .admin-form-field input[type="datetime-local"],
 .admin-form-field input[type="time"],
 .admin-form-field input[type="search"],
-.admin-form-field input[type="file"],
 .admin-form-field select {
 	height: 40px;
 }
-.admin-form-field input[type="file"] {
-	padding: 7px 10px;
-	cursor: pointer;
+.admin-form-field textarea {
+	min-height: 120px;
+	resize: vertical;
 }
 .admin-form-field input:focus,
 .admin-form-field select:focus,
 .admin-form-field textarea:focus {
 	border-color: #9ca3af;
 	box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
+}
+.admin-form-field input:disabled,
+.admin-form-field select:disabled,
+.admin-form-field textarea:disabled {
+	background: #f9fafb;
+	color: #9ca3af;
+	cursor: not-allowed;
 }
 .admin-form-field .error {
 	display: block;
@@ -252,28 +306,55 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	font-size: 11px;
 	line-height: 1.4;
 }
-.admin-form-logo-current {
+/* ==========================================================
+   SWITCH FIELD
+   ========================================================== */
+.admin-form-field--switch {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	margin-top: 10px;
-}
-.admin-form-logo-current__image {
-	display: block;
-	width: 56px;
-	height: 56px;
-	object-fit: contain;
-	padding: 6px;
+	justify-content: space-between;
+	gap: 16px;
+	min-height: 40px;
+	padding: 10px 12px;
 	box-sizing: border-box;
 	border: 1px solid #e5e7eb;
 	border-radius: 7px;
-	background: #fff;
+	background: #f9fafb;
 }
-.admin-form-logo-current__text {
-	color: #9ca3af;
-	font-size: 11px;
-	line-height: 1.4;
+.admin-form-field--switch .admin-form-field__label {
+	margin: 0;
 }
+.admin-form-field__switch {
+	display: inline-flex;
+	flex-shrink: 0;
+}
+.admin-form-field__switch .admin-form-switch {
+	width: 42px;
+	height: 24px;
+}
+.admin-form-field__switch .admin-form-switch__input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	op: 0;
+	left: 0;
+	op: 0;
+	op: 0;
+	op: 0;
+	op: 0;
+	op: 0;
+	margin: 0;
+	op: 0;
+	left: 0;
+	op: 0;
+	opacity: 0;
+}
+.admin-form-field--switch .error {
+	grid-column: 1 / -1;
+}
+/* ==========================================================
+   FOOTER
+   ========================================================== */
 .admin-form-card__footer {
 	display: flex;
 	align-items: center;
@@ -296,6 +377,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	align-items: center;
 	gap: 8px;
 }
+/* ==========================================================
+   BUTTONS
+   ========================================================== */
 .admin-form-button {
 	display: inline-flex;
 	align-items: center;
@@ -312,7 +396,11 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	font-weight: 600;
 	line-height: 1;
 	text-decoration: none !important;
-	transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease;
+	transition:
+		background-color .15s ease,
+		border-color .15s ease,
+		box-shadow .15s ease,
+		color .15s ease;
 }
 .admin-form-button:hover {
 	text-decoration: none !important;
@@ -337,6 +425,9 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 	border-color: #9ca3af;
 	color: #111827 !important;
 }
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
 @media (max-width: 768px) {
 	.admin-form-card__header {
 		align-items: flex-start;
@@ -372,44 +463,29 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 ?>
 <div class="admin-form-page">
 	<?php $form = $this->beginWidget('CActiveForm', array(
-		'id' => 'brands-form',
+		'id' => 'menu-items-form',
 		'enableAjaxValidation' => false,
 		'htmlOptions' => array(
 			'class' => 'admin-form',
-			'enctype' => 'multipart/form-data',
 		),
 	)); ?>
 	<div class="admin-form-card">
 		<div class="admin-form-card__header">
 			<div class="admin-form-card__heading">
 				<div class="admin-form-card__icon">
-					<?php echo $model->isNewRecord ? '<i class="fas fa-plus"></i>' : '<i class="fas fa-pen"></i>'; ?>
+					<?php
+					echo $model->isNewRecord
+						? '<i class="fas fa-plus"></i>'
+						: '<i class="fas fa-pen"></i>';
+					?>
 				</div>
 				<div>
-					<h2 class="admin-form-card__title">Información</h2>
-					<p class="admin-form-card__description">Completa los campos correspondientes.</p>
-				</div>
-			</div>
-			<div class="admin-form-status">
-				<div class="admin-form-status__item">
-					<div class="admin-form-status__text">
-						<span class="admin-form-status__label">Is Active</span>
-						<span class="admin-form-status__description"><?php echo $model->isNewRecord ? 'Activo por defecto' : ($model->is_active ? 'Activo' : 'Inactivo'); ?></span>
-					</div>
-					<label class="admin-form-switch">
-						<?php echo CHtml::activeCheckBox($model, 'is_active', array('uncheckValue' => '0', 'class' => 'admin-form-status__input', 'checked' => $model->isNewRecord ? true : (bool) $model->is_active)); ?>
-						<span class="admin-form-switch__track"></span>
-					</label>
-				</div>
-				<div class="admin-form-status__item">
-					<div class="admin-form-status__text">
-						<span class="admin-form-status__label">Is Featured</span>
-						<span class="admin-form-status__description"><?php echo $model->isNewRecord ? 'No destacado' : ($model->is_featured ? 'Destacado' : 'No destacado'); ?></span>
-					</div>
-					<label class="admin-form-switch">
-						<?php echo CHtml::activeCheckBox($model, 'is_featured', array('uncheckValue' => '0', 'class' => 'admin-form-status__input', 'checked' => $model->isNewRecord ? false : (bool) $model->is_featured)); ?>
-						<span class="admin-form-switch__track"></span>
-					</label>
+					<h2 class="admin-form-card__title">
+						Información
+					</h2>
+					<p class="admin-form-card__description">
+						Completa los campos correspondientes.
+					</p>
 				</div>
 			</div>
 		</div>
@@ -417,34 +493,76 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 			<?= $form->errorSummary($model, '<strong>Por favor verifica la información:</strong>'); ?>
 			<div class="admin-form-fields">
 				<div class="admin-form-field">
-					<?= $form->labelEx($model, 'name'); ?>
-					<?= $form->textField($model, 'name', array('class' => 'form-control', 'size' => 60, 'maxlength' => 255)); ?>
-					<?= $form->error($model, 'name'); ?>
+					<?= $form->labelEx($model, 'key'); ?>
+					<?= $form->textField($model, 'key', ['class' => 'form-control', 'size' => 60, 'maxlength' => 100, 'readonly' => !$model->isNewRecord]); ?>
+				</div>
+				<div class="admin-form-field admin-form-field--switch">
+					<div>
+						<?= $form->labelEx($model, 'is_menu'); ?>
+					</div>
+					<div class="admin-form-field__switch">
+						<label class="admin-form-switch">
+							<?php
+							echo CHtml::activeCheckBox(
+								$model,
+								'is_menu',
+								array(
+									'uncheckValue' => '0',
+									'class' => 'admin-form-switch__input',
+								)
+							);
+							?>
+							<span class="admin-form-switch__track"></span>
+						</label>
+					</div>
+				</div>
+				<div class="admin-form-field admin-form-field--switch">
+					<div>
+						<?= $form->labelEx($model, 'is_button'); ?>
+					</div>
+					<div class="admin-form-field__switch">
+						<label class="admin-form-switch">
+							<?php
+							echo CHtml::activeCheckBox(
+								$model,
+								'is_button',
+								array(
+									'uncheckValue' => '0',
+									'class' => 'admin-form-switch__input',
+								)
+							);
+							?>
+							<span class="admin-form-switch__track"></span>
+						</label>
+					</div>
 				</div>
 				<div class="admin-form-field">
-					<?= $form->labelEx($model, 'logo'); ?>
-					<?= $form->fileField($model, 'logo', array('class' => 'form-control', 'accept' => 'image/jpeg,image/png,image/webp')); ?>
-					<?= $form->error($model, 'logo'); ?>
-					<span class="hint"><?php echo $model->isNewRecord ? 'Selecciona el logo de la marca.' : 'Selecciona una nueva imagen solo si deseas reemplazar el logo actual.'; ?></span>
-					<?php if (!$model->isNewRecord && $model->logo): ?>
-						<div class="admin-form-logo-current">
-							<img
-								src="<?php echo Yii::app()->baseUrl . '/' . ltrim($model->logo, '/'); ?>"
-								alt="Logo actual"
-								class="admin-form-logo-current__image">
-							<span class="admin-form-logo-current__text">Logo actual</span>
-						</div>
-					<?php endif; ?>
-				</div>
-				<div class="admin-form-field">
-					<?= $form->labelEx($model, 'website_url'); ?>
-					<?= $form->textField($model, 'website_url', array('class' => 'form-control', 'size' => 60, 'maxlength' => 255)); ?>
-					<?= $form->error($model, 'website_url'); ?>
+					<?= $form->labelEx($model, 'link'); ?>
+					<?= $form->textField($model, 'link', ['class' => 'form-control', 'size' => 60, 'maxlength' => 255]); ?>
 				</div>
 				<div class="admin-form-field">
 					<?= $form->labelEx($model, 'sort_order'); ?>
-					<?= $form->textField($model, 'sort_order', array('class' => 'form-control')); ?>
-					<?= $form->error($model, 'sort_order'); ?>
+					<?= $form->textField($model, 'sort_order'); ?>
+				</div>
+				<div class="admin-form-field admin-form-field--switch">
+					<div>
+						<?= $form->labelEx($model, 'active'); ?>
+					</div>
+					<div class="admin-form-field__switch">
+						<label class="admin-form-switch">
+							<?php
+							echo CHtml::activeCheckBox(
+								$model,
+								'active',
+								array(
+									'uncheckValue' => '0',
+									'class' => 'admin-form-switch__input',
+								)
+							);
+							?>
+							<span class="admin-form-switch__track"></span>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -454,12 +572,22 @@ Yii::app()->clientScript->registerCss('admin-form-brands', '
 				Campos obligatorios
 			</div>
 			<div class="admin-form-actions">
-				<a href="<?php echo $this->createUrl("index"); ?>" class="admin-form-button admin-form-button--secondary">
+				<a
+					href="<?php echo $this->createUrl("index"); ?>"
+					class="admin-form-button admin-form-button--secondary">
 					<i class="fas fa-times"></i>
 					Cancelar
 				</a>
-				<button type="submit" class="admin-form-button admin-form-button--primary">
-					<?php echo $model->isNewRecord ? '<i class="fas fa-plus"></i> Crear' : '<i class="fas fa-save"></i> Guardar cambios'; ?>
+				<button
+					type="submit"
+					class="admin-form-button admin-form-button--primary">
+					<?php
+					if ($model->isNewRecord) {
+						echo '<i class="fas fa-plus"></i> Crear';
+					} else {
+						echo '<i class="fas fa-save"></i> Guardar cambios';
+					}
+					?>
 				</button>
 			</div>
 		</div>

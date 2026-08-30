@@ -613,6 +613,36 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
                 </div>
 
+                <div class="admin-form-field">
+
+                    <label for="logo_menu_size">
+                        Tamaño logo en Menu
+                    </label>
+
+                    <input
+                        type="text"
+                        id="logo_menu_size"
+                        name="logo_menu_size"
+                        value="<?= CHtml::encode($getBranding('logo_menu_size', '16')); ?>"
+                        class="branding-field">
+
+                </div>
+
+                <div class="admin-form-field">
+
+                    <label for="logo_footer_size">
+                        Tamaño logo en Footer
+                    </label>
+
+                    <input
+                        type="text"
+                        id="logo_footer_size"
+                        name="logo_footer_size"
+                        value="<?= CHtml::encode($getBranding('logo_footer_size', '16')); ?>"
+                        class="branding-field">
+
+                </div>
+
 
                 <!-- =================================================
 				 TAGLINE MENU

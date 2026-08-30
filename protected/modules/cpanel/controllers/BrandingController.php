@@ -11,6 +11,9 @@ class BrandingController extends Controller
             'tagline',
             'tagline_menu',
             'tagline_footer',
+            'logo_menu_size',
+            'logo_footer_size',
+            'full_sheet'
         ),
 
         'typography' => array(

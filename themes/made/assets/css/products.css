@@ -29,7 +29,7 @@
 
 .products__title-line {
     width: 44px;
-    height: 3px;
+    height: 2px;
     margin: 10px auto 0;
     background: var(--made-color-primary);
 }

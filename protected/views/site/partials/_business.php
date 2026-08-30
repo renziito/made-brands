@@ -1,89 +1,6 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| NUESTROS NEGOCIOS
-|--------------------------------------------------------------------------
-|
-| Todo el contenido editable está definido en $businesses.
-|
-| Posteriormente este arreglo puede reemplazarse directamente
-| por información proveniente de la base de datos.
-|
-|--------------------------------------------------------------------------
-*/
 
 $themeUrl = Yii::app()->baseUrl;
-
-
-/*
-|--------------------------------------------------------------------------
-| BUSINESSES
-|--------------------------------------------------------------------------
-| Estructura preparada para futura conexión con DB.
-|
-| Campos:
-|
-| id          => Identificador del negocio
-| title       => Nombre del negocio
-| description => Descripción
-| image       => Imagen principal
-| alt         => Texto alternativo de la imagen
-| icon        => Clase Font Awesome
-| status      => 1 activo / 0 inactivo
-| sort_order  => Orden de aparición
-|--------------------------------------------------------------------------
-*/
-
-
-
-$businesses2 = array(
-
-	array(
-		'id' => 1,
-
-		'title' => 'Consumo masivo',
-
-		'description' => '
-			Llevamos productos de calidad a las
-			góndolas de todo el país.
-		',
-
-		'image' => '/images/business/consumo-masivo.png',
-
-		'alt' => 'Consumo masivo',
-
-		'icon' => 'fa-shopping-cart',
-
-		'status' => 1,
-
-		'sort_order' => 1
-	),
-
-
-	array(
-		'id' => 2,
-
-		'title' => 'Soluciones B2B',
-
-		'description' => '
-			Soluciones a medida para empresas,
-			instituciones y canales profesionales.
-		',
-
-		'image' => '/images/business/soluciones-b2b.png',
-
-		'alt' => 'Soluciones B2B',
-
-		'icon' => 'fa-cutlery',
-
-		'status' => 1,
-
-		'sort_order' => 2
-	)
-
-);
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -118,7 +35,7 @@ usort(
 
 <section
 	id="negocios"
-	class="business">
+	class="business" style="background-color:<?= WebUtils::getSiteSetting('section_alt_background_color') ?>">
 
 	<div class="container">
 
@@ -131,8 +48,8 @@ usort(
 
 		<div class="business__header">
 
-			<h2 class="business__title">
-				Nuestros negocios
+			<h2 class="business__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+				<?= WebUtils::getMenuItemByKey('our_businesses', $languageId)['label'] ?>
 			</h2>
 
 
@@ -195,12 +112,12 @@ usort(
 
 						<div class="business-card__content">
 
-							<h3 class="business-card__title">
+							<h3 class="business-card__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 								<?php echo CHtml::encode($business['title']); ?>
 							</h3>
 
 
-							<p class="business-card__description">
+							<p class="business-card__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 								<?php echo $business['description']; ?>
 							</p>
 

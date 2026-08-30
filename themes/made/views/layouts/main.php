@@ -7,12 +7,43 @@ $themeUrl = Yii::app()->theme->baseUrl;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo CHtml::encode($this->pageTitle); ?> </title>
+
+    <!-- Primary SEO -->
+    <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+    <meta name="description" content="<?= WebUtils::getSiteSetting('SEODescription', 'MADE Brands es una empresa dedicada a la importación y comercialización de marcas y productos, conectando oportunidades comerciales entre Perú y Uruguay.') ?>">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="MADE Brands">
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="<?= CHtml::encode(Yii::app()->request->getHostInfo() . Yii::app()->request->getUrl()); ?>">
+
+    <!-- Favicons -->
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png">
+    <link rel="shortcut icon" href="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png">
+    <link rel="icon" type="image/x-icon" href="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png">
+    <link rel="icon" href="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png" sizes="32x32">
+    <link rel="icon" href="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="<?= Yii::app()->getBaseUrl(); ?>/images/favicon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:locale" content="es_UY">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MADE Brands">
+    <meta property="og:title" content="<?php echo CHtml::encode($this->pageTitle); ?>">
+    <meta property="og:description" content="<?= WebUtils::getSiteSetting('SEODescription', 'MADE Brands es una empresa dedicada a la importación y comercialización de marcas y productos, conectando oportunidades comerciales entre Perú y Uruguay.') ?>">
+    <meta property="og:url" content="<?= CHtml::encode(Yii::app()->request->getHostInfo() . Yii::app()->request->getUrl()); ?>">
+    <meta property="og:image" content="<?= Yii::app()->getBaseUrl(); ?>/images/og-image.jpg">
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo CHtml::encode($this->pageTitle); ?>">
+    <meta name="twitter:description" content="<?= WebUtils::getSiteSetting('SEODescription', 'MADE Brands es una empresa dedicada a la importación y comercialización de marcas y productos, conectando oportunidades comerciales entre Perú y Uruguay.') ?>">
+    <meta name="twitter:image" content="<?= Yii::app()->getBaseUrl(); ?>/images/og-image.jpg">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/bootstrap.min.css">
-    <link href="<?= Yii::app()->getBaseUrl() ?>/bin/fonts/font-awesome/css/all.min.css" rel="stylesheet" type="text/css" />
-
+    <link href="<?= Yii::app()->getBaseUrl() ?>/bin/fonts/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/theme.css">
-
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/variables.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/hero.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/intro.css">
@@ -22,9 +53,7 @@ $themeUrl = Yii::app()->theme->baseUrl;
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/faq.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/footer.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/login.css">
-
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/responsive.css">
-
 </head>
 
 <?php
@@ -35,23 +64,39 @@ $sectionUrl = function ($section) use ($isHome) {
         ? '#' . $section
         : $this->createUrl('site/index') . '#' . $section;
 };
+
+$languageCode = Yii::app()->session->get('language', 'es');
+$language = Languages::model()->find('code = :code', array(':code' => $languageCode));
+$languageId = $language ? $language->id : null;
 ?>
 
-<body>
-    <header class="site-header">
-        <div class="container">
+<body style="font-family:<?= WebUtils::getSiteSetting('font_family') ?>; background-color:<?= WebUtils::getSiteSetting('body_background_color') ?>">
+    <header class="site-header" style="background-color:<?= WebUtils::getSiteSetting('header_background_color') ?>">
+        <div class="site-header__inner">
             <strong>
-                MADE.BRANDS
+                <a href="<?php echo Yii::app()->homeUrl; ?>" style="font-size:<?= WebUtils::getSiteSetting('logo_menu_size') ?>px; font-family:<?= WebUtils::getSiteSetting('logo_font_family') ?>"><?= WebUtils::getSiteSetting('site_name') ?></a>
+                <?php if (WebUtils::getSiteSetting('tagline_menu')) : ?>
+                    <br><small style="font-size:10px"><?= WebUtils::getSiteSetting('tagline') ?></small>
+                <?php endif; ?>
             </strong>
+            <?php $menuItems = WebUtils::getMenu($languageId); ?>
+
             <nav class="site-menu">
-                <a href="<?php echo Yii::app()->homeUrl; ?>">Inicio</a>
-                <a href="<?= $sectionUrl('nosotros'); ?>">Nosotros </a>
-                <a href="<?= $sectionUrl('negocios'); ?>"> Nuestros negocios </a>
-                <a href="<?= $sectionUrl('productos'); ?>"> Productos </a>
-                <a href="<?= $sectionUrl('clientes'); ?>"> Nuestros clientes </a>
-                <a href="<?= $sectionUrl('faq'); ?>"> FAQ </a>
-                <a href="<?= $sectionUrl('contacto'); ?>"> Contacto </a>
+                <?php foreach ($menuItems as $menuItem): ?>
+                    <?php
+                    $url  = $sectionUrl($menuItem['link']);
+                    if (str_starts_with($menuItem['link'], "#")) {
+                        $url = $menuItem['link'];
+                    }
+                    ?>
+                    <?php if ($menuItem['is_button']): ?>
+                        <a href="<?= $url; ?>" class="header-contact-button" style="background-color:<?= WebUtils::getSiteSetting('contact_button_background_color') ?>!important ;color:<?= WebUtils::getSiteSetting('contact_button_text_color') ?> !important"><?= $menuItem['label'] ?></a>
+                    <?php else: ?>
+                        <a href="<?= $url; ?>"><?= $menuItem['label'] ?> </a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             </nav>
+
 
             <button type="button" class="menu-toggle" aria-label="Abrir menú"> <span></span> <span></span> <span></span> </button>
         </div>
@@ -72,6 +117,10 @@ $sectionUrl = function ($section) use ($isHome) {
     |--------------------------------------------------------------------------
     -->
 
+        <?php
+        $contactItems = WebUtils::getContactItems($languageId);
+        ?>
+
         <div class="footer-contact">
 
             <div class="container">
@@ -79,102 +128,38 @@ $sectionUrl = function ($section) use ($isHome) {
                 <div class="footer-contact__content">
 
 
-                    <!--
-                |--------------------------------------------------------------------------
-                | CONTACT INFORMATION
-                |--------------------------------------------------------------------------
-                -->
-
                     <div class="footer-contact__info">
 
+                        <?php foreach ($contactItems as $item): ?>
 
-                        <!-- ADDRESS -->
+                            <div class="footer-contact__item">
 
-                        <div class="footer-contact__item">
+                                <div class="footer-contact__icon">
+                                    <i
+                                        class="<?php echo CHtml::encode($item['icon']); ?>"
+                                        aria-hidden="true">
+                                    </i>
+                                </div>
 
-                            <div class="footer-contact__icon">
+                                <div class="footer-contact__text">
 
-                                <i
-                                    class="fa fa-map-marker"
-                                    aria-hidden="true"></i>
+                                    <strong>
+                                        <?php echo CHtml::encode($item['label']); ?>
+                                    </strong>
 
-                            </div>
+                                    <?php foreach (preg_split('/\r\n|\r|\n/', $item['value']) as $value): ?>
 
+                                        <span>
+                                            <?php echo CHtml::encode(trim($value)); ?>
+                                        </span>
 
-                            <div class="footer-contact__text">
+                                    <?php endforeach; ?>
 
-                                <strong>
-                                    Dirección
-                                </strong>
-
-                                <span>
-                                    Av. Italia 1234, Oficina 456
-                                </span>
-
-                                <span>
-                                    Montevideo, Uruguay
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- PHONE -->
-
-                        <div class="footer-contact__item">
-
-                            <div class="footer-contact__icon">
-
-                                <i
-                                    class="fa fa-phone"
-                                    aria-hidden="true"></i>
+                                </div>
 
                             </div>
 
-
-                            <div class="footer-contact__text">
-
-                                <strong>
-                                    Teléfono
-                                </strong>
-
-                                <span>
-                                    +598 2628 1234
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- EMAIL -->
-
-                        <div class="footer-contact__item">
-
-                            <div class="footer-contact__icon">
-
-                                <i
-                                    class="fa fa-envelope-o"
-                                    aria-hidden="true"></i>
-
-                            </div>
-
-
-                            <div class="footer-contact__text">
-
-                                <strong>
-                                    Email
-                                </strong>
-
-                                <a
-                                    href="mailto:holo@madebrands.com">
-                                    holo@madebrands.com
-                                </a>
-
-                            </div>
-
-                        </div>
+                        <?php endforeach; ?>
 
 
                     </div>
@@ -186,30 +171,30 @@ $sectionUrl = function ($section) use ($isHome) {
                 |--------------------------------------------------------------------------
                 -->
 
+                    <?php $contactCta = WebUtils::getContactCta($languageId); ?>
+
                     <div class="footer-contact__cta">
 
                         <a
-                            href="mailto:holo@madebrands.com"
-                            class="footer-contact__button">
+                            href="<?php echo CHtml::encode($contactCta->url); ?>"
+                            class="footer-contact__button" style="background-color:<?= WebUtils::getSiteSetting('cta_background_color') ?>!important ;color:<?= WebUtils::getSiteSetting('cta_text_color') ?> !important">
 
                             <span class="footer-contact__button-icon">
-
-                                <i
-                                    class="fa fa-envelope-o"
-                                    aria-hidden="true"></i>
-
+                                <i class="<?php echo CHtml::encode($contactCta->icon); ?>" aria-hidden="true"></i>
                             </span>
-
+                            <?php $translation = $contactCta->contactCtaTranslations[0]; ?>
 
                             <span class="footer-contact__button-content">
 
-                                <strong>
-                                    Escríbenos
-                                </strong>
+                                <strong><?php echo CHtml::encode($translation->title); ?></strong>
 
-                                <small>
-                                    Te responderemos a la brevedad
-                                </small>
+                                <?php if (!empty($translation->text)): ?>
+
+                                    <small>
+                                        <?php echo CHtml::encode($translation->text); ?>
+                                    </small>
+
+                                <?php endif; ?>
 
                             </span>
 
@@ -247,7 +232,10 @@ $sectionUrl = function ($section) use ($isHome) {
                     <div class="footer-bottom__brand">
 
                         <strong>
-                            MADE.BRANDS
+                            <span style="font-size:<?= WebUtils::getSiteSetting('logo_footer_size') ?>px; font-family:<?= WebUtils::getSiteSetting('logo_font_family') ?>"><?= WebUtils::getSiteSetting('site_name') ?></span>
+                            <?php if (WebUtils::getSiteSetting('tagline_footer')) : ?>
+                                <br><small style="font-size:10px"><?= WebUtils::getSiteSetting('tagline') ?></small>
+                            <?php endif; ?>
                         </strong>
 
 
@@ -264,11 +252,11 @@ $sectionUrl = function ($section) use ($isHome) {
                     <div class="footer-bottom__copyright">
 
                         <span>
-                            © <?php echo date('Y'); ?> MADE.BRANDS.
+                            © <?php echo date('Y'); ?> <?= WebUtils::getSiteSetting('site_name') ?>
                         </span>
 
                         <span>
-                            Todos los derechos reservados.
+                            <?= WebUtils::getMenuItemByKey('all_rights_reserved', $languageId)['label'] ?>
                         </span>
 
                     </div>
@@ -280,53 +268,27 @@ $sectionUrl = function ($section) use ($isHome) {
                 |--------------------------------------------------------------------------
                 -->
 
+                    <?php $socialLinks = WebUtils::getSocialLinks(); ?>
+
                     <div class="footer-bottom__social">
 
 
-                        <!-- LINKEDIN -->
+                        <?php foreach ($socialLinks as $socialLink): ?>
 
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="LinkedIn">
+                            <a
+                                href="<?php echo CHtml::encode($socialLink->url); ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="<?php echo CHtml::encode($socialLink->name); ?>">
 
-                            <i
-                                class="fa fa-linkedin"
-                                aria-hidden="true"></i>
+                                <i
+                                    class="<?php echo CHtml::encode($socialLink->icon); ?>"
+                                    aria-hidden="true">
+                                </i>
 
-                        </a>
+                            </a>
 
-
-                        <!-- INSTAGRAM -->
-
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Instagram">
-
-                            <i
-                                class="fa fa-instagram"
-                                aria-hidden="true"></i>
-
-                        </a>
-
-
-                        <!-- WHATSAPP -->
-
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="WhatsApp">
-
-                            <i
-                                class="fa fa-whatsapp"
-                                aria-hidden="true"></i>
-
-                        </a>
-
+                        <?php endforeach; ?>
 
                     </div>
 

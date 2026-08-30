@@ -238,7 +238,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasEyebrow): ?>
 
-									<span class="hero__eyebrow">
+									<span class="hero__eyebrow" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
 										<?php echo $slide['eyebrow']; ?>
 									</span>
 
@@ -247,7 +247,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasTitle): ?>
 
-									<h2 class="hero__title">
+									<h2 class="hero__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 										<?php echo $slide['title']; ?>
 									</h2>
 
@@ -256,7 +256,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasDescription): ?>
 
-									<p class="hero__description">
+									<p class="hero__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 										<?php echo $slide['description']; ?>
 									</p>
 
@@ -293,8 +293,8 @@ foreach ($heroSlidesModels as $index => $slide) {
 				aria-hidden="true"></span>
 
 			<span class="sr-only">
-				Anterior
-			</span>
+				<
+					</span>
 
 		</a>
 
@@ -316,7 +316,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 				aria-hidden="true"></span>
 
 			<span class="sr-only">
-				Siguiente
+				>
 			</span>
 
 		</a>

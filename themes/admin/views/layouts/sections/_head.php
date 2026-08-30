@@ -6,7 +6,7 @@
 <meta name="apple-touch-fullscreen" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta content="BeatlesPeru - Pagina de Administracion" name="description" />
+<meta content="made.brands - Pagina de Administracion" name="description" />
 <meta name="robots" content="index,follow">
 <meta content="" name="author" />
 

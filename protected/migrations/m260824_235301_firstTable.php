@@ -45,6 +45,8 @@ class m260824_235301_firstTable extends CDbMigration
 			'site_settings',
 			'languages',
 			'users',
+			'menu_item_translations',
+			'menu_items'
 		);
 
 		foreach ($tables as $table) {
@@ -151,14 +153,13 @@ class m260824_235301_firstTable extends CDbMigration
 
 		$this->createTable('about_sections', array(
 			'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT',
-			'type' => "VARCHAR(30) NOT NULL DEFAULT 'about'",
 			'image' => 'VARCHAR(255) NULL',
 			'sort_order' => 'INT NOT NULL DEFAULT 0',
 			'is_active' => 'TINYINT NOT NULL DEFAULT 1',
 			'created_at' => 'DATETIME NOT NULL',
 			'updated_at' => 'DATETIME NOT NULL',
 			'PRIMARY KEY (`id`)',
-			'KEY `idx_about_sections_type_active` (`type`, `is_active`, `sort_order`)',
+			'KEY `idx_about_sections_active` (`is_active`, `sort_order`)',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
 		$this->createTable('about_section_translations', array(
@@ -319,6 +320,7 @@ class m260824_235301_firstTable extends CDbMigration
 			'eyebrow'    => 'VARCHAR(255) NOT NULL',
 			'title'      => 'VARCHAR(500) NOT NULL',
 			'text'       => 'TEXT NOT NULL',
+			'featured_label' => 'TEXT NOT NULL',
 			'image'      => 'VARCHAR(255) DEFAULT NULL',
 			'created_at' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
 			'updated_at' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
@@ -552,6 +554,33 @@ class m260824_235301_firstTable extends CDbMigration
 			'PRIMARY KEY (`id`)',
 			'UNIQUE KEY `uq_site_settings_key` (`setting_key`)',
 		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+		$this->createTable('menu_items', array(
+			'id' => 'pk',
+			'key' => 'varchar(100) NOT NULL',
+			'is_menu' => 'tinyint(1) NOT NULL DEFAULT 0',
+			'is_button' => 'tinyint(1) NOT NULL DEFAULT 0',
+			'link' => 'varchar(255) NULL',
+			'sort_order' => 'int NOT NULL DEFAULT 0',
+			'active' => 'tinyint(1) NOT NULL DEFAULT 1',
+			'created_at' => 'datetime NOT NULL',
+			'updated_at' => 'datetime NULL',
+		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+		$this->createIndex('ux_menu_items_key', 'menu_items', 'key', true);
+		$this->createIndex('ix_menu_items_menu', 'menu_items', 'is_menu, active, sort_order');
+
+		$this->createTable('menu_item_translations', array(
+			'id' => 'pk',
+			'menu_item_id' => 'int NOT NULL',
+			'language_id' => 'int NOT NULL',
+			'label' => 'varchar(255) NOT NULL',
+			'created_at' => 'datetime NOT NULL',
+			'updated_at' => 'datetime NULL',
+		), 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+		$this->createIndex('ux_menu_item_translations_language_item', 'menu_item_translations', 'menu_item_id, language_id', true);
+		$this->createIndex('ix_menu_item_translations_language', 'menu_item_translations', 'language_id');
 	}
 
 	protected function seedData()
@@ -621,41 +650,10 @@ class m260824_235301_firstTable extends CDbMigration
 			'updated_at' => $now,
 		));
 
-		// -----------------------------------------------------------------
-		// ABOUT / MISSION
-		// -----------------------------------------------------------------
+
 		$this->insert('about_sections', array(
-			'type' => 'mission',
 			'image' => null,
 			'sort_order' => 1,
-			'is_active' => 1,
-			'created_at' => $now,
-			'updated_at' => $now,
-		));
-		$missionId = $this->dbConnection->getLastInsertID();
-
-		$this->insert('about_section_translations', array(
-			'about_section_id' => $missionId,
-			'language_id' => 1,
-			'eyebrow' => 'NUESTRA MISIÓN',
-			'eyebrow_size' => '12',
-			'title' => 'Llevamos grandes marcas a grandes personas',
-			'title_size' => '42',
-			'text' => 'Trabajamos con marcas internacionales de prestigio para ofrecer productos de la más alta calidad, con diseño, innovación y propósito.',
-			'text_size' => '16',
-			'secondary_text' => null,
-			'secondary_text_size' => null,
-			'created_at' => $now,
-			'updated_at' => $now,
-		));
-
-		// -----------------------------------------------------------------
-		// ABOUT / US
-		// -----------------------------------------------------------------
-		$this->insert('about_sections', array(
-			'type' => 'about',
-			'image' => null,
-			'sort_order' => 2,
 			'is_active' => 1,
 			'created_at' => $now,
 			'updated_at' => $now,
@@ -825,10 +823,6 @@ class m260824_235301_firstTable extends CDbMigration
 			array('name' => 'Mercado Verde', 'slug' => 'mercado-verde', 'featured' => 1, 'order' => 1),
 			array('name' => 'Disco', 'slug' => 'disco', 'featured' => 1, 'order' => 2),
 			array('name' => 'Devoto', 'slug' => 'devoto', 'featured' => 0, 'order' => 3),
-			array('name' => 'TOTO', 'slug' => 'toto', 'featured' => 0, 'order' => 4),
-			array('name' => 'Geant', 'slug' => 'geant', 'featured' => 0, 'order' => 5),
-			array('name' => 'Macro Mercado', 'slug' => 'macro-mercado', 'featured' => 0, 'order' => 6),
-			array('name' => 'PedidosYa', 'slug' => 'pedidosya', 'featured' => 0, 'order' => 7),
 		);
 
 		$brandIds = array();
@@ -852,6 +846,7 @@ class m260824_235301_firstTable extends CDbMigration
 			'language_id' => 1,
 			'title'   => 'Estamos donde vos estás',
 			'text'    => 'Nuestras marcas llegan a miles de puntos de venta en todo el país, acompañando cada momento.',
+			'featured_label' => ' Marcas Destacadas',
 			'image'   => null,
 		));
 
@@ -1003,6 +998,8 @@ class m260824_235301_firstTable extends CDbMigration
 			array('key' => 'tagline', 'value' => 'Llevamos grandes marcas a grandes personas', 'type' => 'text'),
 			array('key' => 'tagline_menu', 'value' => '0', 'type' => 'bool'),
 			array('key' => 'tagline_footer', 'value' => '0', 'type' => 'bool'),
+			array('key' => 'logo_menu_size', 'value' => '16', 'type' => 'text'),
+			array('key' => 'logo_footer_size', 'value' => '16', 'type' => 'text'),
 			array('key' => 'full_sheet', 'value' => null, 'type' => 'text'),
 			array('key' => 'font_family', 'value' => 'Inter, sans-serif', 'type' => 'text'),
 			array('key' => 'logo_font_family', 'value' => 'Inter', 'type' => 'text'),
@@ -1133,6 +1130,265 @@ class m260824_235301_firstTable extends CDbMigration
 				$this->insert('product_subcategories', array(
 					'product_id' => $productId,
 					'subcategory_id' => $subcategoryIds[$subcategoryName],
+				));
+			}
+		}
+		$items = array(
+			array(
+				'key' => 'about',
+				'is_menu' => 1,
+				'is_button' => 0,
+				'link' => '#nosotros',
+				'sort_order' => 1,
+			),
+			array(
+				'key' => 'business',
+				'is_menu' => 1,
+				'is_button' => 0,
+				'link' => '#negocios',
+				'sort_order' => 2,
+			),
+			array(
+				'key' => 'products',
+				'is_menu' => 1,
+				'is_button' => 0,
+				'link' => '#productos',
+				'sort_order' => 3,
+			),
+			array(
+				'key' => 'brands',
+				'is_menu' => 1,
+				'is_button' => 0,
+				'link' => '#clientes',
+				'sort_order' => 4,
+			),
+			array(
+				'key' => 'faq',
+				'is_menu' => 1,
+				'is_button' => 0,
+				'link' => '#faq',
+				'sort_order' => 5,
+			),
+			array(
+				'key' => 'contact',
+				'is_menu' => 1,
+				'is_button' => 1,
+				'link' => '#contacto',
+				'sort_order' => 6,
+			),
+			array(
+				'key' => 'our_businesses',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'our_categories',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'view_all_products',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'frequently_asked_questions',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'all_rights_reserved',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'filters',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'categories',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'our_products',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'sort_most_recent',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'sort_name',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'sort_oldest',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'clear_filters',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'download_product_catalog',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'show_filters',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'showing',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'of',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+			array(
+				'key' => 'no_products_found',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'remove_filters_message',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'loading_product_information',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+
+			array(
+				'key' => 'product_infographic_unavailable',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			),
+		);
+
+		foreach ($items as $item) {
+			$this->insert('menu_items', array(
+				'key' => $item['key'],
+				'is_menu' => $item['is_menu'],
+				'is_button' => $item['is_button'],
+				'link' => $item['link'],
+				'sort_order' => $item['sort_order'],
+				'active' => 1,
+				'created_at' => $now,
+				'updated_at' => null,
+			));
+		}
+
+
+		// ==========================================================
+		// SPANISH TRANSLATIONS
+		// language_id = 1
+		// ==========================================================
+
+		$translations = array(
+			'about' => 'Nosotros',
+			'business' => 'Negocios',
+			'products' => 'Productos',
+			'brands' => 'Marcas',
+			'faq' => 'FAQ',
+			'contact' => 'Contacto',
+			'our_businesses' => 'Nuestros negocios',
+			'our_categories' => 'Nuestras categorias',
+			'view_all_products' => 'Ver todos los productos',
+			'frequently_asked_questions' => 'Preguntas Frecuentes',
+			'all_rights_reserved' => 'Todos los derechos reservados',
+			'filters' => 'Filtros',
+			'categories' => 'Categorías',
+			'our_products' => 'Nuestros productos',
+			'sort_most_recent' => 'Ordenar por: Más recientes',
+			'sort_name' => 'Ordenar por: Nombre',
+			'sort_oldest' => 'Ordenar por: Más antiguos',
+			'clear_filters' => 'Limpiar filtros',
+			'download_product_catalog' => 'Descargar Ficha Completa de Productos',
+			'show_filters' => 'Mostrar filtros',
+			'showing' => 'Mostrando',
+			'of' => 'de',
+			'no_products_found' => 'No encontramos productos',
+			'remove_filters_message' => 'Prueba quitando alguno de los filtros para volver a ver todo el catálogo.',
+			'loading_product_information' => 'Cargando información del producto...',
+			'product_infographic_unavailable' => 'La infografía de este producto aún no está disponible.',
+		);
+
+		foreach ($translations as $key => $label) {
+			$item = $this->getDbConnection()->createCommand()
+				->select('id')
+				->from('menu_items')
+				->where('`key` = :key', array(
+					':key' => $key,
+				))
+				->queryRow();
+
+			if ($item) {
+				$this->insert('menu_item_translations', array(
+					'menu_item_id' => $item['id'],
+					'language_id' => 1,
+					'label' => $label,
+					'created_at' => $now,
+					'updated_at' => null,
 				));
 			}
 		}

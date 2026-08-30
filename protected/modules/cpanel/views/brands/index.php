@@ -8,7 +8,6 @@ $this->breadcrumbs = array(
 	'Administrar',
 );
 
-
 /*
  * ==========================================================
  * ORIGINAL FILTER
@@ -40,7 +39,6 @@ foreach ($filterAttributes as $filterAttribute) {
 
 $dataProvider = $model->search();
 
-
 /*
  * ==========================================================
  * LANGUAGES
@@ -52,7 +50,6 @@ $languages = Yii::app()->db->createCommand()
 	->from('languages')
 	->order('id ASC')
 	->queryAll();
-
 
 /*
  * ==========================================================
@@ -75,7 +72,6 @@ foreach ($brandsSectionRows as $brandsSectionRow) {
 	$brandsSectionsByLanguage[(int) $brandsSectionRow->language_id] = $brandsSectionRow;
 }
 
-
 /*
  * ==========================================================
  * CSS
@@ -87,7 +83,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 .admin-crud-page {
 	width: 100%;
 }
-
 
 /* ==========================================================
    HEADER
@@ -136,7 +131,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	gap: 8px;
 	flex-shrink: 0;
 }
-
 
 /* ==========================================================
    BUTTONS
@@ -193,7 +187,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	color: #111827 !important;
 }
 
-
 /* ==========================================================
    CARD
    ========================================================== */
@@ -249,7 +242,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	font-size: 12px;
 	line-height: 1.4;
 }
-
 
 /* ==========================================================
    FILTER PANEL
@@ -341,7 +333,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	margin-top: 16px;
 }
 
-
 /* ==========================================================
    TABLE
    ========================================================== */
@@ -418,7 +409,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	border-bottom: 0 !important;
 }
 
-
 /* ==========================================================
    ACTIONS
    ========================================================== */
@@ -456,7 +446,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	background: #fef2f2;
 	color: #dc2626 !important;
 }
-
 
 /* ==========================================================
    MODAL
@@ -584,7 +573,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	border-color: #b91c1c;
 }
 
-
 /* ==========================================================
    EMPTY STATE
    ========================================================== */
@@ -618,7 +606,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	color: #9ca3af;
 	font-size: 12px;
 }
-
 
 /* ==========================================================
    PAGINATION
@@ -694,7 +681,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	cursor: default;
 }
 
-
 /* ==========================================================
    BRANDS SECTION FORM
 ========================================================== */
@@ -743,7 +729,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	font-size: 12px;
 	line-height: 1.4;
 }
-
 
 /* ==========================================================
    TABS
@@ -809,7 +794,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	color: #fff;
 }
 
-
 /* ==========================================================
    PANELS
 ========================================================== */
@@ -825,7 +809,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 .brands-section-form {
 	margin: 0;
 }
-
 
 /* ==========================================================
    LANGUAGE HEADER
@@ -858,7 +841,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	font-size: 14px;
 	font-weight: 600;
 }
-
 
 /* ==========================================================
    FIELDS
@@ -935,7 +917,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
 }
 
-
 /* ==========================================================
    IMAGE
 ========================================================== */
@@ -1009,7 +990,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	word-break: break-all;
 }
 
-
 /* ==========================================================
    FORM FOOTER
 ========================================================== */
@@ -1047,7 +1027,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 	border-color: #1f2937;
 	color: #fff;
 }
-
 
 /* ==========================================================
    RESPONSIVE
@@ -1128,7 +1107,6 @@ Yii::app()->clientScript->registerCss('admin-crud-brands', "
 }
 ");
 
-
 /*
  * ==========================================================
  * ORIGINAL JAVASCRIPT + LANGUAGE TABS
@@ -1158,9 +1136,7 @@ $('#brands-filter-toggle').on('click', function(e) {
 
 });
 
-
 var crud_633fb5d52cDeleteUrl = null;
-
 
 function opencrud_633fb5d52cDeleteModal(url) {
 
@@ -1174,7 +1150,6 @@ function opencrud_633fb5d52cDeleteModal(url) {
 
 }
 
-
 function closecrud_633fb5d52cDeleteModal() {
 
 	crud_633fb5d52cDeleteUrl = null;
@@ -1186,7 +1161,6 @@ function closecrud_633fb5d52cDeleteModal() {
 	$('body').css('overflow', '');
 
 }
-
 
 $(document).on(
 	'click',
@@ -1210,7 +1184,6 @@ $(document).on(
 	}
 );
 
-
 $('#brands-delete-cancel').on(
 	'click',
 	function(e) {
@@ -1223,7 +1196,6 @@ $('#brands-delete-cancel').on(
 
 	}
 );
-
 
 $('#brands-delete-confirm').on(
 	'click',
@@ -1248,7 +1220,6 @@ $('#brands-delete-confirm').on(
 	}
 );
 
-
 $('#brands-delete-modal').on(
 	'click',
 	function(e) {
@@ -1262,7 +1233,6 @@ $('#brands-delete-modal').on(
 	}
 );
 
-
 $(document).on('keydown', function(e) {
 
 	if (e.key === 'Escape') {
@@ -1272,7 +1242,6 @@ $(document).on('keydown', function(e) {
 	}
 
 });
-
 
 /*
  * ==========================================================
@@ -1328,9 +1297,7 @@ $('.brands-section-tab').on(
 
 ?>
 
-
 <div class="admin-crud-page">
-
 
 	<!-- ======================================================
 	     HEADER ORIGINAL
@@ -1354,9 +1321,7 @@ $('.brands-section-tab').on(
 
 		</div>
 
-
 		<div class="admin-crud-actions">
-
 
 			<a
 				id="brands-filter-toggle"
@@ -1381,7 +1346,6 @@ $('.brands-section-tab').on(
 
 			</a>
 
-
 			<a
 				class="admin-crud-button admin-crud-button--primary"
 				href="<?php
@@ -1401,11 +1365,9 @@ $('.brands-section-tab').on(
 
 			</a>
 
-
 		</div>
 
 	</div>
-
 
 	<!-- ======================================================
 	     FILTER ORIGINAL
@@ -1442,7 +1404,6 @@ $('.brands-section-tab').on(
 
 		</div>
 
-
 		<form
 			method="get"
 			action="<?php
@@ -1450,7 +1411,6 @@ $('.brands-section-tab').on(
 					?>">
 
 			<div class="admin-crud-filter__fields">
-
 
 				<div class="admin-crud-filter__field">
 
@@ -1481,7 +1441,6 @@ $('.brands-section-tab').on(
 
 				</div>
 
-
 				<div class="admin-crud-filter__field">
 
 					<label
@@ -1510,7 +1469,6 @@ $('.brands-section-tab').on(
 					?>
 
 				</div>
-
 
 				<div class="admin-crud-filter__field">
 
@@ -1541,12 +1499,9 @@ $('.brands-section-tab').on(
 
 				</div>
 
-
 			</div>
 
-
 			<div class="admin-crud-filter__footer">
-
 
 				<a
 					class="admin-crud-button admin-crud-button--secondary"
@@ -1565,7 +1520,6 @@ $('.brands-section-tab').on(
 
 				</a>
 
-
 				<button
 					type="submit"
 					class="admin-crud-button admin-crud-button--primary"
@@ -1581,13 +1535,11 @@ $('.brands-section-tab').on(
 
 				</button>
 
-
 			</div>
 
 		</form>
 
 	</div>
-
 
 	<!-- ======================================================
 	     BRANDS SECTION
@@ -1595,7 +1547,6 @@ $('.brands-section-tab').on(
 	====================================================== -->
 
 	<div class="brands-section-card">
-
 
 		<div class="brands-section-card__header">
 
@@ -1607,7 +1558,6 @@ $('.brands-section-tab').on(
 				</i>
 
 			</div>
-
 
 			<div>
 
@@ -1627,9 +1577,7 @@ $('.brands-section-tab').on(
 
 		</div>
 
-
 		<?php if (!empty($languages)): ?>
-
 
 			<!-- ==================================================
 			     LANGUAGE TABS
@@ -1699,7 +1647,6 @@ $('.brands-section-tab').on(
 
 						</span>
 
-
 						<span>
 
 							<?php
@@ -1717,7 +1664,6 @@ $('.brands-section-tab').on(
 				<?php endforeach; ?>
 
 			</div>
-
 
 			<!-- ==================================================
 			     LANGUAGE PANELS
@@ -1771,7 +1717,6 @@ $('.brands-section-tab').on(
 												?>"
 					role="tabpanel">
 
-
 					<form
 						class="brands-section-form"
 						method="post"
@@ -1796,14 +1741,12 @@ $('.brands-section-tab').on(
 
 								?>">
 
-
 						<input
 							type="hidden"
 							name="BrandsSection[language_id]"
 							value="<?php
 									echo $languageId;
 									?>">
-
 
 						<?php if ($section): ?>
 
@@ -1815,7 +1758,6 @@ $('.brands-section-tab').on(
 										?>">
 
 						<?php endif; ?>
-
 
 						<!-- ==========================================
 						     LANGUAGE HEADER
@@ -1835,7 +1777,6 @@ $('.brands-section-tab').on(
 
 							</span>
 
-
 							<span class="brands-section-language-name">
 
 								<?php
@@ -1850,7 +1791,6 @@ $('.brands-section-tab').on(
 
 						</div>
 
-
 						<!-- ==========================================
 						     FORM BODY
 						========================================== -->
@@ -1859,13 +1799,11 @@ $('.brands-section-tab').on(
 
 							<div class="brands-section-form-grid">
 
-
 								<!-- ==================================
 								     TEXT FIELDS
 								================================== -->
 
 								<div class="brands-section-fields">
-
 
 									<div class="brands-section-field">
 
@@ -1882,7 +1820,6 @@ $('.brands-section-tab').on(
 											</span>
 
 										</label>
-
 
 										<input
 											type="text"
@@ -1907,6 +1844,10 @@ $('.brands-section-tab').on(
 
 									</div>
 
+									<div class="brands-section-field">
+										<label class="brands-section-label" for="brands-section-<?php echo $languageId; ?>-featured_label">Featured Label</label>
+										<input type="text" id="brands-section-<?php echo $languageId; ?>-featured_label" name="BrandsSection[featured_label]" value="<?php echo $section ? CHtml::encode($section->featured_label) : ''; ?>" class="brands-section-input" maxlength="255" autocomplete="off" placeholder="Ej. Marcas que confían en nosotros">
+									</div>
 
 									<div class="brands-section-field">
 
@@ -1923,7 +1864,6 @@ $('.brands-section-tab').on(
 											</span>
 
 										</label>
-
 
 										<input
 											type="text"
@@ -1948,7 +1888,6 @@ $('.brands-section-tab').on(
 
 									</div>
 
-
 									<div class="brands-section-field">
 
 										<label
@@ -1964,7 +1903,6 @@ $('.brands-section-tab').on(
 											</span>
 
 										</label>
-
 
 										<textarea
 											id="brands-section-<?php
@@ -1985,9 +1923,7 @@ $('.brands-section-tab').on(
 
 									</div>
 
-
 								</div>
-
 
 								<!-- ==================================
 								     IMAGE
@@ -1995,22 +1931,18 @@ $('.brands-section-tab').on(
 
 								<div class="brands-section-image">
 
-
 									<label class="brands-section-image-label">
 
 										Imagen
 
 									</label>
 
-
 									<div class="brands-section-image-preview">
-
 
 										<?php if (
 											$section &&
 											!empty($section->image)
 										): ?>
-
 
 											<img
 												src="<?= Yii::app()->getBaseUrl() . CHtml::encode(
@@ -2024,9 +1956,7 @@ $('.brands-section-tab').on(
 
 														?>">
 
-
 										<?php else: ?>
-
 
 											<div class="brands-section-image-empty">
 
@@ -2037,19 +1967,15 @@ $('.brands-section-tab').on(
 
 											</div>
 
-
 										<?php endif; ?>
 
-
 									</div>
-
 
 									<input
 										type="file"
 										name="BrandsSection[image]"
 										class="brands-section-image-file"
 										accept="image/jpeg,image/png,image/webp,image/gif">
-
 
 									<div class="brands-section-image-hint">
 
@@ -2058,12 +1984,10 @@ $('.brands-section-tab').on(
 
 									</div>
 
-
 									<?php if (
 										$section &&
 										!empty($section->image)
 									): ?>
-
 
 										<div class="brands-section-image-current">
 
@@ -2077,17 +2001,13 @@ $('.brands-section-tab').on(
 
 										</div>
 
-
 									<?php endif; ?>
 
-
 								</div>
-
 
 							</div>
 
 						</div>
-
 
 						<!-- ==========================================
 						     SAVE BUTTON
@@ -2110,16 +2030,13 @@ $('.brands-section-tab').on(
 
 						</div>
 
-
 					</form>
 
 				</div>
 
 			<?php endforeach; ?>
 
-
 		<?php else: ?>
-
 
 			<div class="admin-crud-empty">
 
@@ -2147,12 +2064,9 @@ $('.brands-section-tab').on(
 
 			</div>
 
-
 		<?php endif; ?>
 
-
 	</div>
-
 
 	<!-- ======================================================
 	     GRID ORIGINAL
@@ -2190,7 +2104,6 @@ $('.brands-section-tab').on(
 			</div>
 
 		</div>
-
 
 		<div class="admin-crud-table-wrapper">
 
@@ -2363,7 +2276,6 @@ $('.brands-section-tab').on(
 
 		</div>
 
-
 		<div class="admin-crud-footer">
 
 			<div class="admin-crud-summary">
@@ -2400,7 +2312,6 @@ $('.brands-section-tab').on(
 				?>
 
 			</div>
-
 
 			<div class="admin-crud-pagination">
 
@@ -2444,7 +2355,6 @@ $('.brands-section-tab').on(
 
 </div>
 
-
 <!-- ==========================================================
      DELETE MODAL ORIGINAL
 ========================================================== -->
@@ -2457,12 +2367,9 @@ $('.brands-section-tab').on(
 	aria-modal="true"
 	aria-labelledby="brands-delete-modal-title">
 
-
 	<div class="admin-crud-modal__dialog">
 
-
 		<div class="admin-crud-modal__header">
-
 
 			<div class="admin-crud-modal__icon">
 
@@ -2472,7 +2379,6 @@ $('.brands-section-tab').on(
 				</i>
 
 			</div>
-
 
 			<div>
 
@@ -2484,7 +2390,6 @@ $('.brands-section-tab').on(
 
 				</h3>
 
-
 				<p class="admin-crud-modal__message">
 
 					¿Está seguro de que desea eliminar este registro?
@@ -2494,12 +2399,9 @@ $('.brands-section-tab').on(
 
 			</div>
 
-
 		</div>
 
-
 		<div class="admin-crud-modal__footer">
-
 
 			<button
 				type="button"
@@ -2517,7 +2419,6 @@ $('.brands-section-tab').on(
 
 			</button>
 
-
 			<button
 				type="button"
 				id="brands-delete-confirm"
@@ -2534,11 +2435,8 @@ $('.brands-section-tab').on(
 
 			</button>
 
-
 		</div>
 
-
 	</div>
-
 
 </div>

@@ -40,7 +40,7 @@ class AboutSectionTranslations extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('about_section_id, language_id, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
+			array('about_section_id, language_id, created_at, updated_at', 'required'),
 			array('about_section_id, language_id', 'length', 'max'=>10),
 			array('eyebrow', 'length', 'max'=>255),
 			array('eyebrow_size, title_size, text_size, secondary_text_size', 'length', 'max'=>20),

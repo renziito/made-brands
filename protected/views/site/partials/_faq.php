@@ -7,37 +7,11 @@
 |--------------------------------------------------------------------------
 */
 
-$faqItems = array(
-    array(
-        'id'       => 'faq-1',
-        'icon'     => 'fa-map-marker',
-        'question' => '¿Dónde puedo comprar nuestros productos?',
-        'answer'   => 'Puedes encontrar nuestros productos en los principales puntos de venta y canales de distribución donde están presentes nuestras marcas.'
-    ),
-    array(
-        'id'       => 'faq-2',
-        'icon'     => 'fa-hand-o-right',
-        'question' => '¿Quieres vender nuestras marcas?',
-        'answer'   => 'Si estás interesado en comercializar nuestras marcas, contáctanos y conversemos sobre las oportunidades disponibles para tu negocio.'
-    ),
-    array(
-        'id'       => 'faq-3',
-        'icon'     => 'fa-cube',
-        'question' => '¿Tienes una marca? Hagámosla crecer en Uruguay',
-        'answer'   => 'Trabajamos con marcas que buscan crecer y llegar a nuevos consumidores. Cuéntanos sobre tu marca y evaluemos juntos las oportunidades.'
-    ),
-    array(
-        'id'       => 'faq-4',
-        'icon'     => 'fa-plane',
-        'question' => '¿Quieres exportar y distribuir tu marca en Uruguay?',
-        'answer'   => 'Contamos con experiencia en distribución y comercialización para conectar marcas con nuevos mercados y oportunidades.'
-    )
-);
 ?>
 
 <section
     id="faq"
-    class="faq">
+    class="faq" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
 
     <div class="container">
 
@@ -50,8 +24,8 @@ $faqItems = array(
 
         <div class="faq__header">
 
-            <h2 class="faq__title">
-                Preguntas frecuentes
+            <h2 class="faq__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+                <?= WebUtils::getMenuItemByKey('frequently_asked_questions', $languageId)['label'] ?>
             </h2>
 
 
@@ -93,7 +67,7 @@ $faqItems = array(
                         <span class="faq__icon">
 
                             <i
-                                class="fa <?php echo $item['icon']; ?>"
+                                class="<?php echo $item['icon']; ?>"
                                 aria-hidden="true"></i>
 
                         </span>
@@ -129,7 +103,7 @@ $faqItems = array(
                         id="<?php echo $item['id']; ?>"
                         class="faq__answer collapse">
 
-                        <div class="faq__answer-content">
+                        <div class="faq__answer-content" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
 
                             <?php echo CHtml::encode(
                                 $item['answer']
