@@ -65,7 +65,7 @@ $imageUrl = function ($path) {
 		return $path;
 	}
 
-	return Yii::app()->baseUrl . '/' . ltrim($path, '/');
+	return Yii::app()->baseUrl . '/images/products/' . ltrim($path, '/');
 };
 
 

@@ -49,6 +49,7 @@ $defaultLanguage = isset($defaultLanguage)
 		)
 	);
 
+
 /*
  * ----------------------------------------------------------
  * EXISTING PRODUCT CATEGORIES / SUBCATEGORIES
@@ -91,8 +92,6 @@ $selectedSubcategoryIds = array_values(
  * ----------------------------------------------------------
  * CATEGORIES / SUBCATEGORIES
  * ----------------------------------------------------------
- *
- * Their labels come from their own translation tables.
  */
 
 $categories = Categories::model()->findAll(
@@ -143,7 +142,8 @@ if ($categoryIds) {
 			'language_id = :category_default_language_id'
 		);
 
-		$criteria->params[':category_default_language_id'] = (int) $defaultLanguage->id;
+		$criteria->params[':category_default_language_id'] =
+			(int) $defaultLanguage->id;
 	}
 
 	$rows = CategoryTranslations::model()->findAll(
@@ -152,7 +152,9 @@ if ($categoryIds) {
 
 	foreach ($rows as $row) {
 
-		$categoryTranslationsByCategory[(int) $row->category_id] = $row;
+		$categoryTranslationsByCategory[
+			(int) $row->category_id
+		] = $row;
 	}
 }
 
@@ -180,7 +182,8 @@ if ($subcategoryIds) {
 			'language_id = :subcategory_default_language_id'
 		);
 
-		$criteria->params[':subcategory_default_language_id'] = (int) $defaultLanguage->id;
+		$criteria->params[':subcategory_default_language_id'] =
+			(int) $defaultLanguage->id;
 	}
 
 	$rows = SubcategoryTranslations::model()->findAll(
@@ -189,7 +192,9 @@ if ($subcategoryIds) {
 
 	foreach ($rows as $row) {
 
-		$subcategoryTranslationsBySubcategory[(int) $row->subcategory_id] = $row;
+		$subcategoryTranslationsBySubcategory[
+			(int) $row->subcategory_id
+		] = $row;
 	}
 }
 
@@ -272,8 +277,6 @@ foreach ($subcategories as $subcategory) {
  * ----------------------------------------------------------
  * LANGUAGES
  * ----------------------------------------------------------
- *
- * Used by the "Add translation" selector.
  */
 
 $languages = Languages::model()->findAll(
@@ -286,7 +289,38 @@ $translationLanguageIds = array();
 
 foreach ($translations as $productTranslation) {
 
-	$translationLanguageIds[(int) $productTranslation->language_id] = true;
+	$translationLanguageIds[
+		(int) $productTranslation->language_id
+	] = true;
+}
+
+
+/*
+ * ----------------------------------------------------------
+ * IMAGE URLS
+ * ----------------------------------------------------------
+ *
+ * The database stores the filename.
+ */
+
+$mainImageUrl = '';
+
+if (!empty($model->main_image)) {
+
+	$mainImageUrl =
+		Yii::app()->getBaseUrl(true) .
+		'/images/products/' .
+		rawurlencode($model->main_image);
+}
+
+$infographicImageUrl = '';
+
+if (!empty($model->infographic_image)) {
+
+	$infographicImageUrl =
+		Yii::app()->getBaseUrl(true) .
+		'/images/products/' .
+		rawurlencode($model->infographic_image);
 }
 
 
@@ -544,6 +578,102 @@ Yii::app()->clientScript->registerCss(
 		0 1px 2px rgba(0, 0, 0, .05);
 }
 
+.dropdown-list-new option {
+	padding: 8px 10px;
+	background: #fff;
+	color: #1f2937;
+	font-size: 13px;
+}
+
+
+/* ==========================================================
+   IMAGE UPLOAD
+   ========================================================== */
+
+.admin-form-image-upload {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	gap: 18px;
+	align-items: start;
+}
+
+.admin-form-image-input {
+	min-width: 0;
+}
+
+.admin-form-file {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 10px;
+	border: 1px solid #d1d5db;
+	border-radius: 7px;
+	background: #fff;
+	color: #374151;
+	font-family: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.admin-form-image-input .hint {
+	display: block;
+	margin-top: 7px;
+	color: #9ca3af;
+	font-size: 11px;
+	line-height: 1.4;
+}
+
+.admin-form-image-current {
+	margin-top: 10px;
+	padding: 9px 10px;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	background: #f9fafb;
+	color: #6b7280;
+	font-size: 11px;
+	line-height: 1.4;
+	word-break: break-all;
+}
+
+.admin-form-image-preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 190px;
+	padding: 12px;
+	box-sizing: border-box;
+	border: 1px dashed #d1d5db;
+	border-radius: 8px;
+	background: #f9fafb;
+	overflow: hidden;
+}
+
+.admin-form-image-preview img {
+	display: block;
+	max-width: 100%;
+	max-height: 240px;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: 6px;
+}
+
+.admin-form-image-preview__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	color: #9ca3af;
+	font-size: 11px;
+	text-align: center;
+}
+
+.admin-form-image-preview__empty i {
+	font-size: 28px;
+	color: #d1d5db;
+}
+
 
 /* ==========================================================
    TRANSLATIONS
@@ -575,28 +705,20 @@ Yii::app()->clientScript->registerCss(
 .admin-product-translation__language {
 	display: flex;
 	align-items: center;
-	gap: 9px;
-	color: #111827;
-	font-size: 13px;
+	gap: 8px;
+	color: #374151;
+	font-size: 12px;
 	font-weight: 600;
 }
 
-.admin-product-translation__language i {
-	color: #6b7280;
-	font-size: 12px;
-}
-
 .admin-product-translation__badge {
-	display: inline-flex;
-	align-items: center;
-	height: 22px;
-	padding: 0 8px;
+	padding: 4px 7px;
 	border-radius: 999px;
 	background: #eef2ff;
 	color: #4338ca;
 	font-size: 10px;
 	font-weight: 700;
-	letter-spacing: .04em;
+	line-height: 1;
 	text-transform: uppercase;
 }
 
@@ -604,48 +726,12 @@ Yii::app()->clientScript->registerCss(
 	padding: 18px 14px;
 }
 
-.admin-product-translation__actions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.admin-product-translation__remove {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 6px;
-	height: 30px;
-	padding: 0 9px;
-	border: 1px solid #e5e7eb;
-	border-radius: 6px;
-	background: #fff;
-	color: #6b7280;
-	cursor: pointer;
-	font-family: inherit;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-.admin-product-translation__remove:hover {
-	border-color: #fecaca;
-	background: #fef2f2;
-	color: #dc2626;
-}
-
 .admin-product-translation__empty {
-	padding: 18px;
-	border: 1px dashed #d1d5db;
-	border-radius: 7px;
+	padding: 30px 20px;
 	color: #9ca3af;
 	font-size: 12px;
 	text-align: center;
 }
-
-
-/* ==========================================================
-   ADD TRANSLATION
-   ========================================================== */
 
 .admin-product-add-translation {
 	margin-top: 18px;
@@ -654,18 +740,14 @@ Yii::app()->clientScript->registerCss(
 }
 
 .admin-product-add-translation__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 14px;
-	margin-bottom: 12px;
+	margin-bottom: 14px;
 }
 
 .admin-product-add-translation__title {
 	margin: 0;
-	color: #374151;
-	font-size: 12px;
-	font-weight: 700;
+	color: #111827;
+	font-size: 13px;
+	font-weight: 600;
 }
 
 .admin-product-add-translation__hint {
@@ -676,70 +758,13 @@ Yii::app()->clientScript->registerCss(
 
 .admin-product-add-translation__fields {
 	display: grid;
-	grid-template-columns: minmax(0, 300px) 1fr;
+	grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
 	gap: 12px;
 	align-items: end;
 }
 
-.admin-product-add-translation__button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 7px;
-	height: 40px;
-	padding: 0 13px;
-	border: 1px solid #d1d5db;
-	border-radius: 7px;
-	background: #fff;
-	color: #374151;
-	cursor: pointer;
-	font-family: inherit;
-	font-size: 12px;
-	font-weight: 600;
-}
-
-.admin-product-add-translation__button:hover {
-	background: #f3f4f6;
-	border-color: #9ca3af;
-	color: #111827;
-}
-
-
-/* ==========================================================
-   DEFAULT LANGUAGE
-   ========================================================== */
-
-.admin-product-language {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 14px;
-	min-height: 42px;
-	padding: 10px 12px;
-	box-sizing: border-box;
-	border: 1px solid #d1d5db;
-	border-radius: 7px;
-	background: #f9fafb;
-}
-
-.admin-product-language__name {
-	color: #111827;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.admin-product-language__badge {
-	display: inline-flex;
-	align-items: center;
-	height: 22px;
-	padding: 0 8px;
-	border-radius: 999px;
-	background: #eef2ff;
-	color: #4338ca;
-	font-size: 10px;
-	font-weight: 700;
-	letter-spacing: .04em;
-	text-transform: uppercase;
+#new-product-translation-fields {
+	display: none;
 }
 
 
@@ -748,10 +773,10 @@ Yii::app()->clientScript->registerCss(
    ========================================================== */
 
 .admin-product-taxonomy {
+	overflow: hidden;
 	border: 1px solid #e5e7eb;
 	border-radius: 8px;
 	background: #fff;
-	overflow: hidden;
 }
 
 .admin-product-taxonomy__search {
@@ -768,9 +793,9 @@ Yii::app()->clientScript->registerCss(
 	position: absolute;
 	top: 50%;
 	left: 12px;
+	transform: translateY(-50%);
 	color: #9ca3af;
 	font-size: 12px;
-	transform: translateY(-50%);
 	pointer-events: none;
 }
 
@@ -780,11 +805,11 @@ Yii::app()->clientScript->registerCss(
 	height: 40px;
 	padding: 0 12px 0 34px;
 	box-sizing: border-box;
-	border: 1px solid #cbd5e1;
+	border: 1px solid #d1d5db;
 	border-radius: 7px;
 	outline: none;
 	background: #fff;
-	color: #1f2937;
+	color: #374151;
 	font-family: inherit;
 	font-size: 13px;
 }
@@ -795,9 +820,9 @@ Yii::app()->clientScript->registerCss(
 }
 
 .admin-product-taxonomy__hint {
-	margin: 7px 0 0;
+	margin: 8px 0 0;
 	color: #9ca3af;
-	font-size: 11px;
+	font-size: 10px;
 	line-height: 1.4;
 }
 
@@ -815,26 +840,8 @@ Yii::app()->clientScript->registerCss(
 	border-bottom: 1px solid #f0f1f3;
 }
 
-.admin-product-taxonomy__result:last-child {
-	border-bottom: 0;
-}
-
-.admin-product-taxonomy__result:hover {
-	background: #fafafa;
-}
-
 .admin-product-taxonomy__result-info {
 	min-width: 0;
-}
-
-.admin-product-taxonomy__result-category {
-	display: block;
-	margin-bottom: 2px;
-	color: #6b7280;
-	font-size: 10px;
-	font-weight: 600;
-	letter-spacing: .04em;
-	text-transform: uppercase;
 }
 
 .admin-product-taxonomy__result-name {
@@ -844,11 +851,12 @@ Yii::app()->clientScript->registerCss(
 	font-weight: 600;
 }
 
+.admin-product-taxonomy__result-category,
 .admin-product-taxonomy__result-type {
 	display: block;
-	margin-top: 2px;
 	color: #9ca3af;
 	font-size: 10px;
+	line-height: 1.4;
 }
 
 .admin-product-taxonomy__add {
@@ -856,27 +864,24 @@ Yii::app()->clientScript->registerCss(
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	height: 30px;
-	padding: 0 10px;
 	flex-shrink: 0;
+	padding: 7px 10px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	background: #fff;
 	color: #374151;
-	cursor: pointer;
 	font-family: inherit;
 	font-size: 11px;
-	font-weight: 600;
+	cursor: pointer;
 }
 
 .admin-product-taxonomy__add:hover {
-	border-color: #9ca3af;
 	background: #f3f4f6;
-	color: #111827;
+	border-color: #9ca3af;
 }
 
-.admin-product-taxonomy__add.is-added {
-	border-color: #d1d5db;
+.admin-product-taxonomy__add.is-added,
+.admin-product-taxonomy__add:disabled {
 	background: #f3f4f6;
 	color: #9ca3af;
 	cursor: default;
@@ -884,9 +889,9 @@ Yii::app()->clientScript->registerCss(
 
 .admin-product-taxonomy__empty {
 	padding: 30px 20px;
-	text-align: center;
 	color: #9ca3af;
 	font-size: 12px;
+	text-align: center;
 }
 
 .admin-product-taxonomy__selected {
@@ -896,60 +901,24 @@ Yii::app()->clientScript->registerCss(
 }
 
 .admin-product-taxonomy__selected-title {
-	margin: 0 0 10px;
+	margin: 0 0 9px;
 	color: #374151;
 	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: .04em;
-	text-transform: uppercase;
-}
-
-.admin-product-taxonomy__selected-empty {
-	padding: 12px;
-	border: 1px dashed #d1d5db;
-	border-radius: 6px;
-	color: #9ca3af;
-	font-size: 11px;
-	text-align: center;
-}
-
-.admin-product-taxonomy__selected-group {
-	margin-bottom: 10px;
-}
-
-.admin-product-taxonomy__selected-group:last-child {
-	margin-bottom: 0;
-}
-
-.admin-product-taxonomy__selected-category {
-	margin-bottom: 5px;
-	color: #374151;
-	font-size: 12px;
-	font-weight: 700;
-}
-
-.admin-product-taxonomy__selected-items {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
+	font-weight: 600;
 }
 
 .admin-product-taxonomy__tag {
 	display: inline-flex;
 	align-items: center;
 	gap: 7px;
-	min-height: 28px;
-	padding: 0 8px 0 10px;
+	margin: 3px;
+	padding: 6px 9px;
 	border: 1px solid #dbe1e8;
 	border-radius: 999px;
 	background: #f8fafc;
 	color: #374151;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-.admin-product-taxonomy__tag--category {
-	background: #f3f4f6;
+	font-size: 10px;
+	line-height: 1;
 }
 
 .admin-product-taxonomy__remove {
@@ -961,14 +930,15 @@ Yii::app()->clientScript->registerCss(
 	padding: 0;
 	border: 0;
 	border-radius: 50%;
-	background: transparent;
-	color: #9ca3af;
+	background: #e5e7eb;
+	color: #6b7280;
+	font-size: 11px;
+	line-height: 1;
 	cursor: pointer;
-	font-size: 10px;
 }
 
 .admin-product-taxonomy__remove:hover {
-	background: #e5e7eb;
+	background: #d1d5db;
 	color: #dc2626;
 }
 
@@ -1084,6 +1054,14 @@ Yii::app()->clientScript->registerCss(
 	.admin-form-button {
 		flex: 1;
 	}
+
+	.admin-form-image-upload {
+		grid-template-columns: 1fr;
+	}
+
+	.admin-form-image-preview {
+		order: -1;
+	}
 }
 '
 );
@@ -1103,10 +1081,17 @@ Yii::app()->clientScript->registerScript(
 	"
 var productUpdateTaxonomy = " . CJSON::encode(
 		array(
-			'categories' => $taxonomyData['categories'],
-			'subcategories' => $taxonomyData['subcategories'],
-			'selectedCategories' => $selectedCategoryIds,
-			'selectedSubcategories' => $selectedSubcategoryIds,
+			'categories' =>
+				$taxonomyData['categories'],
+
+			'subcategories' =>
+				$taxonomyData['subcategories'],
+
+			'selectedCategories' =>
+				$selectedCategoryIds,
+
+			'selectedSubcategories' =>
+				$selectedSubcategoryIds,
 		)
 	) . ";
 
@@ -1127,6 +1112,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 	var hidden =
 		$('#product-category-selection');
 
+
 	function escapeHtml(value) {
 
 		return $('<div>')
@@ -1137,6 +1123,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			)
 			.html();
 	}
+
 
 	function getCategory(id) {
 
@@ -1153,12 +1140,14 @@ var productUpdateTaxonomy = " . CJSON::encode(
 					productUpdateTaxonomy.categories[i].id
 				) === id
 			) {
+
 				return productUpdateTaxonomy.categories[i];
 			}
 		}
 
 		return null;
 	}
+
 
 	function getSubcategory(id) {
 
@@ -1175,12 +1164,14 @@ var productUpdateTaxonomy = " . CJSON::encode(
 					productUpdateTaxonomy.subcategories[i].id
 				) === id
 			) {
+
 				return productUpdateTaxonomy.subcategories[i];
 			}
 		}
 
 		return null;
 	}
+
 
 	function addCategory(id) {
 
@@ -1195,16 +1186,13 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		render();
 	}
 
+
 	function removeCategory(id) {
 
 		id = String(id);
 
 		delete selectedCategories[id];
 
-		/*
-		 * Remove all subcategories belonging to this
-		 * category because the parent relation is removed.
-		 */
 		$.each(
 			selectedSubcategories,
 			function(subcategoryId) {
@@ -1216,6 +1204,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 					subcategory &&
 					String(subcategory.category_id) === id
 				) {
+
 					delete selectedSubcategories[
 						subcategoryId
 					];
@@ -1225,6 +1214,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 		render();
 	}
+
 
 	function addSubcategory(id) {
 
@@ -1239,16 +1229,13 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 		selectedSubcategories[id] = true;
 
-		/*
-		 * Selecting a subcategory automatically selects
-		 * its parent category.
-		 */
 		selectedCategories[
 			String(subcategory.category_id)
 		] = true;
 
 		render();
 	}
+
 
 	function removeSubcategory(id) {
 
@@ -1277,19 +1264,25 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						other &&
 						String(other.category_id) === parentId
 					) {
+
 						hasSibling = true;
+
 						return false;
 					}
 				}
 			);
 
 			if (!hasSibling) {
-				delete selectedCategories[parentId];
+
+				delete selectedCategories[
+					parentId
+				];
 			}
 		}
 
 		render();
 	}
+
 
 	function syncHiddenFields() {
 
@@ -1322,125 +1315,78 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		);
 	}
 
+
 	function renderSelected() {
 
-		var groups = {};
+		var html = '';
+
 
 		$.each(
 			selectedCategories,
-			function(categoryId) {
+			function(id) {
 
 				var category =
-					getCategory(categoryId);
+					getCategory(id);
 
 				if (!category) {
 					return;
 				}
 
-				groups[categoryId] = {
-					category: category,
-					subcategories: []
-				};
+				html +=
+					'<span class=\"admin-product-taxonomy__tag\">' +
+						escapeHtml(category.name) +
+						'<button type=\"button\" ' +
+						'class=\"admin-product-taxonomy__remove\" ' +
+						'data-type=\"category\" ' +
+						'data-id=\"' +
+						escapeHtml(id) +
+						'\">' +
+						'&times;' +
+						'</button>' +
+					'</span>';
 			}
 		);
 
+
 		$.each(
 			selectedSubcategories,
-			function(subcategoryId) {
+			function(id) {
 
 				var subcategory =
-					getSubcategory(subcategoryId);
+					getSubcategory(id);
 
 				if (!subcategory) {
 					return;
 				}
 
-				var categoryId =
-					String(subcategory.category_id);
-
-				if (!groups[categoryId]) {
-
-					var category =
-						getCategory(categoryId);
-
-					if (!category) {
-						return;
-					}
-
-					groups[categoryId] = {
-						category: category,
-						subcategories: []
-					};
-				}
-
-				groups[categoryId]
-					.subcategories
-					.push(subcategory);
+				html +=
+					'<span class=\"admin-product-taxonomy__tag\">' +
+						escapeHtml(subcategory.name) +
+						'<button type=\"button\" ' +
+						'class=\"admin-product-taxonomy__remove\" ' +
+						'data-type=\"subcategory\" ' +
+						'data-id=\"' +
+						escapeHtml(id) +
+						'\">' +
+						'&times;' +
+						'</button>' +
+					'</span>';
 			}
 		);
 
-		var html = '';
 
-		if ($.isEmptyObject(groups)) {
+		if (html === '') {
 
-			selected.html(
-				'<div class=\"admin-product-taxonomy__selected-empty\">' +
-				'No hay categorías ni subcategorías seleccionadas.' +
-				'</div>'
-			);
-
-			return;
+			html =
+				'<span style=\"color:#9ca3af;font-size:11px;\">' +
+					'No hay categorías seleccionadas.' +
+				'</span>';
 		}
 
-		$.each(
-			groups,
-			function(categoryId, group) {
-
-				html +=
-					'<div class=\"admin-product-taxonomy__selected-group\">';
-
-				html +=
-					'<div class=\"admin-product-taxonomy__selected-category\">' +
-					escapeHtml(group.category.name) +
-					'</div>';
-
-				html +=
-					'<div class=\"admin-product-taxonomy__selected-items\">';
-
-				html +=
-					'<span class=\"admin-product-taxonomy__tag admin-product-taxonomy__tag--category\">' +
-					escapeHtml(group.category.name) +
-					'<button type=\"button\" class=\"admin-product-taxonomy__remove\" ' +
-					'data-type=\"category\" data-id=\"' +
-					escapeHtml(categoryId) +
-					'\" title=\"Quitar categoría\" aria-label=\"Quitar categoría\">' +
-					'<i class=\"fas fa-times\"></i>' +
-					'</button>' +
-					'</span>';
-
-				$.each(
-					group.subcategories,
-					function(index, subcategory) {
-
-						html +=
-							'<span class=\"admin-product-taxonomy__tag\">' +
-							escapeHtml(subcategory.name) +
-							'<button type=\"button\" class=\"admin-product-taxonomy__remove\" ' +
-							'data-type=\"subcategory\" data-id=\"' +
-							escapeHtml(subcategory.id) +
-							'\" title=\"Quitar subcategoría\" aria-label=\"Quitar subcategoría\">' +
-							'<i class=\"fas fa-times\"></i>' +
-							'</button>' +
-							'</span>';
-					}
-				);
-
-				html += '</div></div>';
-			}
-		);
 
 		selected.html(html);
 	}
+
 
 	function renderResults() {
 
@@ -1452,6 +1398,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		var html = '';
 		var count = 0;
 
+
 		$.each(
 			productUpdateTaxonomy.categories,
 			function(index, category) {
@@ -1462,10 +1409,13 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						.toLowerCase()
 						.indexOf(term) === -1
 				) {
+
 					return;
 				}
 
+
 				count++;
+
 
 				var id =
 					String(category.id);
@@ -1473,50 +1423,73 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				var isAdded =
 					!!selectedCategories[id];
 
+
 				html +=
 					'<div class=\"admin-product-taxonomy__result\">' +
-					'<div class=\"admin-product-taxonomy__result-info\">' +
-					'<span class=\"admin-product-taxonomy__result-category\">Categoría</span>' +
-					'<span class=\"admin-product-taxonomy__result-name\">' +
-					escapeHtml(category.name) +
-					'</span>' +
-					'<span class=\"admin-product-taxonomy__result-type\">Categoría principal</span>' +
-					'</div>' +
-					'<button type=\"button\" class=\"admin-product-taxonomy__add' +
-					(isAdded ? ' is-added' : '') +
-					'\" data-type=\"category\" data-id=\"' +
-					escapeHtml(id) +
-					'\"' +
-					(isAdded ? ' disabled' : '') +
-					'>' +
-					(
-						isAdded
-							? '<i class=\"fas fa-check\"></i> Agregado'
-							: '<i class=\"fas fa-plus\"></i> Agregar'
-					) +
-					'</button>' +
+
+						'<div class=\"admin-product-taxonomy__result-info\">' +
+
+							'<span class=\"admin-product-taxonomy__result-category\">' +
+								'Categoría' +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-name\">' +
+								escapeHtml(category.name) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-type\">' +
+								'Categoría principal' +
+							'</span>' +
+
+						'</div>' +
+
+						'<button type=\"button\" ' +
+							'class=\"admin-product-taxonomy__add' +
+							(isAdded ? ' is-added' : '') +
+							'\" ' +
+							'data-type=\"category\" ' +
+							'data-id=\"' +
+							escapeHtml(id) +
+							'\"' +
+							(isAdded ? ' disabled' : '') +
+							'>' +
+
+							(
+								isAdded
+									? '<i class=\"fas fa-check\"></i> Agregado'
+									: '<i class=\"fas fa-plus\"></i> Agregar'
+							) +
+
+						'</button>' +
+
 					'</div>';
 			}
 		);
+
 
 		$.each(
 			productUpdateTaxonomy.subcategories,
 			function(index, subcategory) {
 
-				var searchable = (
-					subcategory.name +
-					' ' +
-					subcategory.category_name
-				).toLowerCase();
+				var searchable =
+					(
+						subcategory.name +
+						' ' +
+						subcategory.category_name
+					).toLowerCase();
+
 
 				if (
 					term !== '' &&
 					searchable.indexOf(term) === -1
 				) {
+
 					return;
 				}
 
+
 				count++;
+
 
 				var id =
 					String(subcategory.id);
@@ -1524,44 +1497,66 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				var isAdded =
 					!!selectedSubcategories[id];
 
+
 				html +=
 					'<div class=\"admin-product-taxonomy__result\">' +
-					'<div class=\"admin-product-taxonomy__result-info\">' +
-					'<span class=\"admin-product-taxonomy__result-category\">' +
-					escapeHtml(subcategory.category_name) +
-					'</span>' +
-					'<span class=\"admin-product-taxonomy__result-name\">' +
-					escapeHtml(subcategory.name) +
-					'</span>' +
-					'<span class=\"admin-product-taxonomy__result-type\">Subcategoría</span>' +
-					'</div>' +
-					'<button type=\"button\" class=\"admin-product-taxonomy__add' +
-					(isAdded ? ' is-added' : '') +
-					'\" data-type=\"subcategory\" data-id=\"' +
-					escapeHtml(id) +
-					'\"' +
-					(isAdded ? ' disabled' : '') +
-					'>' +
-					(
-						isAdded
-							? '<i class=\"fas fa-check\"></i> Agregado'
-							: '<i class=\"fas fa-plus\"></i> Agregar'
-					) +
-					'</button>' +
+
+						'<div class=\"admin-product-taxonomy__result-info\">' +
+
+							'<span class=\"admin-product-taxonomy__result-category\">' +
+								escapeHtml(
+									subcategory.category_name
+								) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-name\">' +
+								escapeHtml(
+									subcategory.name
+								) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-type\">' +
+								'Subcategoría' +
+							'</span>' +
+
+						'</div>' +
+
+						'<button type=\"button\" ' +
+							'class=\"admin-product-taxonomy__add' +
+							(isAdded ? ' is-added' : '') +
+							'\" ' +
+							'data-type=\"subcategory\" ' +
+							'data-id=\"' +
+							escapeHtml(id) +
+							'\"' +
+							(isAdded ? ' disabled' : '') +
+							'>' +
+
+							(
+								isAdded
+									? '<i class=\"fas fa-check\"></i> Agregado'
+									: '<i class=\"fas fa-plus\"></i> Agregar'
+							) +
+
+						'</button>' +
+
 					'</div>';
 			}
 		);
+
 
 		if (count === 0) {
 
 			html =
 				'<div class=\"admin-product-taxonomy__empty\">' +
-				'No se encontraron categorías ni subcategorías.' +
+					'No se encontraron categorías ni subcategorías.' +
 				'</div>';
 		}
 
+
 		results.html(html);
 	}
+
 
 	function render() {
 
@@ -1570,9 +1565,11 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		renderResults();
 	}
 
+
 	/*
 	 * Initialize existing relationships.
 	 */
+
 	$.each(
 		productUpdateTaxonomy.selectedCategories,
 		function(index, id) {
@@ -1582,6 +1579,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			] = true;
 		}
 	);
+
 
 	$.each(
 		productUpdateTaxonomy.selectedSubcategories,
@@ -1593,11 +1591,17 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		}
 	);
 
+
+	/*
+	 * Taxonomy events.
+	 */
+
 	$(document).on(
 		'input',
 		'#product-taxonomy-search',
 		renderResults
 	);
+
 
 	$(document).on(
 		'click',
@@ -1612,17 +1616,23 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			var id =
 				$(this).attr('data-id');
 
+
 			if (type === 'category') {
+
 				addCategory(id);
 			}
 
+
 			if (type === 'subcategory') {
+
 				addSubcategory(id);
 			}
+
 
 			return false;
 		}
 	);
+
 
 	$(document).on(
 		'click',
@@ -1637,24 +1647,28 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			var id =
 				$(this).attr('data-id');
 
+
 			if (type === 'category') {
+
 				removeCategory(id);
 			}
 
+
 			if (type === 'subcategory') {
+
 				removeSubcategory(id);
 			}
+
 
 			return false;
 		}
 	);
 
+
 	/*
 	 * New translation language.
-	 *
-	 * This only exposes the language selector. The actual
-	 * translation record is submitted to the controller.
 	 */
+
 	$('#new-product-translation-language').on(
 		'change',
 		function() {
@@ -1663,15 +1677,18 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				$(this).val();
 
 			if (!languageId) {
+
 				$('#new-product-translation-fields')
-					.addClass('is-hidden');
+					.hide();
+
 				return;
 			}
 
 			$('#new-product-translation-fields')
-				.removeClass('is-hidden');
+				.show();
 		}
 	);
+
 
 	$('#add-product-translation-button').on(
 		'click',
@@ -1679,7 +1696,8 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 			e.preventDefault();
 
-			var button = $(this);
+			var button =
+				$(this);
 
 			var languageSelect =
 				$('#new-product-translation-language');
@@ -1687,32 +1705,138 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			var languageId =
 				languageSelect.val();
 
+
 			if (!languageId) {
+
 				languageSelect.focus();
+
 				return false;
 			}
+
 
 			var languageName =
 				languageSelect
 					.find('option:selected')
 					.text();
 
+
 			$('#new-product-translation-language-value')
 				.val(languageId);
 
+
 			$('#new-product-translation-language-name')
-				.text($.trim(languageName));
+				.text(
+					$.trim(languageName)
+				);
+
 
 			$('#new-product-translation-fields')
 				.stop(true, true)
 				.slideDown(150);
 
-			button.prop('disabled', true);
-			languageSelect.prop('disabled', true);
+
+			button.prop(
+				'disabled',
+				true
+			);
+
+			languageSelect.prop(
+				'disabled',
+				true
+			);
+
 
 			return false;
 		}
 	);
+
+
+	/*
+	 * ----------------------------------------------------------
+	 * IMAGE PREVIEW
+	 * ----------------------------------------------------------
+	 */
+
+	function previewImage(
+		input,
+		previewSelector
+	) {
+
+		if (
+			!input.files ||
+			!input.files[0]
+		) {
+
+			return;
+		}
+
+
+		var file =
+			input.files[0];
+
+
+		if (
+			[
+				'image/jpeg',
+				'image/png',
+				'image/webp'
+			].indexOf(file.type) === -1
+		) {
+
+			input.value = '';
+
+			alert(
+				'Solo se permiten imágenes JPG, PNG o WebP.'
+			);
+
+			return;
+		}
+
+
+		var reader =
+			new FileReader();
+
+
+		reader.onload =
+			function(e) {
+
+				$(previewSelector).html(
+					'<img src=\"' +
+						e.target.result +
+						'\" alt=\"Vista previa\">'
+				);
+			};
+
+
+		reader.readAsDataURL(
+			file
+		);
+	}
+
+
+	$('#product-main-image-input').on(
+		'change',
+		function() {
+
+			previewImage(
+				this,
+				'#product-main-image-preview'
+			);
+		}
+	);
+
+
+	$('#product-infographic-image-input').on(
+		'change',
+		function() {
+
+			previewImage(
+				this,
+				'#product-infographic-image-preview'
+			);
+		}
+	);
+
 
 	render();
 
@@ -1720,6 +1844,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 "
 );
 ?>
+
 
 <div class="admin-form-page">
 
@@ -1731,10 +1856,12 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			'enableAjaxValidation' => false,
 			'htmlOptions' => array(
 				'class' => 'admin-form',
+				'enctype' => 'multipart/form-data',
 			),
 		)
 	);
 	?>
+
 
 	<!-- ======================================================
 	     PRODUCT INFORMATION
@@ -1764,6 +1891,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 			</div>
 
+
 			<div class="admin-form-status">
 
 				<div class="admin-form-status__item">
@@ -1771,22 +1899,34 @@ var productUpdateTaxonomy = " . CJSON::encode(
 					<div class="admin-form-status__text">
 
 						<span class="admin-form-status__label">
-							<?= $form->labelEx($model, 'status'); ?>
+							<?= $form->labelEx(
+								$model,
+								'status'
+							); ?>
 						</span>
 
 					</div>
+
 
 					<?= $form->dropDownList(
 						$model,
 						'status',
 						array(
-							'publicado' => 'Publicado',
-							'borrador' => 'Borrador',
-							'deshabilitado' => 'Deshabilitado',
-							'eliminado' => 'Eliminado',
+							'publicado' =>
+								'Publicado',
+
+							'borrador' =>
+								'Borrador',
+
+							'deshabilitado' =>
+								'Deshabilitado',
+
+							'eliminado' =>
+								'Eliminado',
 						),
 						array(
-							'class' => 'dropdown-list-new',
+							'class' =>
+								'dropdown-list-new',
 						)
 					); ?>
 
@@ -1796,6 +1936,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 		</div>
 
+
 		<div class="admin-form-card__body">
 
 			<?= $form->errorSummary(
@@ -1803,11 +1944,16 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				'<strong>Por favor verifica la información:</strong>'
 			); ?>
 
+
 			<div class="admin-form-fields">
 
 				<div class="admin-form-field">
 
-					<?= $form->labelEx($model, 'brand_id'); ?>
+					<?= $form->labelEx(
+						$model,
+						'brand_id'
+					); ?>
+
 
 					<?= $form->dropDownList(
 						$model,
@@ -1815,19 +1961,27 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						CHtml::listData(
 							Brands::model()->findAll(
 								array(
-									'order' => 'name ASC',
+									'order' =>
+										'name ASC',
 								)
 							),
 							'id',
 							'name'
 						),
 						array(
-							'class' => 'form-control',
-							'prompt' => 'Seleccione una marca',
+							'class' =>
+								'form-control',
+
+							'prompt' =>
+								'Seleccione una marca',
 						)
 					); ?>
 
-					<?= $form->error($model, 'brand_id'); ?>
+
+					<?= $form->error(
+						$model,
+						'brand_id'
+					); ?>
 
 				</div>
 
@@ -1839,13 +1993,16 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						'sort_order'
 					); ?>
 
+
 					<?= $form->textField(
 						$model,
 						'sort_order',
 						array(
-							'class' => 'form-control',
+							'class' =>
+								'form-control',
 						)
 					); ?>
+
 
 					<?= $form->error(
 						$model,
@@ -1855,6 +2012,10 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				</div>
 
 
+				<!-- ==================================================
+				     MAIN IMAGE
+				     ================================================== -->
+
 				<div class="admin-form-field admin-form-field--full">
 
 					<?= $form->labelEx(
@@ -1862,22 +2023,95 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						'main_image'
 					); ?>
 
-					<?= $form->textField(
-						$model,
-						'main_image',
-						array(
-							'class' => 'form-control',
-							'maxlength' => 255,
-						)
-					); ?>
 
-					<?= $form->error(
-						$model,
-						'main_image'
-					); ?>
+					<div class="admin-form-image-upload">
+
+						<div class="admin-form-image-input">
+
+							<?= $form->fileField(
+								$model,
+								'main_image',
+								array(
+									'class' =>
+										'admin-form-file',
+
+									'id' =>
+										'product-main-image-input',
+
+									'accept' =>
+										'image/jpeg,image/png,image/webp',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$model,
+								'main_image'
+							); ?>
+
+
+							<span class="hint">
+								Selecciona una imagen JPG, PNG o WebP.
+								La imagen se optimizará sin cambiar
+								su ancho ni su alto.
+							</span>
+
+
+							<?php if (!empty($model->main_image)): ?>
+
+								<div class="admin-form-image-current">
+
+									<strong>
+										Imagen actual:
+									</strong>
+
+									<?= CHtml::encode(
+										$model->main_image
+									); ?>
+
+								</div>
+
+							<?php endif; ?>
+
+						</div>
+
+
+						<div
+							id="product-main-image-preview"
+							class="admin-form-image-preview">
+
+							<?php if ($mainImageUrl): ?>
+
+								<img
+									src="<?= CHtml::encode(
+										$mainImageUrl
+									); ?>"
+									alt="Main Image">
+
+							<?php else: ?>
+
+								<div class="admin-form-image-preview__empty">
+
+									<i class="fas fa-image"></i>
+
+									<span>
+										No hay imagen subida
+									</span>
+
+								</div>
+
+							<?php endif; ?>
+
+						</div>
+
+					</div>
 
 				</div>
 
+
+				<!-- ==================================================
+				     INFOGRAPHIC IMAGE
+				     ================================================== -->
 
 				<div class="admin-form-field admin-form-field--full">
 
@@ -1886,22 +2120,95 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						'infographic_image'
 					); ?>
 
-					<?= $form->textField(
-						$model,
-						'infographic_image',
-						array(
-							'class' => 'form-control',
-							'maxlength' => 255,
-						)
-					); ?>
 
-					<?= $form->error(
-						$model,
-						'infographic_image'
-					); ?>
+					<div class="admin-form-image-upload">
+
+						<div class="admin-form-image-input">
+
+							<?= $form->fileField(
+								$model,
+								'infographic_image',
+								array(
+									'class' =>
+										'admin-form-file',
+
+									'id' =>
+										'product-infographic-image-input',
+
+									'accept' =>
+										'image/jpeg,image/png,image/webp',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$model,
+								'infographic_image'
+							); ?>
+
+
+							<span class="hint">
+								Selecciona una imagen JPG, PNG o WebP.
+								La imagen se optimizará sin cambiar
+								su ancho ni su alto.
+							</span>
+
+
+							<?php if (!empty($model->infographic_image)): ?>
+
+								<div class="admin-form-image-current">
+
+									<strong>
+										Imagen actual:
+									</strong>
+
+									<?= CHtml::encode(
+										$model->infographic_image
+									); ?>
+
+								</div>
+
+							<?php endif; ?>
+
+						</div>
+
+
+						<div
+							id="product-infographic-image-preview"
+							class="admin-form-image-preview">
+
+							<?php if ($infographicImageUrl): ?>
+
+								<img
+									src="<?= CHtml::encode(
+										$infographicImageUrl
+									); ?>"
+									alt="Infographic Image">
+
+							<?php else: ?>
+
+								<div class="admin-form-image-preview__empty">
+
+									<i class="fas fa-image"></i>
+
+									<span>
+										No hay imagen subida
+									</span>
+
+								</div>
+
+							<?php endif; ?>
+
+						</div>
+
+					</div>
 
 				</div>
 
+
+				<!-- ==================================================
+				     SLUG
+				     ================================================== -->
 
 				<div class="admin-form-field admin-form-field--full">
 
@@ -1910,14 +2217,19 @@ var productUpdateTaxonomy = " . CJSON::encode(
 						'slug'
 					); ?>
 
+
 					<?= $form->textField(
 						$model,
 						'slug',
 						array(
-							'class' => 'form-control',
-							'maxlength' => 255,
+							'class' =>
+								'form-control',
+
+							'maxlength' =>
+								255,
 						)
 					); ?>
+
 
 					<?= $form->error(
 						$model,
@@ -1963,6 +2275,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 		</div>
 
+
 		<div class="admin-form-card__body">
 
 			<div class="admin-product-translations">
@@ -1983,6 +2296,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 							(int) $defaultLanguage->id;
 						?>
 
+
 						<div class="admin-product-translation">
 
 							<div class="admin-product-translation__header">
@@ -1992,15 +2306,18 @@ var productUpdateTaxonomy = " . CJSON::encode(
 									<i class="fas fa-language"></i>
 
 									<span>
+
 										<?php
 										echo $translationLanguage !== null
 											? CHtml::encode(
 												$translationLanguage->name
 											)
 											: 'Idioma #' .
-											(int) $translation->language_id;
+												(int) $translation->language_id;
 										?>
+
 									</span>
+
 
 									<?php if ($isDefaultTranslation): ?>
 
@@ -2014,6 +2331,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 							</div>
 
+
 							<div class="admin-product-translation__body">
 
 								<input
@@ -2026,7 +2344,11 @@ var productUpdateTaxonomy = " . CJSON::encode(
 									name="ProductTranslations[<?= (int) $translation->id; ?>][language_id]"
 									value="<?= (int) $translation->language_id; ?>">
 
-								<div class="admin-form-fields" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+
+								<div
+									class="admin-form-fields"
+									style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+
 
 									<div class="admin-form-field admin-form-field--full">
 
@@ -2038,7 +2360,9 @@ var productUpdateTaxonomy = " . CJSON::encode(
 											type="text"
 											class="form-control"
 											name="ProductTranslations[<?= (int) $translation->id; ?>][name]"
-											value="<?= CHtml::encode($translation->name); ?>"
+											value="<?= CHtml::encode(
+												$translation->name
+											); ?>"
 											maxlength="255">
 
 									</div>
@@ -2052,9 +2376,12 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 										<textarea
 											class="form-control"
-											name="ProductTranslations[<?= (int) $translation->id; ?>][short_description]"><?= CHtml::encode($translation->short_description); ?></textarea>
+											name="ProductTranslations[<?= (int) $translation->id; ?>][short_description]"><?= CHtml::encode(
+												$translation->short_description
+											); ?></textarea>
 
 									</div>
+
 
 									<div class="admin-form-field admin-form-field--full">
 
@@ -2064,9 +2391,12 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 										<textarea
 											class="form-control"
-											name="ProductTranslations[<?= (int) $translation->id; ?>][description]"><?= CHtml::encode($translation->description); ?></textarea>
+											name="ProductTranslations[<?= (int) $translation->id; ?>][description]"><?= CHtml::encode(
+												$translation->description
+											); ?></textarea>
 
 									</div>
+
 
 									<div class="admin-form-field">
 
@@ -2078,10 +2408,13 @@ var productUpdateTaxonomy = " . CJSON::encode(
 											type="text"
 											class="form-control"
 											name="ProductTranslations[<?= (int) $translation->id; ?>][name_size]"
-											value="<?= CHtml::encode($translation->name_size); ?>"
+											value="<?= CHtml::encode(
+												$translation->name_size
+											); ?>"
 											maxlength="20">
 
 									</div>
+
 
 									<div class="admin-form-field">
 
@@ -2093,10 +2426,13 @@ var productUpdateTaxonomy = " . CJSON::encode(
 											type="text"
 											class="form-control"
 											name="ProductTranslations[<?= (int) $translation->id; ?>][short_description_size]"
-											value="<?= CHtml::encode($translation->short_description_size); ?>"
+											value="<?= CHtml::encode(
+												$translation->short_description_size
+											); ?>"
 											maxlength="20">
 
 									</div>
+
 
 									<div class="admin-form-field">
 
@@ -2108,7 +2444,9 @@ var productUpdateTaxonomy = " . CJSON::encode(
 											type="text"
 											class="form-control"
 											name="ProductTranslations[<?= (int) $translation->id; ?>][description_size]"
-											value="<?= CHtml::encode($translation->description_size); ?>"
+											value="<?= CHtml::encode(
+												$translation->description_size
+											); ?>"
 											maxlength="20">
 
 									</div>
@@ -2154,6 +2492,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 				</div>
 
+
 				<div class="admin-product-add-translation__fields">
 
 					<div class="admin-form-field">
@@ -2162,6 +2501,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 							for="new-product-translation-language">
 							Idioma
 						</label>
+
 
 						<select
 							id="new-product-translation-language"
@@ -2172,6 +2512,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 								Seleccione un idioma
 							</option>
 
+
 							<?php foreach ($languages as $language): ?>
 
 								<?php
@@ -2180,17 +2521,22 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 								if (
 									isset(
-										$translationLanguageIds[$languageId]
+										$translationLanguageIds[
+											$languageId
+										]
 									)
 								) {
 									continue;
 								}
 								?>
 
+
 								<option value="<?= $languageId; ?>">
+
 									<?= CHtml::encode(
 										$language->name
 									); ?>
+
 								</option>
 
 							<?php endforeach; ?>
@@ -2199,14 +2545,16 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 					</div>
 
+
 					<div>
 
 						<button
 							type="button"
 							id="add-product-translation-button"
-							class="admin-product-add-translation__button">
+							class="admin-form-button admin-form-button--secondary">
 
 							<i class="fas fa-plus"></i>
+
 							Preparar traducción
 
 						</button>
@@ -2215,10 +2563,11 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 				</div>
 
+
 				<div
 					id="new-product-translation-fields"
 					class="admin-product-translation"
-					style="display: none; margin-top: 14px;">
+					style="margin-top:14px;">
 
 					<div class="admin-product-translation__header">
 
@@ -2226,13 +2575,12 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 							<i class="fas fa-language"></i>
 
-							<span
-								id="new-product-translation-language-name">
-							</span>
+							<strong id="new-product-translation-language-name"></strong>
 
 						</div>
 
 					</div>
+
 
 					<div class="admin-product-translation__body">
 
@@ -2242,7 +2590,8 @@ var productUpdateTaxonomy = " . CJSON::encode(
 							name="NewProductTranslation[language_id]"
 							value="">
 
-						<div class="admin-form-fields" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+
+						<div class="admin-form-fields">
 
 							<div class="admin-form-field admin-form-field--full">
 
@@ -2258,6 +2607,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 							</div>
 
+
 							<div class="admin-form-field admin-form-field--full">
 
 								<label>
@@ -2270,6 +2620,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 							</div>
 
+
 							<div class="admin-form-field admin-form-field--full">
 
 								<label>
@@ -2281,6 +2632,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 									name="NewProductTranslation[description]"></textarea>
 
 							</div>
+
 
 							<div class="admin-form-field">
 
@@ -2296,6 +2648,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 							</div>
 
+
 							<div class="admin-form-field">
 
 								<label>
@@ -2309,6 +2662,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 									maxlength="20">
 
 							</div>
+
 
 							<div class="admin-form-field">
 
@@ -2367,6 +2721,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 		</div>
 
+
 		<div class="admin-form-card__body">
 
 			<div class="admin-product-taxonomy">
@@ -2388,16 +2743,20 @@ var productUpdateTaxonomy = " . CJSON::encode(
 
 					</div>
 
+
 					<p class="admin-product-taxonomy__hint">
-						Las relaciones actuales aparecen seleccionadas. Al agregar una subcategoría, su categoría padre se asigna automáticamente.
+						Las relaciones actuales aparecen seleccionadas.
+						Al agregar una subcategoría, su categoría padre se asigna automáticamente.
 					</p>
 
 				</div>
+
 
 				<div
 					id="product-taxonomy-results"
 					class="admin-product-taxonomy__results">
 				</div>
+
 
 				<div class="admin-product-taxonomy__selected">
 
@@ -2410,6 +2769,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 				</div>
 
 			</div>
+
 
 			<div id="product-category-selection"></div>
 
@@ -2429,9 +2789,11 @@ var productUpdateTaxonomy = " . CJSON::encode(
 			<div class="admin-form-footer__note">
 
 				<span class="required">*</span>
+
 				Campos obligatorios
 
 			</div>
+
 
 			<div class="admin-form-actions">
 
@@ -2440,15 +2802,18 @@ var productUpdateTaxonomy = " . CJSON::encode(
 					class="admin-form-button admin-form-button--secondary">
 
 					<i class="fas fa-times"></i>
+
 					Cancelar
 
 				</a>
+
 
 				<button
 					type="submit"
 					class="admin-form-button admin-form-button--primary">
 
 					<i class="fas fa-save"></i>
+
 					Guardar cambios
 
 				</button>
@@ -2458,6 +2823,7 @@ var productUpdateTaxonomy = " . CJSON::encode(
 		</div>
 
 	</div>
+
 
 	<?php $this->endWidget(); ?>
 

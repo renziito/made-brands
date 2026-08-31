@@ -1,4 +1,5 @@
 <?php
+
 class ProductsController extends Controller
 {
 	/**
@@ -44,18 +45,18 @@ class ProductsController extends Controller
 				: array();
 
 			/*
-		 * The product must always use the
-		 * configured default language.
-		 */
+			 * The product must always use the
+			 * configured default language.
+			 */
 			if ($defaultLanguage !== null) {
 				$translation->language_id =
 					(int) $defaultLanguage->id;
 			}
 
 			/*
-		 * The slug comes from the product name
-		 * in the default-language translation.
-		 */
+			 * The slug comes from the product name
+			 * in the default-language translation.
+			 */
 			$model->slug = Utils::Slugify(
 				$translation->name,
 				true
@@ -69,10 +70,10 @@ class ProductsController extends Controller
 			$model->updated_at = date('Y-m-d H:i:s');
 
 			/*
-		 * ---------------------------------------------
-		 * CATEGORY / SUBCATEGORY IDS
-		 * ---------------------------------------------
-		 */
+			 * ---------------------------------------------
+			 * CATEGORY / SUBCATEGORY IDS
+			 * ---------------------------------------------
+			 */
 
 			$categoryIds =
 				isset($categorySelection['category_ids']) &&
@@ -103,10 +104,10 @@ class ProductsController extends Controller
 			);
 
 			/*
-		 * ---------------------------------------------
-		 * ADD PARENT CATEGORIES FROM SUBCATEGORIES
-		 * ---------------------------------------------
-		 */
+			 * ---------------------------------------------
+			 * ADD PARENT CATEGORIES FROM SUBCATEGORIES
+			 * ---------------------------------------------
+			 */
 
 			if (!empty($subcategoryIds)) {
 
@@ -140,10 +141,20 @@ class ProductsController extends Controller
 			}
 
 			/*
-		 * ---------------------------------------------
-		 * DATABASE TRANSACTION
-		 * ---------------------------------------------
-		 */
+			 * ---------------------------------------------
+			 * UPLOAD IMAGES
+			 * ---------------------------------------------
+			 */
+
+			$mainImage = CUploadedFile::getInstanceByName(
+				'Products[main_image]'
+			);
+
+			$infographicImage = CUploadedFile::getInstanceByName(
+				'Products[infographic_image]'
+			);
+
+			$uploadedImages = array();
 
 			$transaction =
 				Yii::app()->db->beginTransaction();
@@ -151,8 +162,46 @@ class ProductsController extends Controller
 			try {
 
 				/*
-			 * PRODUCTS
-			 */
+				 * MAIN IMAGE
+				 */
+
+				if ($mainImage !== null) {
+
+					$model->main_image =
+						$this->saveProductImage(
+							$mainImage,
+							'main'
+						);
+
+					$uploadedImages[] =
+						$model->main_image;
+				} else {
+
+					$model->main_image = null;
+				}
+
+				/*
+				 * INFOGRAPHIC IMAGE
+				 */
+
+				if ($infographicImage !== null) {
+
+					$model->infographic_image =
+						$this->saveProductImage(
+							$infographicImage,
+							'infographic'
+						);
+
+					$uploadedImages[] =
+						$model->infographic_image;
+				} else {
+
+					$model->infographic_image = null;
+				}
+
+				/*
+				 * PRODUCT
+				 */
 
 				if (!$model->save()) {
 
@@ -162,8 +211,8 @@ class ProductsController extends Controller
 				}
 
 				/*
-			 * PRODUCT TRANSLATION
-			 */
+				 * PRODUCT TRANSLATION
+				 */
 
 				$translation->product_id =
 					(int) $model->id;
@@ -173,8 +222,12 @@ class ProductsController extends Controller
 					$translation->language_id =
 						(int) $defaultLanguage->id;
 				}
-				$translation->created_at = date('Y-m-d H:i:s');
-				$translation->updated_at = date('Y-m-d H:i:s');
+
+				$translation->created_at =
+					date('Y-m-d H:i:s');
+
+				$translation->updated_at =
+					date('Y-m-d H:i:s');
 
 				if (!$translation->save()) {
 
@@ -184,8 +237,8 @@ class ProductsController extends Controller
 				}
 
 				/*
-			 * PRODUCT CATEGORIES
-			 */
+				 * PRODUCT CATEGORIES
+				 */
 
 				foreach ($categoryIds as $categoryId) {
 
@@ -207,8 +260,8 @@ class ProductsController extends Controller
 				}
 
 				/*
-			 * PRODUCT SUBCATEGORIES
-			 */
+				 * PRODUCT SUBCATEGORIES
+				 */
 
 				foreach ($subcategoryIds as $subcategoryId) {
 
@@ -230,8 +283,8 @@ class ProductsController extends Controller
 				}
 
 				/*
-			 * EVERYTHING WAS SAVED
-			 */
+				 * EVERYTHING WAS SAVED
+				 */
 
 				$transaction->commit();
 
@@ -241,6 +294,17 @@ class ProductsController extends Controller
 			} catch (Exception $e) {
 
 				$transaction->rollback();
+
+				/*
+				 * Remove images uploaded during
+				 * this failed operation.
+				 */
+				foreach ($uploadedImages as $uploadedImage) {
+
+					$this->deleteProductImage(
+						$uploadedImage
+					);
+				}
 
 				$model->addError(
 					'brand_id',
@@ -258,6 +322,8 @@ class ProductsController extends Controller
 			)
 		);
 	}
+
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
@@ -269,10 +335,10 @@ class ProductsController extends Controller
 		$model = $this->loadModel($id);
 
 		/*
-	 * ----------------------------------------------------------
-	 * DEFAULT LANGUAGE
-	 * ----------------------------------------------------------
-	 */
+		 * ----------------------------------------------------------
+		 * DEFAULT LANGUAGE
+		 * ----------------------------------------------------------
+		 */
 
 		$defaultLanguage = Languages::model()->findByAttributes(array(
 			'is_default' => 1,
@@ -280,10 +346,23 @@ class ProductsController extends Controller
 
 
 		/*
-	 * ----------------------------------------------------------
-	 * POST DATA
-	 * ----------------------------------------------------------
-	 */
+		 * ----------------------------------------------------------
+		 * KEEP ORIGINAL IMAGE VALUES
+		 * ----------------------------------------------------------
+		 */
+
+		$oldMainImage =
+			$model->main_image;
+
+		$oldInfographicImage =
+			$model->infographic_image;
+
+
+		/*
+		 * ----------------------------------------------------------
+		 * POST DATA
+		 * ----------------------------------------------------------
+		 */
 
 		$post = Yii::app()->request->getPost(
 			'Products',
@@ -307,25 +386,34 @@ class ProductsController extends Controller
 
 
 		/*
-	 * ----------------------------------------------------------
-	 * UPDATE
-	 * ----------------------------------------------------------
-	 */
+		 * ----------------------------------------------------------
+		 * UPDATE
+		 * ----------------------------------------------------------
+		 */
 
 		if ($post !== false) {
 
 			$model->attributes = $post;
 
-			$model->updated_at = date(
-				'Y-m-d H:i:s'
-			);
+			/*
+			 * Never allow the text POST to overwrite
+			 * the existing image filenames.
+			 */
+			$model->main_image =
+				$oldMainImage;
+
+			$model->infographic_image =
+				$oldInfographicImage;
+
+			$model->updated_at =
+				date('Y-m-d H:i:s');
 
 
 			/*
-		 * ------------------------------------------------------
-		 * CATEGORY / SUBCATEGORY IDS
-		 * ------------------------------------------------------
-		 */
+			 * ------------------------------------------------------
+			 * CATEGORY / SUBCATEGORY IDS
+			 * ------------------------------------------------------
+			 */
 
 			$categoryIds =
 				isset($categorySelection['category_ids']) &&
@@ -341,8 +429,8 @@ class ProductsController extends Controller
 
 
 			/*
-		 * Normalize IDs.
-		 */
+			 * Normalize IDs.
+			 */
 
 			$categoryIds = array_values(
 				array_unique(
@@ -368,13 +456,13 @@ class ProductsController extends Controller
 
 
 			/*
-		 * ------------------------------------------------------
-		 * ADD PARENT CATEGORIES
-		 * ------------------------------------------------------
-		 *
-		 * If a subcategory is selected, its parent category
-		 * must also be associated with the product.
-		 */
+			 * ------------------------------------------------------
+			 * ADD PARENT CATEGORIES
+			 * ------------------------------------------------------
+			 *
+			 * If a subcategory is selected, its parent category
+			 * must also be associated with the product.
+			 */
 
 			if (!empty($subcategoryIds)) {
 
@@ -411,13 +499,10 @@ class ProductsController extends Controller
 
 
 			/*
-		 * ------------------------------------------------------
-		 * GET DEFAULT TRANSLATION
-		 * ------------------------------------------------------
-		 *
-		 * We need the default translation before saving the
-		 * product because the slug comes from its name.
-		 */
+			 * ------------------------------------------------------
+			 * GET DEFAULT TRANSLATION
+			 * ------------------------------------------------------
+			 */
 
 			$defaultTranslation = null;
 
@@ -426,17 +511,20 @@ class ProductsController extends Controller
 				$defaultTranslation =
 					ProductTranslations::model()->findByAttributes(
 						array(
-							'product_id' => (int) $model->id,
-							'language_id' => (int) $defaultLanguage->id,
+							'product_id' =>
+							(int) $model->id,
+
+							'language_id' =>
+							(int) $defaultLanguage->id,
 						)
 					);
 			}
 
 
 			/*
-		 * If the default translation is part of the POST,
-		 * use the posted name for the new slug.
-		 */
+			 * If the default translation is part of the POST,
+			 * use the posted name for the new slug.
+			 */
 
 			if (
 				$defaultTranslation !== null &&
@@ -467,12 +555,34 @@ class ProductsController extends Controller
 
 
 			/*
-		 * ------------------------------------------------------
-		 * DATABASE TRANSACTION
-		 * ------------------------------------------------------
-		 */
+			 * ------------------------------------------------------
+			 * NEW UPLOADS
+			 * ------------------------------------------------------
+			 */
 
-			$model->updated_at = date('Y-m-d H:i:s');
+			$mainImage =
+				CUploadedFile::getInstanceByName(
+					'Products[main_image]'
+				);
+
+			$infographicImage =
+				CUploadedFile::getInstanceByName(
+					'Products[infographic_image]'
+				);
+
+
+			$newMainImage =
+				null;
+
+			$newInfographicImage =
+				null;
+
+
+			/*
+			 * ------------------------------------------------------
+			 * DATABASE TRANSACTION
+			 * ------------------------------------------------------
+			 */
 
 			$transaction =
 				Yii::app()->db->beginTransaction();
@@ -480,10 +590,51 @@ class ProductsController extends Controller
 			try {
 
 				/*
-			 * --------------------------------------------------
-			 * PRODUCT
-			 * --------------------------------------------------
-			 */
+				 * --------------------------------------------------
+				 * MAIN IMAGE
+				 * --------------------------------------------------
+				 *
+				 * If a new file was selected, process it.
+				 * Otherwise keep the current filename.
+				 */
+
+				if ($mainImage !== null) {
+
+					$newMainImage =
+						$this->saveProductImage(
+							$mainImage,
+							'main'
+						);
+
+					$model->main_image =
+						$newMainImage;
+				}
+
+
+				/*
+				 * --------------------------------------------------
+				 * INFOGRAPHIC IMAGE
+				 * --------------------------------------------------
+				 */
+
+				if ($infographicImage !== null) {
+
+					$newInfographicImage =
+						$this->saveProductImage(
+							$infographicImage,
+							'infographic'
+						);
+
+					$model->infographic_image =
+						$newInfographicImage;
+				}
+
+
+				/*
+				 * --------------------------------------------------
+				 * PRODUCT
+				 * --------------------------------------------------
+				 */
 
 				if (!$model->save()) {
 
@@ -494,13 +645,10 @@ class ProductsController extends Controller
 
 
 				/*
-			 * --------------------------------------------------
-			 * EXISTING TRANSLATIONS
-			 * --------------------------------------------------
-			 *
-			 * Only existing translation IDs belonging to this
-			 * product can be updated.
-			 */
+				 * --------------------------------------------------
+				 * EXISTING TRANSLATIONS
+				 * --------------------------------------------------
+				 */
 
 				if (
 					is_array($translationPost) &&
@@ -509,7 +657,8 @@ class ProductsController extends Controller
 
 					foreach (
 						$translationPost
-						as $translationId => $translationAttributes
+						as $translationId =>
+						$translationAttributes
 					) {
 
 						$translationId =
@@ -520,10 +669,14 @@ class ProductsController extends Controller
 						}
 
 						$translation =
-							ProductTranslations::model()->findByAttributes(
+							ProductTranslations::model()
+							->findByAttributes(
 								array(
-									'id' => $translationId,
-									'product_id' => (int) $model->id,
+									'id' =>
+									$translationId,
+
+									'product_id' =>
+									(int) $model->id,
 								)
 							);
 
@@ -535,16 +688,12 @@ class ProductsController extends Controller
 						}
 
 
-						/*
-					 * Do not allow product_id or language_id
-					 * to be changed through the POST.
-					 */
-
 						if (
 							isset(
 								$translationAttributes['name']
 							)
 						) {
+
 							$translation->name =
 								$translationAttributes['name'];
 						}
@@ -554,6 +703,7 @@ class ProductsController extends Controller
 								$translationAttributes['name_size']
 							)
 						) {
+
 							$translation->name_size =
 								$translationAttributes['name_size'];
 						}
@@ -563,6 +713,7 @@ class ProductsController extends Controller
 								$translationAttributes['short_description']
 							)
 						) {
+
 							$translation->short_description =
 								$translationAttributes['short_description'];
 						}
@@ -572,6 +723,7 @@ class ProductsController extends Controller
 								$translationAttributes['short_description_size']
 							)
 						) {
+
 							$translation->short_description_size =
 								$translationAttributes['short_description_size'];
 						}
@@ -581,6 +733,7 @@ class ProductsController extends Controller
 								$translationAttributes['description']
 							)
 						) {
+
 							$translation->description =
 								$translationAttributes['description'];
 						}
@@ -590,20 +743,15 @@ class ProductsController extends Controller
 								$translationAttributes['description_size']
 							)
 						) {
+
 							$translation->description_size =
 								$translationAttributes['description_size'];
 						}
 
+						$translation->updated_at =
+							date('Y-m-d H:i:s');
 
-						$translation->updated_at = date('Y-m-d H:i:s');
-
-						/*
-					 * Keep the existing language.
-					 */
-
-						if (
-							!$translation->save()
-						) {
+						if (!$translation->save()) {
 
 							throw new CException(
 								'No se pudo actualizar una traducción del producto.'
@@ -614,45 +762,26 @@ class ProductsController extends Controller
 
 
 				/*
-			 * --------------------------------------------------
-			 * NEW TRANSLATION
-			 * --------------------------------------------------
-			 */
+				 * --------------------------------------------------
+				 * NEW TRANSLATION
+				 * --------------------------------------------------
+				 */
 
 				if (
 					is_array($newTranslationPost) &&
 					!empty($newTranslationPost) &&
-					!empty($newTranslationPost['language_id'])
+					isset(
+						$newTranslationPost['language_id']
+					) &&
+					$newTranslationPost['language_id'] !== ''
 				) {
 
 					$newLanguageId =
-						(int)
-						$newTranslationPost['language_id'];
-
-
-					/*
-				 * Verify that the language exists.
-				 */
-
-					$language =
-						Languages::model()->findByPk(
-							$newLanguageId
-						);
-
-					if ($language === null) {
-
-						throw new CException(
-							'El idioma seleccionado no existe.'
-						);
-					}
-
-
-					/*
-				 * Prevent duplicate translations.
-				 */
+						(int) $newTranslationPost['language_id'];
 
 					$existingTranslation =
-						ProductTranslations::model()->findByAttributes(
+						ProductTranslations::model()
+						->findByAttributes(
 							array(
 								'product_id' =>
 								(int) $model->id,
@@ -679,11 +808,13 @@ class ProductsController extends Controller
 					$newTranslation->language_id =
 						$newLanguageId;
 
+
 					if (
 						isset(
 							$newTranslationPost['name']
 						)
 					) {
+
 						$newTranslation->name =
 							$newTranslationPost['name'];
 					}
@@ -693,6 +824,7 @@ class ProductsController extends Controller
 							$newTranslationPost['name_size']
 						)
 					) {
+
 						$newTranslation->name_size =
 							$newTranslationPost['name_size'];
 					}
@@ -702,6 +834,7 @@ class ProductsController extends Controller
 							$newTranslationPost['short_description']
 						)
 					) {
+
 						$newTranslation->short_description =
 							$newTranslationPost['short_description'];
 					}
@@ -711,6 +844,7 @@ class ProductsController extends Controller
 							$newTranslationPost['short_description_size']
 						)
 					) {
+
 						$newTranslation->short_description_size =
 							$newTranslationPost['short_description_size'];
 					}
@@ -720,6 +854,7 @@ class ProductsController extends Controller
 							$newTranslationPost['description']
 						)
 					) {
+
 						$newTranslation->description =
 							$newTranslationPost['description'];
 					}
@@ -729,12 +864,16 @@ class ProductsController extends Controller
 							$newTranslationPost['description_size']
 						)
 					) {
+
 						$newTranslation->description_size =
 							$newTranslationPost['description_size'];
 					}
 
-					$newTranslation->created_at = date('Y-m-d H:i:s');
-					$newTranslation->updated_at = date('Y-m-d H:i:s');
+					$newTranslation->created_at =
+						date('Y-m-d H:i:s');
+
+					$newTranslation->updated_at =
+						date('Y-m-d H:i:s');
 
 					if (!$newTranslation->save()) {
 
@@ -746,14 +885,14 @@ class ProductsController extends Controller
 
 
 				/*
-			 * --------------------------------------------------
-			 * PRODUCT CATEGORIES
-			 * --------------------------------------------------
-			 *
-			 * The update form represents the complete current
-			 * selection, so we synchronize the relations by
-			 * deleting the old ones and recreating them.
-			 */
+				 * --------------------------------------------------
+				 * PRODUCT CATEGORIES
+				 * --------------------------------------------------
+				 *
+				 * The update form represents the complete current
+				 * selection, so we synchronize the relations by
+				 * deleting the old ones and recreating them.
+				 */
 
 				ProductCategories::model()->deleteAll(
 					'product_id = :product_id',
@@ -785,10 +924,10 @@ class ProductsController extends Controller
 
 
 				/*
-			 * --------------------------------------------------
-			 * PRODUCT SUBCATEGORIES
-			 * --------------------------------------------------
-			 */
+				 * --------------------------------------------------
+				 * PRODUCT SUBCATEGORIES
+				 * --------------------------------------------------
+				 */
 
 				ProductSubcategories::model()->deleteAll(
 					'product_id = :product_id',
@@ -820,12 +959,41 @@ class ProductsController extends Controller
 
 
 				/*
-			 * --------------------------------------------------
-			 * EVERYTHING WAS SAVED
-			 * --------------------------------------------------
-			 */
+				 * --------------------------------------------------
+				 * EVERYTHING WAS SAVED
+				 * --------------------------------------------------
+				 */
 
 				$transaction->commit();
+
+
+				/*
+				 * Delete old images only after the database
+				 * transaction has been successfully committed.
+				 */
+
+				if (
+					$newMainImage !== null &&
+					$oldMainImage !== null &&
+					$oldMainImage !== ''
+				) {
+
+					$this->deleteProductImage(
+						$oldMainImage
+					);
+				}
+
+				if (
+					$newInfographicImage !== null &&
+					$oldInfographicImage !== null &&
+					$oldInfographicImage !== ''
+				) {
+
+					$this->deleteProductImage(
+						$oldInfographicImage
+					);
+				}
+
 
 				$this->redirect(
 					array(
@@ -836,6 +1004,39 @@ class ProductsController extends Controller
 
 				$transaction->rollback();
 
+
+				/*
+				 * Remove the newly generated files because
+				 * the update failed.
+				 */
+
+				if ($newMainImage !== null) {
+
+					$this->deleteProductImage(
+						$newMainImage
+					);
+				}
+
+				if ($newInfographicImage !== null) {
+
+					$this->deleteProductImage(
+						$newInfographicImage
+					);
+				}
+
+
+				/*
+				 * Restore the model values so the form continues
+				 * showing the original images after the error.
+				 */
+
+				$model->main_image =
+					$oldMainImage;
+
+				$model->infographic_image =
+					$oldInfographicImage;
+
+
 				$model->addError(
 					'brand_id',
 					$e->getMessage()
@@ -845,15 +1046,16 @@ class ProductsController extends Controller
 
 
 		/*
-	 * ----------------------------------------------------------
-	 * LOAD DATA FOR UPDATE FORM
-	 * ----------------------------------------------------------
-	 */
+		 * ----------------------------------------------------------
+		 * LOAD DATA FOR UPDATE FORM
+		 * ----------------------------------------------------------
+		 */
 
 		$translations =
 			ProductTranslations::model()->findAllByAttributes(
 				array(
-					'product_id' => (int) $model->id,
+					'product_id' =>
+					(int) $model->id,
 				),
 				array(
 					'order' =>
@@ -865,52 +1067,541 @@ class ProductsController extends Controller
 		$this->render(
 			'update',
 			array(
-				'model' => $model,
-				'translations' => $translations,
-				'defaultLanguage' => $defaultLanguage,
+				'model' =>
+				$model,
+
+				'translations' =>
+				$translations,
+
+				'defaultLanguage' =>
+				$defaultLanguage,
 			)
 		);
 	}
+
+
+	/**
+	 * Saves and optimizes a product image.
+	 *
+	 * The original width and height are preserved.
+	 * The image is NOT resized.
+	 *
+	 * Supported formats:
+	 * - JPEG
+	 * - PNG
+	 * - WebP
+	 *
+	 * @param CUploadedFile $file
+	 * @param string $prefix
+	 * @return string
+	 * @throws CException
+	 */
+	protected function saveProductImage(
+		$file,
+		$prefix
+	) {
+
+		if (
+			!$file instanceof CUploadedFile
+		) {
+
+			throw new CException(
+				'El archivo de imagen no es válido.'
+			);
+		}
+
+
+		/*
+		 * Upload error.
+		 */
+
+		if (
+			$file->error !== UPLOAD_ERR_OK
+		) {
+
+			throw new CException(
+				'No se pudo recibir correctamente la imagen.'
+			);
+		}
+
+
+		/*
+		 * Maximum upload size: 15 MB.
+		 */
+
+		if (
+			(int) $file->size <= 0 ||
+			(int) $file->size > 15 * 1024 * 1024
+		) {
+
+			throw new CException(
+				'La imagen debe tener un tamaño entre 1 byte y 15 MB.'
+			);
+		}
+
+
+		/*
+		 * Validate the actual image contents.
+		 * Do not trust only the browser MIME type.
+		 */
+
+		$imageInfo =
+			@getimagesize(
+				$file->tempName
+			);
+
+		if ($imageInfo === false) {
+
+			throw new CException(
+				'El archivo seleccionado no es una imagen válida.'
+			);
+		}
+
+
+		$mime =
+			isset($imageInfo['mime'])
+			? strtolower(
+				(string) $imageInfo['mime']
+			)
+			: '';
+
+
+		$allowedMimeTypes = array(
+			'image/jpeg',
+			'image/png',
+			'image/webp',
+		);
+
+
+		if (
+			!in_array(
+				$mime,
+				$allowedMimeTypes,
+				true
+			)
+		) {
+
+			throw new CException(
+				'Solo se permiten imágenes JPG, PNG o WebP.'
+			);
+		}
+
+
+		/*
+		 * GD is required.
+		 */
+
+		if (
+			!function_exists(
+				'imagecreatefromstring'
+			)
+		) {
+
+			throw new CException(
+				'La extensión GD de PHP no está disponible.'
+			);
+		}
+
+
+		/*
+		 * Read the original image.
+		 */
+
+		$imageData =
+			@file_get_contents(
+				$file->tempName
+			);
+
+		if ($imageData === false) {
+
+			throw new CException(
+				'No se pudo leer la imagen.'
+			);
+		}
+
+
+		$image =
+			@imagecreatefromstring(
+				$imageData
+			);
+
+		if ($image === false) {
+
+			throw new CException(
+				'No se pudo procesar la imagen.'
+			);
+		}
+
+
+		/*
+		 * ----------------------------------------------------------
+		 * IMPORTANT
+		 * ----------------------------------------------------------
+		 *
+		 * No imagecreatetruecolor().
+		 * No imagecopyresampled().
+		 * No width/height calculations.
+		 *
+		 * Therefore the original dimensions are preserved.
+		 * We only recompress the image.
+		 * ----------------------------------------------------------
+		 */
+
+
+		$uploadDirectory =
+			Yii::getPathOfAlias(
+				'webroot'
+			) .
+			DIRECTORY_SEPARATOR .
+			'images' .
+			DIRECTORY_SEPARATOR .
+			'products';
+
+
+		if (
+			!is_dir(
+				$uploadDirectory
+			)
+		) {
+
+			if (
+				!@mkdir(
+					$uploadDirectory,
+					0755,
+					true
+				)
+			) {
+
+				imagedestroy($image);
+
+				throw new CException(
+					'No se pudo crear la carpeta de imágenes de productos.'
+				);
+			}
+		}
+
+
+		if (
+			!is_writable(
+				$uploadDirectory
+			)
+		) {
+
+			imagedestroy($image);
+
+			throw new CException(
+				'La carpeta de imágenes de productos no tiene permisos de escritura.'
+			);
+		}
+
+
+		/*
+		 * Keep the original format.
+		 *
+		 * This avoids changing the public URL extension and
+		 * preserves compatibility with existing product images.
+		 */
+
+		switch ($mime) {
+
+			case 'image/jpeg':
+				$extension = 'jpg';
+				break;
+
+			case 'image/png':
+				$extension = 'png';
+				break;
+
+			case 'image/webp':
+				$extension = 'webp';
+				break;
+
+			default:
+
+				imagedestroy($image);
+
+				throw new CException(
+					'Formato de imagen no soportado.'
+				);
+		}
+
+
+		$filename =
+			$prefix .
+			'_' .
+			uniqid(
+				'',
+				true
+			) .
+			'.' .
+			$extension;
+
+
+		$targetPath =
+			$uploadDirectory .
+			DIRECTORY_SEPARATOR .
+			$filename;
+
+
+		$saved = false;
+
+
+		/*
+		 * ----------------------------------------------------------
+		 * JPEG
+		 * ----------------------------------------------------------
+		 *
+		 * Quality 82 gives a good reduction in file size while
+		 * preserving visual quality.
+		 */
+
+		if (
+			$mime === 'image/jpeg'
+		) {
+
+			if (
+				function_exists(
+					'imageinterlace'
+				)
+			) {
+
+				imageinterlace(
+					$image,
+					true
+				);
+			}
+
+
+			$saved =
+				@imagejpeg(
+					$image,
+					$targetPath,
+					82
+				);
+		}
+
+
+		/*
+		 * ----------------------------------------------------------
+		 * PNG
+		 * ----------------------------------------------------------
+		 *
+		 * PNG compression level 6.
+		 * Alpha channel is preserved.
+		 */ elseif (
+			$mime === 'image/png'
+		) {
+
+			imagealphablending(
+				$image,
+				false
+			);
+
+			imagesavealpha(
+				$image,
+				true
+			);
+
+
+			$saved =
+				@imagepng(
+					$image,
+					$targetPath,
+					6
+				);
+		}
+
+
+		/*
+		 * ----------------------------------------------------------
+		 * WEBP
+		 * ----------------------------------------------------------
+		 */ elseif (
+			$mime === 'image/webp'
+		) {
+
+			if (
+				!function_exists(
+					'imagewebp'
+				)
+			) {
+
+				imagedestroy($image);
+
+				throw new CException(
+					'El servidor no soporta WebP mediante GD.'
+				);
+			}
+
+
+			$saved =
+				@imagewebp(
+					$image,
+					$targetPath,
+					82
+				);
+		}
+
+
+		imagedestroy(
+			$image
+		);
+
+
+		/*
+		 * Validate the resulting file.
+		 */
+
+		if (
+			!$saved ||
+			!is_file(
+				$targetPath
+			) ||
+			filesize(
+				$targetPath
+			) <= 0
+		) {
+
+			@unlink(
+				$targetPath
+			);
+
+			throw new CException(
+				'No se pudo guardar la imagen optimizada.'
+			);
+		}
+
+
+		return $filename;
+	}
+
+
+	/**
+	 * Deletes a product image from disk.
+	 *
+	 * @param string $filename
+	 */
+	protected function deleteProductImage(
+		$filename
+	) {
+
+		$filename =
+			basename(
+				(string) $filename
+			);
+
+
+		if (
+			$filename === ''
+		) {
+			return;
+		}
+
+
+		$imagePath =
+			Yii::getPathOfAlias(
+				'webroot'
+			) .
+			DIRECTORY_SEPARATOR .
+			'images' .
+			DIRECTORY_SEPARATOR .
+			'products' .
+			DIRECTORY_SEPARATOR .
+			$filename;
+
+
+		if (
+			is_file(
+				$imagePath
+			)
+		) {
+
+			@unlink(
+				$imagePath
+			);
+		}
+	}
+
+
 	/**
 	 * Soft deletes a particular model.
 	 * Instead of physically deleting the record, all tinyint fields are set to 0.
 	 * If the update is successful, the browser will be redirected to the 'index' page.
+	 *
 	 * @param integer $id the ID of the model to be deleted
 	 */
 	public function actionDelete($id)
 	{
 		$model = $this->loadModel($id);
+
 		$model->status = 0;
+
 		if ($model->save()) {
-			$this->redirect(array('index'));
+
+			$this->redirect(
+				array(
+					'index',
+				)
+			);
 		}
 	}
+
+
 	/**
 	 * Manages all models.
 	 */
 	public function actionIndex()
 	{
 		$model = new Products('search');
+
 		$model->unsetAttributes();
-		$attributes = Yii::app()->request->getQuery('Products', false);
+
+		$attributes =
+			Yii::app()->request->getQuery(
+				'Products',
+				false
+			);
+
 		if ($attributes) {
-			$model->attributes = $attributes;
+
+			$model->attributes =
+				$attributes;
 		}
-		$this->render('index', array('model' => $model));
+
+		$this->render(
+			'index',
+			array(
+				'model' =>
+				$model,
+			)
+		);
 	}
+
+
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
+	 *
 	 * @param integer $id the ID of the model to be loaded
 	 * @return Products the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-		$model = Products::model()->findByPk($id);
-		if ($model === null) {
-			throw new CHttpException(404, 'La página solicitada no existe.');
+		$model =
+			Products::model()->findByPk(
+				$id
+			);
+
+		if (
+			$model === null
+		) {
+
+			throw new CHttpException(
+				404,
+				'La página solicitada no existe.'
+			);
 		}
+
 		return $model;
 	}
 }

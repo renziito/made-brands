@@ -2,166 +2,238 @@
 /* @var $this ProductsController */
 /* @var $model Products */
 /* @var $form CActiveForm */
+/* @var $translation ProductTranslations */
+/* @var $defaultLanguage Languages */
+
 
 /*
- * CREATE FORM
- *
- * Expected controller variables:
- * - $translation: ProductTranslations
- * - $defaultLanguage: Languages
- *
- * Additional submitted data:
- * ProductCategorySelection[category_ids][]
- * ProductCategorySelection[subcategory_ids][]
+ * ----------------------------------------------------------
+ * DEFAULT LANGUAGE
+ * ----------------------------------------------------------
  */
-
-$translation = isset($translation)
-    ? $translation
-    : new ProductTranslations;
 
 $defaultLanguage = isset($defaultLanguage)
-    ? $defaultLanguage
-    : Languages::model()->findByAttributes(array(
-        'is_default' => 1,
-    ));
+	? $defaultLanguage
+	: Languages::model()->findByAttributes(
+		array(
+			'is_default' => 1,
+		)
+	);
+
 
 /*
- * Categories and subcategories use their own translation tables.
- * ProductTranslations is only used for the product itself.
+ * ----------------------------------------------------------
+ * CATEGORIES / SUBCATEGORIES
+ * ----------------------------------------------------------
  */
-$categories = Categories::model()->findAll(array(
-    'order' => 'sort_order ASC, id ASC',
-));
 
-$subcategories = Subcategories::model()->findAll(array(
-    'order' => 'category_id ASC, sort_order ASC, id ASC',
-));
+$categories = Categories::model()->findAll(
+	array(
+		'order' => 'sort_order ASC, id ASC',
+	)
+);
+
+$subcategories = Subcategories::model()->findAll(
+	array(
+		'order' => 'category_id ASC, sort_order ASC, id ASC',
+	)
+);
 
 $categoryIds = array();
+
 foreach ($categories as $category) {
-    $categoryIds[] = (int) $category->id;
+	$categoryIds[] = (int) $category->id;
 }
 
 $subcategoryIds = array();
+
 foreach ($subcategories as $subcategory) {
-    $subcategoryIds[] = (int) $subcategory->id;
+	$subcategoryIds[] = (int) $subcategory->id;
 }
+
+
+/*
+ * ----------------------------------------------------------
+ * CATEGORY TRANSLATIONS
+ * ----------------------------------------------------------
+ */
 
 $categoryTranslationsByCategory = array();
 
 if ($categoryIds) {
 
-    $criteria = new CDbCriteria;
-    $criteria->addInCondition('category_id', $categoryIds);
+	$criteria = new CDbCriteria;
 
-    if ($defaultLanguage !== null) {
-        $criteria->addCondition(
-            'language_id = :category_default_language_id'
-        );
-        $criteria->params[':category_default_language_id'] =
-            (int) $defaultLanguage->id;
-    }
+	$criteria->addInCondition(
+		'category_id',
+		$categoryIds
+	);
 
-    $rows = CategoryTranslations::model()->findAll($criteria);
+	if ($defaultLanguage !== null) {
 
-    foreach ($rows as $row) {
-        $categoryTranslationsByCategory[(int) $row->category_id] = $row;
-    }
+		$criteria->addCondition(
+			'language_id = :category_default_language_id'
+		);
+
+		$criteria->params[':category_default_language_id'] =
+			(int) $defaultLanguage->id;
+	}
+
+	$rows = CategoryTranslations::model()->findAll(
+		$criteria
+	);
+
+	foreach ($rows as $row) {
+
+		$categoryTranslationsByCategory[(int) $row->category_id] = $row;
+	}
 }
+
+
+/*
+ * ----------------------------------------------------------
+ * SUBCATEGORY TRANSLATIONS
+ * ----------------------------------------------------------
+ */
 
 $subcategoryTranslationsBySubcategory = array();
 
 if ($subcategoryIds) {
 
-    $criteria = new CDbCriteria;
-    $criteria->addInCondition('subcategory_id', $subcategoryIds);
+	$criteria = new CDbCriteria;
 
-    if ($defaultLanguage !== null) {
-        $criteria->addCondition(
-            'language_id = :subcategory_default_language_id'
-        );
-        $criteria->params[':subcategory_default_language_id'] =
-            (int) $defaultLanguage->id;
-    }
+	$criteria->addInCondition(
+		'subcategory_id',
+		$subcategoryIds
+	);
 
-    $rows = SubcategoryTranslations::model()->findAll($criteria);
+	if ($defaultLanguage !== null) {
 
-    foreach ($rows as $row) {
-        $subcategoryTranslationsBySubcategory[(int) $row->subcategory_id] = $row;
-    }
+		$criteria->addCondition(
+			'language_id = :subcategory_default_language_id'
+		);
+
+		$criteria->params[':subcategory_default_language_id'] =
+			(int) $defaultLanguage->id;
+	}
+
+	$rows = SubcategoryTranslations::model()->findAll(
+		$criteria
+	);
+
+	foreach ($rows as $row) {
+
+		$subcategoryTranslationsBySubcategory[(int) $row->subcategory_id] = $row;
+	}
 }
 
+
+/*
+ * ----------------------------------------------------------
+ * TAXONOMY DATA
+ * ----------------------------------------------------------
+ */
+
 $taxonomyData = array(
-    'categories' => array(),
-    'subcategories' => array(),
+	'categories' => array(),
+	'subcategories' => array(),
 );
 
 foreach ($categories as $category) {
 
-    $id = (int) $category->id;
+	$categoryId = (int) $category->id;
 
-    $name = isset($categoryTranslationsByCategory[$id])
-        ? trim((string) $categoryTranslationsByCategory[$id]->name)
-        : '';
+	$name = isset(
+		$categoryTranslationsByCategory[$categoryId]
+	)
+		? trim(
+			(string)
+			$categoryTranslationsByCategory[$categoryId]->name
+		)
+		: '';
 
-    if ($name === '') {
-        $name = 'Categoría #' . $id;
-    }
+	if ($name === '') {
+		$name = 'Categoría #' . $categoryId;
+	}
 
-    $taxonomyData['categories'][] = array(
-        'id' => $id,
-        'name' => $name,
-    );
+	$taxonomyData['categories'][] = array(
+		'id' => $categoryId,
+		'name' => $name,
+	);
 }
 
 foreach ($subcategories as $subcategory) {
 
-    $id = (int) $subcategory->id;
-    $categoryId = (int) $subcategory->category_id;
+	$subcategoryId = (int) $subcategory->id;
+	$categoryId = (int) $subcategory->category_id;
 
-    $name = isset($subcategoryTranslationsBySubcategory[$id])
-        ? trim((string) $subcategoryTranslationsBySubcategory[$id]->name)
-        : '';
+	$name = isset(
+		$subcategoryTranslationsBySubcategory[$subcategoryId]
+	)
+		? trim(
+			(string)
+			$subcategoryTranslationsBySubcategory[$subcategoryId]->name
+		)
+		: '';
 
-    if ($name === '') {
-        $name = 'Subcategoría #' . $id;
-    }
+	if ($name === '') {
+		$name = 'Subcategoría #' . $subcategoryId;
+	}
 
-    $categoryName = isset($categoryTranslationsByCategory[$categoryId])
-        ? trim((string) $categoryTranslationsByCategory[$categoryId]->name)
-        : '';
+	$categoryName = isset(
+		$categoryTranslationsByCategory[$categoryId]
+	)
+		? trim(
+			(string)
+			$categoryTranslationsByCategory[$categoryId]->name
+		)
+		: '';
 
-    if ($categoryName === '') {
-        $categoryName = 'Categoría #' . $categoryId;
-    }
+	if ($categoryName === '') {
+		$categoryName = 'Categoría #' . $categoryId;
+	}
 
-    $taxonomyData['subcategories'][] = array(
-        'id' => $id,
-        'name' => $name,
-        'category_id' => $categoryId,
-        'category_name' => $categoryName,
-    );
+	$taxonomyData['subcategories'][] = array(
+		'id' => $subcategoryId,
+		'name' => $name,
+		'category_id' => $categoryId,
+		'category_name' => $categoryName,
+	);
 }
-?>
-<?php
-Yii::app()->clientScript->registerCss('admin-form-products', '
-/* ==========================================================
-   PAGE
-   ========================================================== */
+
+
+/*
+ * ----------------------------------------------------------
+ * LANGUAGES
+ * ----------------------------------------------------------
+ */
+
+$languages = Languages::model()->findAll(
+	array(
+		'order' => 'sort_order ASC, id ASC',
+	)
+);
+
+
+/*
+ * ----------------------------------------------------------
+ * CSS
+ * ----------------------------------------------------------
+ */
+
+Yii::app()->clientScript->registerCss(
+	'admin-form-products-create',
+	'
 .admin-form-page {
 	width: 100%;
 	max-width: 1100px;
 	margin: 0 auto;
 }
-/* ==========================================================
-   FORM
-   ========================================================== */
+
 .admin-form {
 	margin-top: 28px;
 }
-/* ==========================================================
-   CARD
-   ========================================================== */
+
 .admin-form-card {
 	overflow: hidden;
 	background: #fff;
@@ -169,9 +241,11 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	border-radius: 10px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
 }
-/* ==========================================================
-   CARD HEADER
-   ========================================================== */
+
+.admin-form-card + .admin-form-card {
+	margin-top: 20px;
+}
+
 .admin-form-card__header {
 	display: flex;
 	align-items: center;
@@ -180,12 +254,14 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	padding: 18px 20px;
 	border-bottom: 1px solid #e5e7eb;
 }
+
 .admin-form-card__heading {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	min-width: 0;
 }
+
 .admin-form-card__icon {
 	display: flex;
 	align-items: center;
@@ -198,6 +274,7 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	color: #374151;
 	font-size: 14px;
 }
+
 .admin-form-card__title {
 	margin: 0;
 	color: #111827;
@@ -205,116 +282,44 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	font-weight: 600;
 	line-height: 1.3;
 }
+
 .admin-form-card__description {
 	margin: 2px 0 0;
 	color: #9ca3af;
 	font-size: 12px;
 	line-height: 1.4;
 }
-/* ==========================================================
-   STATUS
-   ========================================================== */
+
 .admin-form-status {
 	display: flex;
 	align-items: center;
 	gap: 20px;
 	flex-shrink: 0;
 }
+
 .admin-form-status__item {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 }
+
 .admin-form-status__text {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
 }
+
 .admin-form-status__label {
 	color: #374151;
 	font-size: 12px;
 	font-weight: 600;
 	line-height: 1.3;
 }
-.admin-form-status__description {
-	color: #9ca3af;
-	font-size: 11px;
-	line-height: 1.3;
-}
-/* ==========================================================
-   SWITCH
-   ========================================================== */
-.admin-form-switch {
-	position: relative;
-	display: inline-flex;
-	align-items: center;
-	width: 42px;
-	height: 24px;
-	flex-shrink: 0;
-}
-.admin-form-switch input {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-}
-.admin-form-switch__track {
-	position: relative;
-	display: block;
-	width: 42px;
-	height: 24px;
-	border-radius: 999px;
-	background: #d1d5db;
-	cursor: pointer;
-	transition:
-		background-color .15s ease,
-		box-shadow .15s ease;
-}
-.admin-form-switch__track::after {
-	position: absolute;
-	top: 3px;
-	left: 3px;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: #fff;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, .18);
-	content: "";
-	transition: transform .15s ease;
-}
-.admin-form-switch input:checked + .admin-form-switch__track {
-	background: #111827;
-}
-.admin-form-switch input:checked + .admin-form-switch__track::after {
-	transform: translateX(18px);
-}
-.admin-form-switch input:focus + .admin-form-switch__track {
-	box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
-}
-/* ==========================================================
-   BODY
-   ========================================================== */
+
 .admin-form-card__body {
 	padding: 24px 20px;
 }
-/* ==========================================================
-   REQUIRED NOTE
-   ========================================================== */
-.admin-form-required-note {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	margin: 0 0 22px;
-	color: #6b7280;
-	font-size: 12px;
-}
-.admin-form-required-note .required {
-	color: #dc2626;
-	font-weight: 700;
-}
-/* ==========================================================
-   ERROR SUMMARY
-   ========================================================== */
+
 .admin-form-card .errorSummary {
 	margin: 0 0 22px;
 	padding: 14px 16px;
@@ -325,30 +330,26 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	font-size: 13px;
 	line-height: 1.5;
 }
+
 .admin-form-card .errorSummary ul {
 	margin: 7px 0 0 18px;
 	padding: 0;
 }
-.admin-form-card .errorSummary li {
-	margin: 3px 0;
-}
-.admin-form-card .errorSummary a {
-	color: #991b1b;
-}
-/* ==========================================================
-   FIELDS
-   ========================================================== */
+
 .admin-form-fields {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 20px 18px;
 }
+
 .admin-form-field {
 	min-width: 0;
 }
+
 .admin-form-field--full {
 	grid-column: 1 / -1;
 }
+
 .admin-form-field label {
 	display: block;
 	margin: 0 0 7px;
@@ -357,14 +358,13 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	font-weight: 600;
 	line-height: 1.4;
 }
+
 .admin-form-field label .required {
 	margin-left: 2px;
 	color: #dc2626;
 	font-weight: 700;
 }
-/* ==========================================================
-   INPUTS
-   ========================================================== */
+
 .admin-form-field input[type="text"],
 .admin-form-field input[type="password"],
 .admin-form-field input[type="email"],
@@ -395,6 +395,7 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 		box-shadow .15s ease,
 		background-color .15s ease;
 }
+
 .admin-form-field input[type="text"],
 .admin-form-field input[type="password"],
 .admin-form-field input[type="email"],
@@ -409,23 +410,19 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 .admin-form-field select {
 	height: 40px;
 }
+
 .admin-form-field textarea {
 	min-height: 120px;
 	resize: vertical;
 }
+
 .admin-form-field input:focus,
 .admin-form-field select:focus,
 .admin-form-field textarea:focus {
 	border-color: #9ca3af;
 	box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
 }
-.admin-form-field input:disabled,
-.admin-form-field select:disabled,
-.admin-form-field textarea:disabled {
-	background: #f9fafb;
-	color: #9ca3af;
-	cursor: not-allowed;
-}
+
 .admin-form-field .error {
 	display: block;
 	margin-top: 6px;
@@ -433,179 +430,218 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	font-size: 11px;
 	line-height: 1.4;
 }
-.admin-form-field input.error,
-.admin-form-field select.error,
-.admin-form-field textarea.error {
-	border-color: #fca5a5;
-	background: #fffafa;
-}
-.admin-form-field .hint {
+
+.dropdown-list-new {
 	display: block;
-	margin-top: 6px;
+	width: 100%;
+	min-height: 40px;
+	padding: 0 38px 0 12px;
+	box-sizing: border-box;
+	border: 1px solid #b8c0cc;
+	border-radius: 7px;
+	background-color: #fff;
+	color: #1f2937;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 40px;
+	cursor: pointer;
+	outline: none;
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, .05),
+		0 0 0 1px rgba(17, 24, 39, .02);
+	transition:
+		border-color .15s ease,
+		box-shadow .15s ease,
+		background-color .15s ease;
+}
+
+.dropdown-list-new:hover {
+	border-color: #9ca3af;
+	background-color: #fafafa;
+}
+
+.dropdown-list-new:focus {
+	border-color: #6b7280;
+	background-color: #fff;
+	box-shadow:
+		0 0 0 3px rgba(17, 24, 39, .08),
+		0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.dropdown-list-new option {
+	padding: 8px 10px;
+	background: #fff;
+	color: #1f2937;
+	font-size: 13px;
+}
+
+
+/* ==========================================================
+   IMAGE UPLOAD
+   ========================================================== */
+
+.admin-form-image-upload {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	gap: 18px;
+	align-items: start;
+}
+
+.admin-form-image-input {
+	min-width: 0;
+}
+
+.admin-form-file {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 10px;
+	border: 1px solid #d1d5db;
+	border-radius: 7px;
+	background: #fff;
+	color: #374151;
+	font-family: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.admin-form-image-input .hint {
+	display: block;
+	margin-top: 7px;
 	color: #9ca3af;
 	font-size: 11px;
 	line-height: 1.4;
 }
-/* ==========================================================
-   SWITCH FIELD
-   ========================================================== */
-.admin-form-field--switch {
+
+.admin-form-image-preview {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	min-height: 40px;
-	padding: 10px 12px;
+	justify-content: center;
+	min-height: 190px;
+	padding: 12px;
 	box-sizing: border-box;
-	border: 1px solid #e5e7eb;
-	border-radius: 7px;
+	border: 1px dashed #d1d5db;
+	border-radius: 8px;
 	background: #f9fafb;
+	overflow: hidden;
 }
-.admin-form-field--switch .admin-form-field__label {
-	margin: 0;
+
+.admin-form-image-preview img {
+	display: block;
+	max-width: 100%;
+	max-height: 240px;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: 6px;
 }
-.admin-form-field__switch {
-	display: inline-flex;
-	flex-shrink: 0;
-}
-.admin-form-field__switch .admin-form-switch {
-	width: 42px;
-	height: 24px;
-}
-.admin-form-field__switch .admin-form-switch__input {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	op: 0;
-	left: 0;
-	op: 0;
-	op: 0;
-	op: 0;
-	op: 0;
-	op: 0;
-	margin: 0;
-	op: 0;
-	left: 0;
-	op: 0;
-	opacity: 0;
-}
-.admin-form-field--switch .error {
-	grid-column: 1 / -1;
-}
-/* ==========================================================
-   FOOTER
-   ========================================================== */
-.admin-form-card__footer {
+
+.admin-form-image-preview__empty {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	padding: 16px 20px;
-	border-top: 1px solid #e5e7eb;
-	background: #f9fafb;
-}
-.admin-form-footer__note {
-	color: #9ca3af;
-	font-size: 11px;
-}
-.admin-form-footer__note .required {
-	color: #dc2626;
-	font-weight: 700;
-}
-.admin-form-actions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-/* ==========================================================
-   BUTTONS
-   ========================================================== */
-.admin-form-button {
-	display: inline-flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
-	height: 38px;
-	padding: 0 14px;
-	box-sizing: border-box;
-	border: 1px solid transparent;
-	border-radius: 7px;
-	cursor: pointer;
-	font-family: inherit;
-	font-size: 13px;
-	font-weight: 600;
-	line-height: 1;
-	text-decoration: none !important;
-	transition:
-		background-color .15s ease,
-		border-color .15s ease,
-		box-shadow .15s ease,
-		color .15s ease;
+	color: #9ca3af;
+	font-size: 11px;
+	text-align: center;
 }
-.admin-form-button:hover {
-	text-decoration: none !important;
+
+.admin-form-image-preview__empty i {
+	font-size: 28px;
+	color: #d1d5db;
 }
-.admin-form-button--primary {
-	background: #111827;
-	border-color: #111827;
-	color: #fff !important;
-}
-.admin-form-button--primary:hover {
-	background: #1f2937;
-	border-color: #1f2937;
-	color: #fff !important;
-}
-.admin-form-button--secondary {
-	background: #fff;
-	border-color: #d1d5db;
-	color: #374151 !important;
-}
-.admin-form-button--secondary:hover {
-	background: #f3f4f6;
-	border-color: #9ca3af;
-	color: #111827 !important;
-}
+
 
 /* ==========================================================
-   PRODUCT DEFAULT LANGUAGE
+   TRANSLATIONS
    ========================================================== */
 
-.admin-product-language {
+.admin-product-translations {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.admin-product-translation {
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.admin-product-translation__header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 14px;
-	min-height: 42px;
-	padding: 10px 12px;
-	box-sizing: border-box;
-	border: 1px solid #d1d5db;
-	border-radius: 7px;
+	gap: 16px;
+	padding: 13px 14px;
+	border-bottom: 1px solid #e5e7eb;
 	background: #f9fafb;
 }
 
-.admin-product-language__name {
-	color: #111827;
-	font-size: 13px;
+.admin-product-translation__language {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #374151;
+	font-size: 12px;
 	font-weight: 600;
 }
 
-.admin-product-language__badge {
-	display: inline-flex;
-	align-items: center;
-	height: 22px;
-	padding: 0 8px;
+.admin-product-translation__badge {
+	padding: 4px 7px;
 	border-radius: 999px;
 	background: #eef2ff;
 	color: #4338ca;
 	font-size: 10px;
 	font-weight: 700;
-	letter-spacing: .04em;
+	line-height: 1;
 	text-transform: uppercase;
+}
+
+.admin-product-translation__body {
+	padding: 18px 14px;
+}
+
+.admin-product-add-translation {
+	margin-top: 18px;
+	padding-top: 18px;
+	border-top: 1px solid #e5e7eb;
+}
+
+.admin-product-add-translation__header {
+	margin-bottom: 14px;
+}
+
+.admin-product-add-translation__title {
+	margin: 0;
+	color: #111827;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.admin-product-add-translation__hint {
+	margin: 3px 0 0;
+	color: #9ca3af;
+	font-size: 11px;
+}
+
+.admin-product-add-translation__fields {
+	display: grid;
+	grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+	gap: 12px;
+	align-items: end;
+}
+
+#new-product-translation-fields {
+	display: none;
 }
 
 
 /* ==========================================================
-   CATEGORY / SUBCATEGORY SELECTOR
+   TAXONOMY
    ========================================================== */
 
 .admin-product-taxonomy {
@@ -629,9 +665,9 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	position: absolute;
 	top: 50%;
 	left: 12px;
+	transform: translateY(-50%);
 	color: #9ca3af;
 	font-size: 12px;
-	transform: translateY(-50%);
 	pointer-events: none;
 }
 
@@ -641,11 +677,11 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	height: 40px;
 	padding: 0 12px 0 34px;
 	box-sizing: border-box;
-	border: 1px solid #cbd5e1;
+	border: 1px solid #d1d5db;
 	border-radius: 7px;
 	outline: none;
 	background: #fff;
-	color: #1f2937;
+	color: #374151;
 	font-family: inherit;
 	font-size: 13px;
 }
@@ -656,9 +692,9 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 }
 
 .admin-product-taxonomy__hint {
-	margin: 7px 0 0;
+	margin: 8px 0 0;
 	color: #9ca3af;
-	font-size: 11px;
+	font-size: 10px;
 	line-height: 1.4;
 }
 
@@ -676,26 +712,8 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	border-bottom: 1px solid #f0f1f3;
 }
 
-.admin-product-taxonomy__result:last-child {
-	border-bottom: 0;
-}
-
-.admin-product-taxonomy__result:hover {
-	background: #fafafa;
-}
-
 .admin-product-taxonomy__result-info {
 	min-width: 0;
-}
-
-.admin-product-taxonomy__result-category {
-	display: block;
-	margin-bottom: 2px;
-	color: #6b7280;
-	font-size: 10px;
-	font-weight: 600;
-	letter-spacing: .04em;
-	text-transform: uppercase;
 }
 
 .admin-product-taxonomy__result-name {
@@ -705,11 +723,12 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	font-weight: 600;
 }
 
+.admin-product-taxonomy__result-category,
 .admin-product-taxonomy__result-type {
 	display: block;
-	margin-top: 2px;
 	color: #9ca3af;
 	font-size: 10px;
+	line-height: 1.4;
 }
 
 .admin-product-taxonomy__add {
@@ -717,26 +736,24 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	height: 30px;
-	padding: 0 10px;
 	flex-shrink: 0;
+	padding: 7px 10px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	background: #fff;
 	color: #374151;
-	cursor: pointer;
 	font-family: inherit;
 	font-size: 11px;
-	font-weight: 600;
+	cursor: pointer;
 }
 
 .admin-product-taxonomy__add:hover {
-	border-color: #9ca3af;
 	background: #f3f4f6;
-	color: #111827;
+	border-color: #9ca3af;
 }
 
-.admin-product-taxonomy__add.is-added {
+.admin-product-taxonomy__add.is-added,
+.admin-product-taxonomy__add:disabled {
 	background: #f3f4f6;
 	color: #9ca3af;
 	cursor: default;
@@ -744,9 +761,9 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 
 .admin-product-taxonomy__empty {
 	padding: 30px 20px;
-	text-align: center;
 	color: #9ca3af;
 	font-size: 12px;
+	text-align: center;
 }
 
 .admin-product-taxonomy__selected {
@@ -756,60 +773,24 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 }
 
 .admin-product-taxonomy__selected-title {
-	margin: 0 0 10px;
+	margin: 0 0 9px;
 	color: #374151;
 	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: .04em;
-	text-transform: uppercase;
-}
-
-.admin-product-taxonomy__selected-empty {
-	padding: 12px;
-	border: 1px dashed #d1d5db;
-	border-radius: 6px;
-	color: #9ca3af;
-	font-size: 11px;
-	text-align: center;
-}
-
-.admin-product-taxonomy__selected-group {
-	margin-bottom: 10px;
-}
-
-.admin-product-taxonomy__selected-group:last-child {
-	margin-bottom: 0;
-}
-
-.admin-product-taxonomy__selected-category {
-	margin-bottom: 5px;
-	color: #374151;
-	font-size: 12px;
-	font-weight: 700;
-}
-
-.admin-product-taxonomy__selected-items {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
+	font-weight: 600;
 }
 
 .admin-product-taxonomy__tag {
 	display: inline-flex;
 	align-items: center;
 	gap: 7px;
-	min-height: 28px;
-	padding: 0 8px 0 10px;
+	margin: 3px;
+	padding: 6px 9px;
 	border: 1px solid #dbe1e8;
 	border-radius: 999px;
 	background: #f8fafc;
 	color: #374151;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-.admin-product-taxonomy__tag--category {
-	background: #f3f4f6;
+	font-size: 10px;
+	line-height: 1;
 }
 
 .admin-product-taxonomy__remove {
@@ -821,132 +802,202 @@ Yii::app()->clientScript->registerCss('admin-form-products', '
 	padding: 0;
 	border: 0;
 	border-radius: 50%;
-	background: transparent;
-	color: #9ca3af;
+	background: #e5e7eb;
+	color: #6b7280;
+	font-size: 11px;
+	line-height: 1;
 	cursor: pointer;
-	font-size: 10px;
 }
 
 .admin-product-taxonomy__remove:hover {
-	background: #e5e7eb;
+	background: #d1d5db;
 	color: #dc2626;
 }
 
+
 /* ==========================================================
-   RESPONSIVE
+   FOOTER
    ========================================================== */
+
+.admin-form-card__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 20px;
+	border-top: 1px solid #e5e7eb;
+	background: #f9fafb;
+}
+
+.admin-form-footer__note {
+	color: #9ca3af;
+	font-size: 11px;
+}
+
+.admin-form-footer__note .required {
+	color: #dc2626;
+	font-weight: 700;
+}
+
+.admin-form-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.admin-form-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	height: 38px;
+	padding: 0 14px;
+	box-sizing: border-box;
+	border: 1px solid transparent;
+	border-radius: 7px;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none !important;
+}
+
+.admin-form-button--primary {
+	background: #111827;
+	border-color: #111827;
+	color: #fff !important;
+}
+
+.admin-form-button--primary:hover {
+	background: #1f2937;
+	border-color: #1f2937;
+	color: #fff !important;
+}
+
+.admin-form-button--secondary {
+	background: #fff;
+	border-color: #d1d5db;
+	color: #374151 !important;
+}
+
+.admin-form-button--secondary:hover {
+	background: #f3f4f6;
+	border-color: #9ca3af;
+	color: #111827 !important;
+}
+
 @media (max-width: 768px) {
+
 	.admin-form-card__header {
 		align-items: flex-start;
 		flex-direction: column;
 	}
+
 	.admin-form-status {
 		width: 100%;
 		justify-content: space-between;
 		padding-top: 12px;
 		border-top: 1px solid #f0f1f3;
 	}
-	.admin-form-fields {
+
+	.admin-form-fields,
+	.admin-product-add-translation__fields {
 		grid-template-columns: 1fr;
 	}
+
 	.admin-form-field--full {
 		grid-column: auto;
 	}
+
 	.admin-form-card__body {
 		padding: 20px 16px;
 	}
+
 	.admin-form-card__footer {
 		align-items: stretch;
 		flex-direction: column;
 	}
+
 	.admin-form-actions {
 		width: 100%;
 	}
+
 	.admin-form-button {
 		flex: 1;
 	}
+
+	.admin-form-image-upload {
+		grid-template-columns: 1fr;
+	}
+
+	.admin-form-image-preview {
+		order: -1;
+	}
 }
+'
+);
 
-.dropdown-list-new {
-	display: block;
-	width: 100%;
-	min-height: 40px;
-	padding: 0 38px 0 12px;
-	box-sizing: border-box;
-
-	border: 1px solid #b8c0cc;
-	border-radius: 7px;
-
-	background-color: #ffffff;
-	color: #1f2937;
-
-	font-family: inherit;
-	font-size: 13px;
-	font-weight: 500;
-	line-height: 40px;
-
-	cursor: pointer;
-	outline: none;
-
-	box-shadow:
-		0 1px 2px rgba(0, 0, 0, .05),
-		0 0 0 1px rgba(17, 24, 39, .02);
-
-	transition:
-		border-color .15s ease,
-		box-shadow .15s ease,
-		background-color .15s ease;
-}
-
-.dropdown-list-new:hover {
-	border-color: #9ca3af;
-	background-color: #fafafa;
-}
-
-.dropdown-list-new:focus {
-	border-color: #6b7280;
-	background-color: #ffffff;
-
-	box-shadow:
-		0 0 0 3px rgba(17, 24, 39, .08),
-		0 1px 2px rgba(0, 0, 0, .05);
-}
-
-.dropdown-list-new option {
-	padding: 8px 10px;
-	background: #ffffff;
-	color: #1f2937;
-	font-size: 13px;
-}
-');
 
 /*
- * Product category/subcategory selector.
+ * ----------------------------------------------------------
+ * JAVASCRIPT
+ * ----------------------------------------------------------
  */
+
 Yii::app()->clientScript->registerScript(
-    'admin-product-create-taxonomy',
-    "
-var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
+	'admin-product-create-form',
+	"
+var productCreateTaxonomy = " . CJSON::encode(
+		$taxonomyData
+	) . ";
 
 (function($) {
 
 	var selectedCategories = {};
 	var selectedSubcategories = {};
 
-	var searchInput = $('#product-taxonomy-search');
-	var results = $('#product-taxonomy-results');
-	var selected = $('#product-taxonomy-selected');
-	var hidden = $('#product-category-selection');
+	var searchInput =
+		$('#product-taxonomy-search');
+
+	var results =
+		$('#product-taxonomy-results');
+
+	var selected =
+		$('#product-taxonomy-selected');
+
+	var hidden =
+		$('#product-category-selection');
+
 
 	function escapeHtml(value) {
-		return $('<div>').text(value == null ? '' : String(value)).html();
+
+		return $('<div>')
+			.text(
+				value == null
+					? ''
+					: String(value)
+			)
+			.html();
 	}
 
+
 	function getCategory(id) {
+
 		id = String(id);
 
-		for (var i = 0; i < productCreateTaxonomy.categories.length; i++) {
-			if (String(productCreateTaxonomy.categories[i].id) === id) {
+		for (
+			var i = 0;
+			i < productCreateTaxonomy.categories.length;
+			i++
+		) {
+
+			if (
+				String(
+					productCreateTaxonomy.categories[i].id
+				) === id
+			) {
+
 				return productCreateTaxonomy.categories[i];
 			}
 		}
@@ -954,11 +1005,23 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 		return null;
 	}
 
+
 	function getSubcategory(id) {
+
 		id = String(id);
 
-		for (var i = 0; i < productCreateTaxonomy.subcategories.length; i++) {
-			if (String(productCreateTaxonomy.subcategories[i].id) === id) {
+		for (
+			var i = 0;
+			i < productCreateTaxonomy.subcategories.length;
+			i++
+		) {
+
+			if (
+				String(
+					productCreateTaxonomy.subcategories[i].id
+				) === id
+			) {
+
 				return productCreateTaxonomy.subcategories[i];
 			}
 		}
@@ -966,7 +1029,9 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 		return null;
 	}
 
+
 	function addCategory(id) {
+
 		id = String(id);
 
 		if (!getCategory(id)) {
@@ -974,37 +1039,46 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 		}
 
 		selectedCategories[id] = true;
+
 		render();
 	}
 
+
 	function removeCategory(id) {
+
 		id = String(id);
 
 		delete selectedCategories[id];
 
-		/*
-		 * Removing a category also removes its selected subcategories.
-		 * This prevents a subcategory from remaining without its parent.
-		 */
-		$.each(selectedSubcategories, function(subcategoryId) {
+		$.each(
+			selectedSubcategories,
+			function(subcategoryId) {
 
-			var subcategory = getSubcategory(subcategoryId);
+				var subcategory =
+					getSubcategory(subcategoryId);
 
-			if (
-				subcategory &&
-				String(subcategory.category_id) === id
-			) {
-				delete selectedSubcategories[subcategoryId];
+				if (
+					subcategory &&
+					String(subcategory.category_id) === id
+				) {
+
+					delete selectedSubcategories[
+						subcategoryId
+					];
+				}
 			}
-		});
+		);
 
 		render();
 	}
 
+
 	function addSubcategory(id) {
+
 		id = String(id);
 
-		var subcategory = getSubcategory(id);
+		var subcategory =
+			getSubcategory(id);
 
 		if (!subcategory) {
 			return;
@@ -1012,287 +1086,353 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 
 		selectedSubcategories[id] = true;
 
-		/*
-		 * Selecting a subcategory automatically selects its parent.
-		 */
-		selectedCategories[String(subcategory.category_id)] = true;
+		selectedCategories[
+			String(subcategory.category_id)
+		] = true;
 
 		render();
 	}
 
+
 	function removeSubcategory(id) {
+
 		id = String(id);
 
 		delete selectedSubcategories[id];
 
-		/*
-		 * If no other selected subcategory belongs to the parent,
-		 * remove the parent category as well.
-		 */
-		var removed = getSubcategory(id);
+		var removed =
+			getSubcategory(id);
 
 		if (removed) {
 
-			var parentId = String(removed.category_id);
+			var parentId =
+				String(removed.category_id);
+
 			var hasSibling = false;
 
-			$.each(selectedSubcategories, function(otherId) {
+			$.each(
+				selectedSubcategories,
+				function(otherId) {
 
-				var other = getSubcategory(otherId);
+					var other =
+						getSubcategory(otherId);
 
-				if (
-					other &&
-					String(other.category_id) === parentId
-				) {
-					hasSibling = true;
-					return false;
+					if (
+						other &&
+						String(other.category_id) === parentId
+					) {
+
+						hasSibling = true;
+
+						return false;
+					}
 				}
-			});
+			);
 
 			if (!hasSibling) {
-				delete selectedCategories[parentId];
+
+				delete selectedCategories[
+					parentId
+				];
 			}
 		}
 
 		render();
 	}
+
 
 	function syncHiddenFields() {
 
 		hidden.empty();
 
-		$.each(selectedCategories, function(id) {
+		$.each(
+			selectedCategories,
+			function(id) {
 
-			$('<input>', {
-				type: 'hidden',
-				name: 'ProductCategorySelection[category_ids][]',
-				value: id
-			}).appendTo(hidden);
-		});
+				$('<input>', {
+					type: 'hidden',
+					name:
+						'ProductCategorySelection[category_ids][]',
+					value: id
+				}).appendTo(hidden);
+			}
+		);
 
-		$.each(selectedSubcategories, function(id) {
+		$.each(
+			selectedSubcategories,
+			function(id) {
 
-			$('<input>', {
-				type: 'hidden',
-				name: 'ProductCategorySelection[subcategory_ids][]',
-				value: id
-			}).appendTo(hidden);
-		});
+				$('<input>', {
+					type: 'hidden',
+					name:
+						'ProductCategorySelection[subcategory_ids][]',
+					value: id
+				}).appendTo(hidden);
+			}
+		);
 	}
+
 
 	function renderSelected() {
 
-		var groups = {};
+		var html = '';
 
-		$.each(selectedCategories, function(categoryId) {
 
-			var category = getCategory(categoryId);
+		$.each(
+			selectedCategories,
+			function(id) {
 
-			if (!category) {
-				return;
-			}
-
-			groups[categoryId] = {
-				category: category,
-				subcategories: []
-			};
-		});
-
-		$.each(selectedSubcategories, function(subcategoryId) {
-
-			var subcategory = getSubcategory(subcategoryId);
-
-			if (!subcategory) {
-				return;
-			}
-
-			var categoryId = String(subcategory.category_id);
-
-			if (!groups[categoryId]) {
-
-				var category = getCategory(categoryId);
+				var category =
+					getCategory(id);
 
 				if (!category) {
 					return;
 				}
 
-				groups[categoryId] = {
-					category: category,
-					subcategories: []
-				};
+				html +=
+					'<span class=\"admin-product-taxonomy__tag\">' +
+						escapeHtml(category.name) +
+						'<button type=\"button\" ' +
+						'class=\"admin-product-taxonomy__remove\" ' +
+						'data-type=\"category\" ' +
+						'data-id=\"' +
+						escapeHtml(id) +
+						'\">' +
+						'&times;' +
+						'</button>' +
+					'</span>';
 			}
+		);
 
-			groups[categoryId].subcategories.push(subcategory);
-		});
 
-		var html = '';
+		$.each(
+			selectedSubcategories,
+			function(id) {
 
-		if ($.isEmptyObject(groups)) {
+				var subcategory =
+					getSubcategory(id);
 
-			selected.html(
-				'<div class=\"admin-product-taxonomy__selected-empty\">' +
-				'No hay categorías ni subcategorías seleccionadas.' +
-				'</div>'
-			);
-
-			return;
-		}
-
-		$.each(groups, function(categoryId, group) {
-
-			html +=
-				'<div class=\"admin-product-taxonomy__selected-group\">';
-
-			html +=
-				'<div class=\"admin-product-taxonomy__selected-category\">' +
-				escapeHtml(group.category.name) +
-				'</div>';
-
-			html +=
-				'<div class=\"admin-product-taxonomy__selected-items\">';
-
-			html +=
-				'<span class=\"admin-product-taxonomy__tag admin-product-taxonomy__tag--category\">' +
-				escapeHtml(group.category.name) +
-				'<button type=\"button\" class=\"admin-product-taxonomy__remove\" ' +
-				'data-type=\"category\" data-id=\"' +
-				escapeHtml(categoryId) +
-				'\" title=\"Quitar categoría\" aria-label=\"Quitar categoría\">' +
-				'<i class=\"fas fa-times\"></i>' +
-				'</button>' +
-				'</span>';
-
-			$.each(group.subcategories, function(index, subcategory) {
+				if (!subcategory) {
+					return;
+				}
 
 				html +=
 					'<span class=\"admin-product-taxonomy__tag\">' +
-					escapeHtml(subcategory.name) +
-					'<button type=\"button\" class=\"admin-product-taxonomy__remove\" ' +
-					'data-type=\"subcategory\" data-id=\"' +
-					escapeHtml(subcategory.id) +
-					'\" title=\"Quitar subcategoría\" aria-label=\"Quitar subcategoría\">' +
-					'<i class=\"fas fa-times\"></i>' +
-					'</button>' +
+						escapeHtml(subcategory.name) +
+						'<button type=\"button\" ' +
+						'class=\"admin-product-taxonomy__remove\" ' +
+						'data-type=\"subcategory\" ' +
+						'data-id=\"' +
+						escapeHtml(id) +
+						'\">' +
+						'&times;' +
+						'</button>' +
 					'</span>';
-			});
+			}
+		);
 
-			html += '</div></div>';
-		});
+
+		if (html === '') {
+
+			html =
+				'<span style=\"color:#9ca3af;font-size:11px;\">' +
+					'No hay categorías seleccionadas.' +
+				'</span>';
+		}
+
 
 		selected.html(html);
 	}
 
+
 	function renderResults() {
 
-		var term = $.trim(searchInput.val()).toLowerCase();
+		var term =
+			$.trim(
+				searchInput.val()
+			).toLowerCase();
+
 		var html = '';
 		var count = 0;
 
-		$.each(productCreateTaxonomy.categories, function(index, category) {
 
-			if (
-				term !== '' &&
-				category.name.toLowerCase().indexOf(term) === -1
-			) {
-				return;
+		$.each(
+			productCreateTaxonomy.categories,
+			function(index, category) {
+
+				if (
+					term !== '' &&
+					category.name
+						.toLowerCase()
+						.indexOf(term) === -1
+				) {
+
+					return;
+				}
+
+
+				count++;
+
+
+				var id =
+					String(category.id);
+
+				var isAdded =
+					!!selectedCategories[id];
+
+
+				html +=
+					'<div class=\"admin-product-taxonomy__result\">' +
+
+						'<div class=\"admin-product-taxonomy__result-info\">' +
+
+							'<span class=\"admin-product-taxonomy__result-category\">' +
+								'Categoría' +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-name\">' +
+								escapeHtml(category.name) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-type\">' +
+								'Categoría principal' +
+							'</span>' +
+
+						'</div>' +
+
+						'<button type=\"button\" ' +
+							'class=\"admin-product-taxonomy__add' +
+							(isAdded ? ' is-added' : '') +
+							'\" ' +
+							'data-type=\"category\" ' +
+							'data-id=\"' +
+							escapeHtml(id) +
+							'\"' +
+							(isAdded ? ' disabled' : '') +
+							'>' +
+
+							(
+								isAdded
+									? '<i class=\"fas fa-check\"></i> Agregado'
+									: '<i class=\"fas fa-plus\"></i> Agregar'
+							) +
+
+						'</button>' +
+
+					'</div>';
 			}
+		);
 
-			count++;
 
-			var id = String(category.id);
-			var isAdded = !!selectedCategories[id];
+		$.each(
+			productCreateTaxonomy.subcategories,
+			function(index, subcategory) {
 
-			html +=
-				'<div class=\"admin-product-taxonomy__result\">' +
-				'<div class=\"admin-product-taxonomy__result-info\">' +
-				'<span class=\"admin-product-taxonomy__result-category\">Categoría</span>' +
-				'<span class=\"admin-product-taxonomy__result-name\">' +
-				escapeHtml(category.name) +
-				'</span>' +
-				'<span class=\"admin-product-taxonomy__result-type\">Categoría principal</span>' +
-				'</div>' +
-				'<button type=\"button\" class=\"admin-product-taxonomy__add' +
-				(isAdded ? ' is-added' : '') +
-				'\" data-type=\"category\" data-id=\"' +
-				escapeHtml(id) + '\"' +
-				(isAdded ? ' disabled' : '') +
-				'>' +
-				(
-					isAdded
-						? '<i class=\"fas fa-check\"></i> Agregado'
-						: '<i class=\"fas fa-plus\"></i> Agregar'
-				) +
-				'</button>' +
-				'</div>';
-		});
+				var searchable =
+					(
+						subcategory.name +
+						' ' +
+						subcategory.category_name
+					).toLowerCase();
 
-		$.each(productCreateTaxonomy.subcategories, function(index, subcategory) {
 
-			var searchable = (
-				subcategory.name + ' ' +
-				subcategory.category_name
-			).toLowerCase();
+				if (
+					term !== '' &&
+					searchable.indexOf(term) === -1
+				) {
 
-			if (
-				term !== '' &&
-				searchable.indexOf(term) === -1
-			) {
-				return;
+					return;
+				}
+
+
+				count++;
+
+
+				var id =
+					String(subcategory.id);
+
+				var isAdded =
+					!!selectedSubcategories[id];
+
+
+				html +=
+					'<div class=\"admin-product-taxonomy__result\">' +
+
+						'<div class=\"admin-product-taxonomy__result-info\">' +
+
+							'<span class=\"admin-product-taxonomy__result-category\">' +
+								escapeHtml(
+									subcategory.category_name
+								) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-name\">' +
+								escapeHtml(
+									subcategory.name
+								) +
+							'</span>' +
+
+							'<span class=\"admin-product-taxonomy__result-type\">' +
+								'Subcategoría' +
+							'</span>' +
+
+						'</div>' +
+
+						'<button type=\"button\" ' +
+							'class=\"admin-product-taxonomy__add' +
+							(isAdded ? ' is-added' : '') +
+							'\" ' +
+							'data-type=\"subcategory\" ' +
+							'data-id=\"' +
+							escapeHtml(id) +
+							'\"' +
+							(isAdded ? ' disabled' : '') +
+							'>' +
+
+							(
+								isAdded
+									? '<i class=\"fas fa-check\"></i> Agregado'
+									: '<i class=\"fas fa-plus\"></i> Agregar'
+							) +
+
+						'</button>' +
+
+					'</div>';
 			}
+		);
 
-			count++;
-
-			var id = String(subcategory.id);
-			var isAdded = !!selectedSubcategories[id];
-
-			html +=
-				'<div class=\"admin-product-taxonomy__result\">' +
-				'<div class=\"admin-product-taxonomy__result-info\">' +
-				'<span class=\"admin-product-taxonomy__result-category\">' +
-				escapeHtml(subcategory.category_name) +
-				'</span>' +
-				'<span class=\"admin-product-taxonomy__result-name\">' +
-				escapeHtml(subcategory.name) +
-				'</span>' +
-				'<span class=\"admin-product-taxonomy__result-type\">Subcategoría</span>' +
-				'</div>' +
-				'<button type=\"button\" class=\"admin-product-taxonomy__add' +
-				(isAdded ? ' is-added' : '') +
-				'\" data-type=\"subcategory\" data-id=\"' +
-				escapeHtml(id) + '\"' +
-				(isAdded ? ' disabled' : '') +
-				'>' +
-				(
-					isAdded
-						? '<i class=\"fas fa-check\"></i> Agregado'
-						: '<i class=\"fas fa-plus\"></i> Agregar'
-				) +
-				'</button>' +
-				'</div>';
-		});
 
 		if (count === 0) {
 
 			html =
 				'<div class=\"admin-product-taxonomy__empty\">' +
-				'No se encontraron categorías ni subcategorías.' +
+					'No se encontraron categorías ni subcategorías.' +
 				'</div>';
 		}
+
 
 		results.html(html);
 	}
 
+
 	function render() {
+
 		syncHiddenFields();
 		renderSelected();
 		renderResults();
 	}
+
+
+	/*
+	 * Taxonomy events.
+	 */
 
 	$(document).on(
 		'input',
 		'#product-taxonomy-search',
 		renderResults
 	);
+
 
 	$(document).on(
 		'click',
@@ -1301,20 +1441,29 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 
 			e.preventDefault();
 
-			var type = $(this).attr('data-type');
-			var id = $(this).attr('data-id');
+			var type =
+				$(this).attr('data-type');
+
+			var id =
+				$(this).attr('data-id');
+
 
 			if (type === 'category') {
+
 				addCategory(id);
 			}
 
+
 			if (type === 'subcategory') {
+
 				addSubcategory(id);
 			}
+
 
 			return false;
 		}
 	);
+
 
 	$(document).on(
 		'click',
@@ -1323,458 +1472,866 @@ var productCreateTaxonomy = " . CJSON::encode($taxonomyData) . ";
 
 			e.preventDefault();
 
-			var type = $(this).attr('data-type');
-			var id = $(this).attr('data-id');
+			var type =
+				$(this).attr('data-type');
+
+			var id =
+				$(this).attr('data-id');
+
 
 			if (type === 'category') {
+
 				removeCategory(id);
 			}
 
+
 			if (type === 'subcategory') {
+
 				removeSubcategory(id);
 			}
+
 
 			return false;
 		}
 	);
+
+
+	/*
+	 * ----------------------------------------------------------
+	 * IMAGE PREVIEW
+	 * ----------------------------------------------------------
+	 */
+
+	function previewImage(
+		input,
+		previewSelector
+	) {
+
+		if (
+			!input.files ||
+			!input.files[0]
+		) {
+
+			return;
+		}
+
+
+		var file =
+			input.files[0];
+
+
+		if (
+			[
+				'image/jpeg',
+				'image/png',
+				'image/webp'
+			].indexOf(file.type) === -1
+		) {
+
+			input.value = '';
+
+			alert(
+				'Solo se permiten imágenes JPG, PNG o WebP.'
+			);
+
+			return;
+		}
+
+
+		var reader =
+			new FileReader();
+
+
+		reader.onload =
+			function(e) {
+
+				$(previewSelector).html(
+					'<img src=\"' +
+						e.target.result +
+						'\" alt=\"Vista previa\">'
+				);
+			};
+
+
+		reader.readAsDataURL(
+			file
+		);
+	}
+
+
+	$('#product-main-image-input').on(
+		'change',
+		function() {
+
+			previewImage(
+				this,
+				'#product-main-image-preview'
+			);
+		}
+	);
+
+
+	$('#product-infographic-image-input').on(
+		'change',
+		function() {
+
+			previewImage(
+				this,
+				'#product-infographic-image-preview'
+			);
+		}
+	);
+
 
 	render();
 
 })(jQuery);
 "
 );
-
 ?>
+
+
 <div class="admin-form-page">
-    <?php $form = $this->beginWidget('CActiveForm', array(
-        'id' => 'products-create-form',
-        'enableAjaxValidation' => false,
-        'htmlOptions' => array(
-            'class' => 'admin-form',
-        ),
-    )); ?>
-    <div class="admin-form-card">
-        <div class="admin-form-card__header">
-            <div class="admin-form-card__heading">
-                <div class="admin-form-card__icon">
-                    <?php
-                    echo $model->isNewRecord
-                        ? '<i class="fas fa-plus"></i>'
-                        : '<i class="fas fa-pen"></i>';
-                    ?>
-                </div>
-                <div>
-                    <h2 class="admin-form-card__title">
-                        Información
-                    </h2>
-                    <p class="admin-form-card__description">
-                        Completa los campos correspondientes.
-                    </p>
-                </div>
-            </div>
-            <div class="admin-form-status">
-                <div class="admin-form-status__item">
-                    <div class="admin-form-status__text">
-                        <span class="admin-form-status__label">
-                            <?= $form->labelEx($model, 'status'); ?> </span>
-                    </div>
-                    <?= $form->dropDownList(
-                        $model,
-                        'status',
-                        array(
-                            'publicado' => 'Publicado',
-                            'borrador' => 'Borrador',
-                            'deshabilitado' => 'Deshabilitado',
-                            'eliminado' => 'Eliminado',
-                        ),
-                        array(
-                            'class' => 'dropdown-list-new',
-                        )
-                    ); ?>
 
-                </div>
-            </div>
+	<?php
+	$form = $this->beginWidget(
+		'CActiveForm',
+		array(
+			'id' => 'products-create-form',
+			'enableAjaxValidation' => false,
+			'htmlOptions' => array(
+				'class' => 'admin-form',
+				'enctype' => 'multipart/form-data',
+			),
+		)
+	);
+	?>
 
 
-        </div>
-        <div class="admin-form-card__body">
-
-            <?= $form->errorSummary(
-                $model,
-                '<strong>Por favor verifica la información:</strong>'
-            ); ?>
-
-            <div class="admin-form-fields">
-
-                <div class="admin-form-field">
-                    <?= $form->labelEx($model, 'brand_id'); ?>
-
-                    <?= $form->dropDownList(
-                        $model,
-                        'brand_id',
-                        CHtml::listData(
-                            Brands::model()->findAll(array(
-                                'order' => 'name ASC',
-                            )),
-                            'id',
-                            'name'
-                        ),
-                        array(
-                            'class' => 'form-control',
-                            'prompt' => 'Seleccione una marca',
-                        )
-                    ); ?>
-
-                    <?= $form->error($model, 'brand_id'); ?>
-                </div>
-
-                <div class="admin-form-field">
-                    <?= $form->labelEx($model, 'sort_order'); ?>
-
-                    <?= $form->textField(
-                        $model,
-                        'sort_order',
-                        array(
-                            'class' => 'form-control',
-                        )
-                    ); ?>
-
-                    <?= $form->error($model, 'sort_order'); ?>
-                </div>
-
-                <div class="admin-form-field admin-form-field--full">
-                    <?= $form->labelEx($model, 'main_image'); ?>
-
-                    <?= $form->textField(
-                        $model,
-                        'main_image',
-                        array(
-                            'class' => 'form-control',
-                            'maxlength' => 255,
-                        )
-                    ); ?>
-
-                    <?= $form->error($model, 'main_image'); ?>
-                </div>
-
-                <div class="admin-form-field admin-form-field--full">
-                    <?= $form->labelEx($model, 'infographic_image'); ?>
-
-                    <?= $form->textField(
-                        $model,
-                        'infographic_image',
-                        array(
-                            'class' => 'form-control',
-                            'maxlength' => 255,
-                        )
-                    ); ?>
-
-                    <?= $form->error($model, 'infographic_image'); ?>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ======================================================
-	     DEFAULT TRANSLATION
+	<!-- ======================================================
+	     PRODUCT INFORMATION
 	     ====================================================== -->
 
-        <div class="admin-form-card">
+	<div class="admin-form-card">
 
-            <div class="admin-form-card__header">
+		<div class="admin-form-card__header">
 
-                <div class="admin-form-card__heading">
+			<div class="admin-form-card__heading">
 
-                    <div class="admin-form-card__icon">
-                        <i class="fas fa-language"></i>
-                    </div>
+				<div class="admin-form-card__icon">
+					<i class="fas fa-box"></i>
+				</div>
 
-                    <div>
-                        <h2 class="admin-form-card__title">
-                            Traducción inicial
-                        </h2>
+				<div>
 
-                        <p class="admin-form-card__description">
-                            La información del producto se guardará en el idioma predeterminado.
-                        </p>
-                    </div>
+					<h2 class="admin-form-card__title">
+						Información del producto
+					</h2>
 
-                </div>
+					<p class="admin-form-card__description">
+						Completa la información principal del nuevo producto.
+					</p>
 
-            </div>
+				</div>
 
-            <div class="admin-form-card__body">
-
-                <div class="admin-form-fields" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
-
-                    <div class="admin-form-field admin-form-field--full">
-
-                        <label class="admin-form-field__label">
-                            Idioma
-                        </label>
-
-                        <div class="admin-product-language">
-
-                            <span class="admin-product-language__name">
-                                <?php
-                                echo $defaultLanguage !== null
-                                    ? CHtml::encode($defaultLanguage->name)
-                                    : 'No configurado';
-                                ?>
-                            </span>
-
-                            <span class="admin-product-language__badge">
-                                Predeterminado
-                            </span>
-
-                        </div>
-
-                        <?php
-                        if ($defaultLanguage !== null) {
-                            echo CHtml::hiddenField(
-                                'ProductTranslations[language_id]',
-                                (int) $defaultLanguage->id
-                            );
-                        }
-                        ?>
-
-                    </div>
-
-                    <div class="admin-form-field admin-form-field--full">
-
-                        <?= CHtml::activeLabelEx($translation, 'name'); ?>
-
-                        <?= CHtml::activeTextField(
-                            $translation,
-                            'name',
-                            array(
-                                'class' => 'form-control',
-                                'maxlength' => 255,
-                            )
-                        ); ?>
-
-                        <?= CHtml::error($translation, 'name'); ?>
-
-                    </div>
-
-                    <div class="admin-form-field admin-form-field--full">
-
-                        <?= CHtml::activeLabelEx(
-                            $translation,
-                            'short_description'
-                        ); ?>
-
-                        <?= CHtml::activeTextArea(
-                            $translation,
-                            'short_description',
-                            array(
-                                'class' => 'form-control',
-                            )
-                        ); ?>
-
-                        <?= CHtml::error(
-                            $translation,
-                            'short_description'
-                        ); ?>
-
-                    </div>
+			</div>
 
 
-                    <div class="admin-form-field admin-form-field--full">
+			<div class="admin-form-status">
 
-                        <?= CHtml::activeLabelEx(
-                            $translation,
-                            'description'
-                        ); ?>
+				<div class="admin-form-status__item">
 
-                        <?= CHtml::activeTextArea(
-                            $translation,
-                            'description',
-                            array(
-                                'class' => 'form-control',
-                            )
-                        ); ?>
+					<div class="admin-form-status__text">
 
-                        <?= CHtml::error(
-                            $translation,
-                            'description'
-                        ); ?>
+						<span class="admin-form-status__label">
+							<?= $form->labelEx(
+								$model,
+								'status'
+							); ?>
+						</span>
 
-                    </div>
+					</div>
 
 
+					<?= $form->dropDownList(
+						$model,
+						'status',
+						array(
+							'publicado' =>
+							'Publicado',
 
-                    <div class="admin-form-field ">
+							'borrador' =>
+							'Borrador',
 
-                        <?= CHtml::activeLabelEx($translation, 'name_size'); ?>
+							'deshabilitado' =>
+							'Deshabilitado',
 
-                        <?= CHtml::activeTextField(
-                            $translation,
-                            'name_size',
-                            array(
-                                'class' => 'form-control',
-                                'maxlength' => 10,
-                            )
-                        ); ?>
+							'eliminado' =>
+							'Eliminado',
+						),
+						array(
+							'class' =>
+							'dropdown-list-new',
 
-                        <?= CHtml::error($translation, 'name_size'); ?>
+							'options' => array(
+								'borrador' =>
+								array(
+									'selected' =>
+									$model->status === null ||
+										$model->status === ''
+								),
+							),
+						)
+					); ?>
 
-                    </div>
+				</div>
 
-                    <div class="admin-form-field ">
+			</div>
 
-                        <?= CHtml::activeLabelEx(
-                            $translation,
-                            'short_description_size'
-                        ); ?>
-
-                        <?= CHtml::activeTextField(
-                            $translation,
-                            'short_description_size',
-                            array(
-                                'class' => 'form-control',
-                                'maxlength' => 10,
-                            )
-                        ); ?>
-
-                        <?= CHtml::error(
-                            $translation,
-                            'short_description_size'
-                        ); ?>
-
-                    </div>
-
-                    <div class="admin-form-field ">
-
-                        <?= CHtml::activeLabelEx(
-                            $translation,
-                            'description_size'
-                        ); ?>
-
-                        <?= CHtml::activeTextField(
-                            $translation,
-                            'description_size',
-                            array(
-                                'class' => 'form-control',
-                                'maxlength' => 10,
-                            )
-                        ); ?>
-
-                        <?= CHtml::error(
-                            $translation,
-                            'description_size'
-                        ); ?>
+		</div>
 
 
-                    </div>
+		<div class="admin-form-card__body">
 
-                </div>
+			<?= $form->errorSummary(
+				$model,
+				'<strong>Por favor verifica la información:</strong>'
+			); ?>
 
-            </div>
 
-        </div>
+			<div class="admin-form-fields">
+
+				<div class="admin-form-field">
+
+					<?= $form->labelEx(
+						$model,
+						'brand_id'
+					); ?>
 
 
-        <!-- ======================================================
+					<?= $form->dropDownList(
+						$model,
+						'brand_id',
+						CHtml::listData(
+							Brands::model()->findAll(
+								array(
+									'order' =>
+									'name ASC',
+								)
+							),
+							'id',
+							'name'
+						),
+						array(
+							'class' =>
+							'form-control',
+
+							'prompt' =>
+							'Seleccione una marca',
+						)
+					); ?>
+
+
+					<?= $form->error(
+						$model,
+						'brand_id'
+					); ?>
+
+				</div>
+
+
+				<div class="admin-form-field">
+
+					<?= $form->labelEx(
+						$model,
+						'sort_order'
+					); ?>
+
+
+					<?= $form->textField(
+						$model,
+						'sort_order',
+						array(
+							'class' =>
+							'form-control',
+
+							'value' =>
+							$model->sort_order !== null
+								? $model->sort_order
+								: 0,
+						)
+					); ?>
+
+
+					<?= $form->error(
+						$model,
+						'sort_order'
+					); ?>
+
+				</div>
+
+
+				<!-- ==================================================
+				     MAIN IMAGE
+				     ================================================== -->
+
+				<div class="admin-form-field admin-form-field--full">
+
+					<?= $form->labelEx(
+						$model,
+						'main_image'
+					); ?>
+
+
+					<div class="admin-form-image-upload">
+
+						<div class="admin-form-image-input">
+
+							<?= $form->fileField(
+								$model,
+								'main_image',
+								array(
+									'class' =>
+									'admin-form-file',
+
+									'id' =>
+									'product-main-image-input',
+
+									'accept' =>
+									'image/jpeg,image/png,image/webp',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$model,
+								'main_image'
+							); ?>
+
+
+							<span class="hint">
+								Selecciona una imagen JPG, PNG o WebP.
+								La imagen se optimizará sin cambiar
+								su ancho ni su alto.
+							</span>
+
+						</div>
+
+
+						<div
+							id="product-main-image-preview"
+							class="admin-form-image-preview">
+
+							<div class="admin-form-image-preview__empty">
+
+								<i class="fas fa-image"></i>
+
+								<span>
+									La vista previa aparecerá aquí
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<!-- ==================================================
+				     INFOGRAPHIC IMAGE
+				     ================================================== -->
+
+				<div class="admin-form-field admin-form-field--full">
+
+					<?= $form->labelEx(
+						$model,
+						'infographic_image'
+					); ?>
+
+
+					<div class="admin-form-image-upload">
+
+						<div class="admin-form-image-input">
+
+							<?= $form->fileField(
+								$model,
+								'infographic_image',
+								array(
+									'class' =>
+									'admin-form-file',
+
+									'id' =>
+									'product-infographic-image-input',
+
+									'accept' =>
+									'image/jpeg,image/png,image/webp',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$model,
+								'infographic_image'
+							); ?>
+
+
+							<span class="hint">
+								Selecciona una imagen JPG, PNG o WebP.
+								La imagen se optimizará sin cambiar
+								su ancho ni su alto.
+							</span>
+
+						</div>
+
+
+						<div
+							id="product-infographic-image-preview"
+							class="admin-form-image-preview">
+
+							<div class="admin-form-image-preview__empty">
+
+								<i class="fas fa-image"></i>
+
+								<span>
+									La vista previa aparecerá aquí
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<!-- ==================================================
+				     SLUG
+				     ================================================== -->
+
+				<div class="admin-form-field admin-form-field--full">
+
+					<?= $form->labelEx(
+						$model,
+						'slug'
+					); ?>
+
+
+					<?= $form->textField(
+						$model,
+						'slug',
+						array(
+							'class' =>
+							'form-control',
+
+							'maxlength' =>
+							255,
+						)
+					); ?>
+
+
+					<?= $form->error(
+						$model,
+						'slug'
+					); ?>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!-- ======================================================
+	     DEFAULT LANGUAGE TRANSLATION
+	     ====================================================== -->
+
+	<div class="admin-form-card">
+
+		<div class="admin-form-card__header">
+
+			<div class="admin-form-card__heading">
+
+				<div class="admin-form-card__icon">
+					<i class="fas fa-language"></i>
+				</div>
+
+				<div>
+
+					<h2 class="admin-form-card__title">
+						Traducción
+					</h2>
+
+					<p class="admin-form-card__description">
+						Información del producto en el idioma predeterminado.
+					</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+
+		<div class="admin-form-card__body">
+
+			<div class="admin-product-translation">
+
+				<div class="admin-product-translation__header">
+
+					<div class="admin-product-translation__language">
+
+						<i class="fas fa-language"></i>
+
+						<span>
+
+							<?php
+							if ($defaultLanguage !== null) {
+
+								echo CHtml::encode(
+									$defaultLanguage->name
+								);
+							} else {
+
+								echo 'Idioma predeterminado';
+							}
+							?>
+
+						</span>
+
+
+						<span class="admin-product-translation__badge">
+							Predeterminado
+						</span>
+
+					</div>
+
+				</div>
+
+
+				<div class="admin-product-translation__body">
+
+					<div
+						class="admin-form-fields"
+						style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+
+
+						<div class="admin-form-field admin-form-field--full">
+
+							<?= $form->labelEx(
+								$translation,
+								'name'
+							); ?>
+
+
+							<?= $form->textField(
+								$translation,
+								'name',
+								array(
+									'class' =>
+									'form-control',
+
+									'maxlength' =>
+									255,
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'name'
+							); ?>
+
+						</div>
+
+
+						<div class="admin-form-field admin-form-field--full">
+
+							<?= $form->labelEx(
+								$translation,
+								'short_description'
+							); ?>
+
+
+							<?= $form->textArea(
+								$translation,
+								'short_description',
+								array(
+									'class' =>
+									'form-control',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'short_description'
+							); ?>
+
+						</div>
+
+
+						<div class="admin-form-field admin-form-field--full">
+
+							<?= $form->labelEx(
+								$translation,
+								'description'
+							); ?>
+
+
+							<?= $form->textArea(
+								$translation,
+								'description',
+								array(
+									'class' =>
+									'form-control',
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'description'
+							); ?>
+
+						</div>
+
+
+						<div class="admin-form-field">
+
+							<?= $form->labelEx(
+								$translation,
+								'name_size'
+							); ?>
+
+
+							<?= $form->textField(
+								$translation,
+								'name_size',
+								array(
+									'class' =>
+									'form-control',
+
+									'maxlength' =>
+									20,
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'name_size'
+							); ?>
+
+						</div>
+
+
+						<div class="admin-form-field">
+
+							<?= $form->labelEx(
+								$translation,
+								'short_description_size'
+							); ?>
+
+
+							<?= $form->textField(
+								$translation,
+								'short_description_size',
+								array(
+									'class' =>
+									'form-control',
+
+									'maxlength' =>
+									20,
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'short_description_size'
+							); ?>
+
+						</div>
+
+
+						<div class="admin-form-field">
+
+							<?= $form->labelEx(
+								$translation,
+								'description_size'
+							); ?>
+
+
+							<?= $form->textField(
+								$translation,
+								'description_size',
+								array(
+									'class' =>
+									'form-control',
+
+									'maxlength' =>
+									20,
+								)
+							); ?>
+
+
+							<?= $form->error(
+								$translation,
+								'description_size'
+							); ?>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!-- ======================================================
 	     CATEGORIES / SUBCATEGORIES
 	     ====================================================== -->
 
-        <div class="admin-form-card">
+	<div class="admin-form-card">
 
-            <div class="admin-form-card__header">
+		<div class="admin-form-card__header">
 
-                <div class="admin-form-card__heading">
+			<div class="admin-form-card__heading">
 
-                    <div class="admin-form-card__icon">
-                        <i class="fas fa-sitemap"></i>
-                    </div>
+				<div class="admin-form-card__icon">
+					<i class="fas fa-sitemap"></i>
+				</div>
 
-                    <div>
-                        <h2 class="admin-form-card__title">
-                            Categorías y subcategorías
-                        </h2>
+				<div>
 
-                        <p class="admin-form-card__description">
-                            Busca y agrega las categorías o subcategorías del producto.
-                        </p>
-                    </div>
+					<h2 class="admin-form-card__title">
+						Categorías y subcategorías
+					</h2>
 
-                </div>
+					<p class="admin-form-card__description">
+						Selecciona las categorías y subcategorías del producto.
+					</p>
 
-            </div>
+				</div>
 
-            <div class="admin-form-card__body">
+			</div>
 
-                <div class="admin-product-taxonomy">
+		</div>
 
-                    <div class="admin-product-taxonomy__search">
 
-                        <div class="admin-product-taxonomy__search-wrap">
+		<div class="admin-form-card__body">
 
-                            <i
-                                class="fas fa-search admin-product-taxonomy__search-icon"
-                                aria-hidden="true"></i>
+			<div class="admin-product-taxonomy">
 
-                            <input
-                                type="search"
-                                id="product-taxonomy-search"
-                                class="admin-product-taxonomy__search-input"
-                                placeholder="Buscar categoría o subcategoría..."
-                                autocomplete="off">
+				<div class="admin-product-taxonomy__search">
 
-                        </div>
+					<div class="admin-product-taxonomy__search-wrap">
 
-                        <p class="admin-product-taxonomy__hint">
-                            Al agregar una subcategoría, su categoría padre se asigna automáticamente.
-                        </p>
+						<i
+							class="fas fa-search admin-product-taxonomy__search-icon"
+							aria-hidden="true"></i>
 
-                    </div>
+						<input
+							type="search"
+							id="product-taxonomy-search"
+							class="admin-product-taxonomy__search-input"
+							placeholder="Buscar categoría o subcategoría..."
+							autocomplete="off">
 
-                    <div
-                        id="product-taxonomy-results"
-                        class="admin-product-taxonomy__results">
-                    </div>
+					</div>
 
-                    <div class="admin-product-taxonomy__selected">
 
-                        <h3 class="admin-product-taxonomy__selected-title">
-                            Seleccionados
-                        </h3>
+					<p class="admin-product-taxonomy__hint">
+						Al agregar una subcategoría, su categoría padre
+						se asigna automáticamente.
+					</p>
 
-                        <div id="product-taxonomy-selected"></div>
+				</div>
 
-                    </div>
 
-                </div>
+				<div
+					id="product-taxonomy-results"
+					class="admin-product-taxonomy__results">
+				</div>
 
-                <div id="product-category-selection"></div>
 
-            </div>
+				<div class="admin-product-taxonomy__selected">
 
-        </div>
+					<h3 class="admin-product-taxonomy__selected-title">
+						Seleccionados
+					</h3>
 
-        <div class="admin-form-card__footer">
-            <div class="admin-form-footer__note">
-                <span class="required">*</span>
-                Campos obligatorios
-            </div>
-            <div class="admin-form-actions">
-                <a
-                    href="<?php echo $this->createUrl("index"); ?>"
-                    class="admin-form-button admin-form-button--secondary">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </a>
-                <button
-                    type="submit"
-                    class="admin-form-button admin-form-button--primary">
-                    <i class="fas fa-plus"></i>
-                    Crear producto
-                </button>
-            </div>
-        </div>
-    </div>
-    <?php $this->endWidget(); ?>
+					<div id="product-taxonomy-selected"></div>
+
+				</div>
+
+			</div>
+
+
+			<div id="product-category-selection"></div>
+
+		</div>
+
+	</div>
+
+
+	<!-- ======================================================
+	     FOOTER
+	     ====================================================== -->
+
+	<div class="admin-form-card">
+
+		<div class="admin-form-card__footer">
+
+			<div class="admin-form-footer__note">
+
+				<span class="required">*</span>
+
+				Campos obligatorios
+
+			</div>
+
+
+			<div class="admin-form-actions">
+
+				<a
+					href="<?php echo $this->createUrl('index'); ?>"
+					class="admin-form-button admin-form-button--secondary">
+
+					<i class="fas fa-times"></i>
+
+					Cancelar
+
+				</a>
+
+
+				<button
+					type="submit"
+					class="admin-form-button admin-form-button--primary">
+
+					<i class="fas fa-save"></i>
+
+					Crear producto
+
+				</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<?php $this->endWidget(); ?>
+
 </div>
