@@ -7,6 +7,7 @@
  * @property string $id
  * @property string $title
  * @property string $description
+ * @property string $success_message
  * @property integer $is_active
  * @property string $created_at
  * @property string $updated_at
@@ -33,13 +34,13 @@ class FaqForms extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, created_at, updated_at', 'required'),
-			array('is_active', 'numerical', 'integerOnly'=>true),
+			array('title, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
+			array('is_active', 'numerical', 'integerOnly'=>true,'message' => '{attribute} solo debe ser numeros.'),
 			array('title', 'length', 'max'=>255),
-			array('description', 'safe'),
+			array('description, success_message', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, title, description, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, title, description, success_message, is_active, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -65,6 +66,7 @@ class FaqForms extends CActiveRecord
 			'id' => 'ID',
 			'title' => 'Title',
 			'description' => 'Description',
+			'success_message' => 'Success Message',
 			'is_active' => 'Is Active',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
@@ -92,7 +94,10 @@ class FaqForms extends CActiveRecord
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('title',$this->title,true);
 		$criteria->compare('description',$this->description,true);
+		$criteria->compare('success_message',$this->success_message,true);
 		$criteria->compare('is_active',$this->is_active);
+
+		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

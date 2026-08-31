@@ -562,7 +562,7 @@ class SiteController extends Controller
 			"(status = 'published' OR status = 'publicado')"
 		);
 
-	
+
 
 		if ($selectedCategoryId !== null) {
 
@@ -958,38 +958,22 @@ class SiteController extends Controller
 		$this->render(
 			'productos',
 			array(
-				'languageId' =>
-				$languageId,
-				'language' =>
-				$language,
-				'categories' =>
-				$categoryData,
-				'subcategories' =>
-				$subcategoryData,
-				'brands' =>
-				$brands,
-				'products' =>
-				$productData,
-				'dataProvider' =>
-				$dataProvider,
-				'selectedProduct' =>
-				$selectedProduct,
-				'selectedCategoryId' =>
-				$selectedCategoryId,
-				'selectedSubcategoryId' =>
-				$selectedSubcategoryId,
-				'selectedBrandId' =>
-				$selectedBrandId,
-				'categoryFilter' =>
-				$categoryFilter,
-				'subcategoryFilter' =>
-				$subcategoryFilter,
-				'brandFilter' =>
-				$brandFilter,
-				'orderFilter' =>
-				$orderFilter,
-				'productFilter' =>
-				$productFilter,
+				'languageId' =>				$languageId,
+				'language' =>				$language,
+				'categories' =>				$categoryData,
+				'subcategories' =>				$subcategoryData,
+				'brands' =>				$brands,
+				'products' =>				$productData,
+				'dataProvider' =>				$dataProvider,
+				'selectedProduct' =>				$selectedProduct,
+				'selectedCategoryId' =>				$selectedCategoryId,
+				'selectedSubcategoryId' =>				$selectedSubcategoryId,
+				'selectedBrandId' =>				$selectedBrandId,
+				'categoryFilter' =>				$categoryFilter,
+				'subcategoryFilter' =>				$subcategoryFilter,
+				'brandFilter' =>				$brandFilter,
+				'orderFilter' =>				$orderFilter,
+				'productFilter' =>				$productFilter,
 			)
 		);
 	}

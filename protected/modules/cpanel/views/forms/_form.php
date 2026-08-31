@@ -15,7 +15,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	margin: 0 auto;
 }
 
-
 /* ==========================================================
    FORM
    ========================================================== */
@@ -23,7 +22,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 .admin-form {
 	margin-top: 28px;
 }
-
 
 /* ==========================================================
    CARD
@@ -36,7 +34,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	border-radius: 10px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
 }
-
 
 /* ==========================================================
    CARD HEADER
@@ -86,7 +83,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	line-height: 1.4;
 }
 
-
 /* ==========================================================
    STATUS
    ========================================================== */
@@ -122,7 +118,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	font-size: 11px;
 	line-height: 1.3;
 }
-
 
 /* ==========================================================
    SWITCH
@@ -183,7 +178,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
 }
 
-
 /* ==========================================================
    BODY
    ========================================================== */
@@ -191,7 +185,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 .admin-form-card__body {
 	padding: 24px 20px;
 }
-
 
 /* ==========================================================
    REQUIRED NOTE
@@ -210,7 +203,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	color: #dc2626;
 	font-weight: 700;
 }
-
 
 /* ==========================================================
    ERROR SUMMARY
@@ -239,7 +231,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 .admin-form-card .errorSummary a {
 	color: #991b1b;
 }
-
 
 /* ==========================================================
    FIELDS
@@ -273,7 +264,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	color: #dc2626;
 	font-weight: 700;
 }
-
 
 /* ==========================================================
    INPUTS
@@ -368,7 +358,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	line-height: 1.4;
 }
 
-
 /* ==========================================================
    FOOTER
    ========================================================== */
@@ -398,7 +387,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	align-items: center;
 	gap: 8px;
 }
-
 
 /* ==========================================================
    BUTTONS
@@ -455,7 +443,6 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 	color: #111827 !important;
 }
 
-
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
@@ -504,9 +491,7 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 ?>
 
 <div class="admin-form-page">
-
-	<?php
-	$form = $this->beginWidget('CActiveForm', array(
+	<?php $form = $this->beginWidget('CActiveForm', array(
 		'id' => 'faq-forms-form',
 		'enableAjaxValidation' => false,
 		'htmlOptions' => array(
@@ -526,13 +511,10 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 			<div class="admin-form-card__heading">
 
 				<div class="admin-form-card__icon">
-
-					<?php
-					echo $model->isNewRecord
+					<?php echo $model->isNewRecord
 						? '<i class="fas fa-plus"></i>'
 						: '<i class="fas fa-pen"></i>';
 					?>
-
 				</div>
 
 				<div>
@@ -544,11 +526,8 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 					<p class="admin-form-card__description">
 						Completa los campos correspondientes.
 					</p>
-
 				</div>
-
 			</div>
-
 
 			<!-- STATUS -->
 
@@ -563,22 +542,15 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 						</span>
 
 						<span class="admin-form-status__description">
-
-							<?php
-							echo $model->isNewRecord
+							<?php echo $model->isNewRecord
 								? 'Activo por defecto'
 								: ($model->is_active ? 'Activo' : 'Inactivo');
 							?>
-
 						</span>
-
 					</div>
 
-
 					<label class="admin-form-switch">
-
-						<?php
-						echo CHtml::activeCheckBox(
+						<?php echo CHtml::activeCheckBox(
 							$model,
 							'is_active',
 							array(
@@ -592,24 +564,17 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 						?>
 
 						<span class="admin-form-switch__track"></span>
-
 					</label>
-
 				</div>
-
 			</div>
-
 		</div>
-
 
 		<!-- ======================================================
 		     BODY
 		     ======================================================= -->
 
 		<div class="admin-form-card__body">
-
-			<?php
-			echo $form->errorSummary(
+			<?php echo $form->errorSummary(
 				$model,
 				'<strong>Por favor verifica la información:</strong>'
 			);
@@ -617,15 +582,11 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 
 			<div class="admin-form-fields">
 
-
 				<!-- TITLE -->
 
 				<div class="admin-form-field">
-
 					<?php echo $form->labelEx($model, 'title'); ?>
-
-					<?php
-					echo $form->textField(
+					<?php echo $form->textField(
 						$model,
 						'title',
 						array(
@@ -635,18 +596,28 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 						)
 					);
 					?>
-
 					<?php echo $form->error($model, 'title'); ?>
-
 				</div>
 
+				<div class="admin-form-field">
+					<?php echo $form->labelEx($model, 'success_message'); ?>
+					<?php echo $form->textField(
+						$model,
+						'success_message',
+						array(
+							'class' => 'form-control',
+							'size' => 60,
+							'maxlength' => 255,
+						)
+					);
+					?>
+					<?php echo $form->error($model, 'success_message'); ?>
+				</div>
 
 				<!-- DESCRIPTION -->
 
 				<div class="admin-form-field admin-form-field--full">
-
 					<?php echo $form->labelEx($model, 'description'); ?>
-
 					<?php
 					echo $form->textArea(
 						$model,
@@ -657,16 +628,10 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 						)
 					);
 					?>
-
 					<?php echo $form->error($model, 'description'); ?>
-
 				</div>
-
-
 			</div>
-
 		</div>
-
 
 		<!-- ======================================================
 		     FOOTER
@@ -678,9 +643,7 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 
 				<span class="required">*</span>
 				Campos obligatorios
-
 			</div>
-
 
 			<div class="admin-form-actions">
 
@@ -691,11 +654,9 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 					Volver
 				</a>
 
-
 				<button
 					type="submit"
 					class="admin-form-button admin-form-button--primary">
-
 					<?php
 					if ($model->isNewRecord) {
 						echo '<i class="fas fa-plus"></i> Crear';
@@ -703,15 +664,9 @@ Yii::app()->clientScript->registerCss('admin-form-faq-forms', '
 						echo '<i class="fas fa-save"></i> Guardar cambios';
 					}
 					?>
-
 				</button>
-
 			</div>
-
 		</div>
-
 	</div>
-
 	<?php $this->endWidget(); ?>
-
 </div>

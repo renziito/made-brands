@@ -1,5 +1,4 @@
 <?php
-
 /* @var $this FaqController */
 /* @var $model Faqs */
 /* @var $form CActiveForm */
@@ -10,253 +9,87 @@
 /* @var $translationsByLanguage array */
 /* @var $faqForms FaqForms[] */
 
+$languages = isset($languages) ? $languages : array();
+$translationsByLanguage = isset($translationsByLanguage) ? $translationsByLanguage : array();
+$faqForms = isset($faqForms) ? $faqForms : array();
 
-/*
- * ==========================================================
- * DEFAULT VALUES
- * ==========================================================
- */
-
-$languages =
-	isset($languages)
-	? $languages
-	: array();
-
-$translationsByLanguage =
-	isset($translationsByLanguage)
-	? $translationsByLanguage
-	: array();
-
-$faqForms =
-	isset($faqForms)
-	? $faqForms
-	: array();
-
-
-/*
- * ==========================================================
- * FAQ FORMS DATA
- * ==========================================================
- */
-
-$faqFormsData =
-	array();
-
+$faqFormsData = array();
 foreach ($faqForms as $faqForm) {
+    $formId = (int) $faqForm->id;
+    $formLabel = '';
 
-	$formId =
-		(int) $faqForm->id;
+    if (isset($faqForm->text)) {
+        $formLabel = (string) $faqForm->text;
+    } elseif (isset($faqForm->title)) {
+        $formLabel = (string) $faqForm->title;
+    } elseif (isset($faqForm->name)) {
+        $formLabel = (string) $faqForm->name;
+    }
 
-	$formLabel =
-		'';
-
-
-	if (isset($faqForm->text)) {
-
-		$formLabel =
-			(string) $faqForm->text;
-	} elseif (isset($faqForm->title)) {
-
-		$formLabel =
-			(string) $faqForm->title;
-	} elseif (isset($faqForm->name)) {
-
-		$formLabel =
-			(string) $faqForm->name;
-	}
-
-
-	$faqFormsData[$formId] =
-		$formLabel;
+    $faqFormsData[$formId] = $formLabel;
 }
 
-
-/*
- * ==========================================================
- * FONT AWESOME ICONS
- * ==========================================================
- *
- * Correct path:
- *
- * /bin/fonts/font-awesome/metadata/icons.yml
- */
-
-$fontAwesomeIcons =
-	array();
-
-$fontAwesomeMetadataPath =
-	Yii::getPathOfAlias('webroot') .
-	'/bin/fonts/font-awesome/metadata/icons.yml';
-
+$fontAwesomeIcons = array();
+$fontAwesomeMetadataPath = Yii::getPathOfAlias('webroot') . '/bin/fonts/font-awesome/metadata/icons.yml';
 
 if (is_file($fontAwesomeMetadataPath)) {
+    $lines = file($fontAwesomeMetadataPath, FILE_IGNORE_NEW_LINES);
+    $currentIcon = null;
+    $insideStyles = false;
 
-	$lines =
-		file(
-			$fontAwesomeMetadataPath,
-			FILE_IGNORE_NEW_LINES
-		);
+    foreach ($lines as $line) {
+        if (preg_match('/^([A-Za-z0-9][A-Za-z0-9-]*):\s*$/', $line, $matches)) {
+            $currentIcon = $matches[1];
+            $insideStyles = false;
+            continue;
+        }
 
-	$currentIcon =
-		null;
+        if ($currentIcon === null) {
+            continue;
+        }
 
-	$insideStyles =
-		false;
+        if (preg_match('/^\s{2}styles:\s*$/', $line)) {
+            $insideStyles = true;
+            continue;
+        }
 
+        if ($insideStyles && preg_match('/^\s{2}[A-Za-z0-9_-]+:/', $line)) {
+            $insideStyles = false;
+        }
 
-	foreach ($lines as $line) {
+        if (!$insideStyles) {
+            continue;
+        }
 
+        if (preg_match('/^\s{4}-\s*([A-Za-z0-9_-]+)\s*$/', $line, $matches)) {
+            $style = $matches[1];
+            $prefix = null;
 
-		/*
-		 * Detect icon name.
-		 */
-		if (
-			preg_match(
-				'/^([A-Za-z0-9][A-Za-z0-9-]*):\s*$/',
-				$line,
-				$matches
-			)
-		) {
+            switch ($style) {
+                case 'solid':
+                    $prefix = 'fas';
+                    break;
+                case 'regular':
+                    $prefix = 'far';
+                    break;
+                case 'brands':
+                    $prefix = 'fab';
+                    break;
+            }
 
-			$currentIcon =
-				$matches[1];
-
-			$insideStyles =
-				false;
-
-			continue;
-		}
-
-
-		if ($currentIcon === null) {
-			continue;
-		}
-
-
-		/*
-		 * Detect styles section.
-		 */
-		if (
-			preg_match(
-				'/^\s{2}styles:\s*$/',
-				$line
-			)
-		) {
-
-			$insideStyles =
-				true;
-
-			continue;
-		}
-
-
-		/*
-		 * A new second-level property ends
-		 * the styles section.
-		 */
-		if (
-			$insideStyles &&
-			preg_match(
-				'/^\s{2}[A-Za-z0-9_-]+:/',
-				$line
-			)
-		) {
-
-			$insideStyles =
-				false;
-		}
-
-
-		if (!$insideStyles) {
-			continue;
-		}
-
-
-		/*
-		 * Detect Font Awesome style.
-		 */
-		if (
-			preg_match(
-				'/^\s{4}-\s*([A-Za-z0-9_-]+)\s*$/',
-				$line,
-				$matches
-			)
-		) {
-
-			$style =
-				$matches[1];
-
-			$prefix =
-				null;
-
-
-			switch ($style) {
-
-				case 'solid':
-
-					$prefix =
-						'fas';
-
-					break;
-
-
-				case 'regular':
-
-					$prefix =
-						'far';
-
-					break;
-
-
-				case 'brands':
-
-					$prefix =
-						'fab';
-
-					break;
-			}
-
-
-			if ($prefix !== null) {
-
-				$fontAwesomeIcons[] =
-					$prefix .
-					' fa-' .
-					$currentIcon;
-			}
-		}
-	}
+            if ($prefix !== null) {
+                $fontAwesomeIcons[] = $prefix . ' fa-' . $currentIcon;
+            }
+        }
+    }
 }
 
-
-/*
- * Remove duplicate icons.
- */
-$fontAwesomeIcons =
-	array_values(
-		array_unique(
-			$fontAwesomeIcons
-		)
-	);
-
-
-/*
- * Sort icons alphabetically.
- */
-sort(
-	$fontAwesomeIcons
-);
-
-
-/*
- * ==========================================================
- * CSS
- * ==========================================================
- */
+$fontAwesomeIcons = array_values(array_unique($fontAwesomeIcons));
+sort($fontAwesomeIcons);
 
 Yii::app()->clientScript->registerCss(
-	'admin-form-faqs',
-	'
+    'admin-form-faqs',
+    '
 .admin-form-page {
 	width: 100%;
 	max-width: 1100px;
@@ -266,11 +99,6 @@ Yii::app()->clientScript->registerCss(
 .admin-form {
 	margin-top: 28px;
 }
-
-
-/* ==========================================================
-   MAIN CARDS
-   ========================================================== */
 
 .admin-form-card,
 .admin-form-translation-card {
@@ -284,11 +112,6 @@ Yii::app()->clientScript->registerCss(
 .admin-form-translation-card {
 	margin-top: 18px;
 }
-
-
-/* ==========================================================
-   MAIN HEADER
-   ========================================================== */
 
 .admin-form-card__header {
 	display: flex;
@@ -333,11 +156,6 @@ Yii::app()->clientScript->registerCss(
 	font-size: 12px;
 	line-height: 1.4;
 }
-
-
-/* ==========================================================
-   HEADER ACTIONS
-   ========================================================== */
 
 .admin-form-card__header-actions {
 	display: flex;
@@ -394,19 +212,9 @@ Yii::app()->clientScript->registerCss(
 	font-size: 10px;
 }
 
-
-/* ==========================================================
-   MAIN BODY
-   ========================================================== */
-
 .admin-form-card__body {
 	padding: 24px 20px;
 }
-
-
-/* ==========================================================
-   ERROR SUMMARY
-   ========================================================== */
 
 .admin-form-card .errorSummary {
 	margin: 0 0 20px;
@@ -424,11 +232,6 @@ Yii::app()->clientScript->registerCss(
 	padding: 0;
 }
 
-
-/* ==========================================================
-   FORM GRID
-   ========================================================== */
-
 .admin-form-fields {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -442,11 +245,6 @@ Yii::app()->clientScript->registerCss(
 .admin-form-field--full {
 	grid-column: 1 / -1;
 }
-
-
-/* ==========================================================
-   LABELS
-   ========================================================== */
 
 .admin-form-field label {
 	display: block;
@@ -462,11 +260,6 @@ Yii::app()->clientScript->registerCss(
 	color: #dc2626;
 	font-weight: 700;
 }
-
-
-/* ==========================================================
-   INPUTS
-   ========================================================== */
 
 .admin-form-field input[type="text"],
 .admin-form-field input[type="number"],
@@ -484,9 +277,7 @@ Yii::app()->clientScript->registerCss(
 	font-family: inherit;
 	font-size: 13px;
 	line-height: 1.5;
-	transition:
-		border-color .15s ease,
-		box-shadow .15s ease;
+	transition: border-color .15s ease, box-shadow .15s ease;
 }
 
 .admin-form-field input[type="text"],
@@ -514,11 +305,6 @@ Yii::app()->clientScript->registerCss(
 	font-size: 11px;
 	line-height: 1.4;
 }
-
-
-/* ==========================================================
-   FONT AWESOME PICKER
-   ========================================================== */
 
 .admin-icon-picker {
 	width: 100%;
@@ -629,11 +415,7 @@ Yii::app()->clientScript->registerCss(
 	color: #4b5563;
 	cursor: pointer;
 	font-size: 16px;
-	transition:
-		background-color .12s ease,
-		border-color .12s ease,
-		color .12s ease,
-		transform .12s ease;
+	transition: background-color .12s ease, border-color .12s ease, color .12s ease, transform .12s ease;
 }
 
 .admin-icon-picker__item:hover {
@@ -661,11 +443,6 @@ Yii::app()->clientScript->registerCss(
 .admin-icon-picker__empty.is-visible {
 	display: block;
 }
-
-
-/* ==========================================================
-   SWITCH
-   ========================================================== */
 
 .faq-switch {
 	position: relative;
@@ -714,11 +491,6 @@ Yii::app()->clientScript->registerCss(
 .faq-switch input:checked + .faq-switch__track::after {
 	transform: translateX(18px);
 }
-
-
-/* ==========================================================
-   TRANSLATION HEADER
-   ========================================================== */
 
 .admin-form-translation-card__header {
 	display: flex;
@@ -782,19 +554,9 @@ Yii::app()->clientScript->registerCss(
 	color: #15803d;
 }
 
-
-/* ==========================================================
-   TRANSLATION BODY
-   ========================================================== */
-
 .admin-form-translation-card__body {
 	padding: 20px;
 }
-
-
-/* ==========================================================
-   FORM HINT
-   ========================================================== */
 
 .admin-form-form-hint {
 	display: flex;
@@ -814,11 +576,6 @@ Yii::app()->clientScript->registerCss(
 .admin-form-form-hint i {
 	color: #9ca3af;
 }
-
-
-/* ==========================================================
-   FOOTERS
-   ========================================================== */
 
 .admin-form-main-footer,
 .admin-form-translation-card__footer {
@@ -841,11 +598,6 @@ Yii::app()->clientScript->registerCss(
 	color: #dc2626;
 	font-weight: 700;
 }
-
-
-/* ==========================================================
-   BUTTONS
-   ========================================================== */
 
 .admin-form-actions {
 	display: flex;
@@ -872,12 +624,7 @@ Yii::app()->clientScript->registerCss(
 	font-weight: 600;
 	line-height: 1;
 	text-decoration: none !important;
-	transition:
-		background-color .15s ease,
-		border-color .15s ease,
-		box-shadow .15s ease,
-		color .15s ease,
-		transform .1s ease;
+	transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease, transform .1s ease;
 }
 
 .admin-form-button:active {
@@ -914,11 +661,6 @@ Yii::app()->clientScript->registerCss(
 	color: #111827 !important;
 }
 
-
-/* ==========================================================
-   EMPTY
-   ========================================================== */
-
 .admin-form-empty {
 	padding: 40px 20px;
 	color: #9ca3af;
@@ -932,20 +674,13 @@ Yii::app()->clientScript->registerCss(
 	font-size: 20px;
 }
 
-
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
-
 @media (max-width: 900px) {
-
 	.admin-icon-picker__grid {
 		grid-template-columns: repeat(8, minmax(0, 1fr));
 	}
 }
 
 @media (max-width: 768px) {
-
 	.admin-form-card__header,
 	.admin-form-translation-card__header {
 		align-items: flex-start;
@@ -993,1354 +728,363 @@ Yii::app()->clientScript->registerCss(
 '
 );
 
-
-/*
- * ==========================================================
- * JAVASCRIPT
- * ==========================================================
- */
-
 Yii::app()->clientScript->registerScript(
-	'faq-form',
-	"
+    'faq-form',
+    "
 (function() {
-
-
-	/* ======================================================
-	   FAQ FORMS
-	   ====================================================== */
-
-	var faqForms =
-		" . CJSON::encode($faqFormsData) . ";
-
+	var faqForms = " . CJSON::encode($faqFormsData) . ";
 
 	function updateFaqFormHint(select) {
-
-		var formId =
-			$(select).val();
-
-
-		var hint =
-			$(select)
-				.closest('.admin-form-field')
-				.find('.admin-form-form-hint-text');
-
+		var formId = $(select).val();
+		var hint = $(select).closest('.admin-form-field').find('.admin-form-form-hint-text');
 
 		if (!hint.length) {
 			return;
 		}
 
-
-		if (
-			formId &&
-			typeof faqForms[formId] !== 'undefined'
-		) {
-
-			hint.text(
-				'Formulario seleccionado: ' +
-				faqForms[formId]
-			);
-
+		if (formId && typeof faqForms[formId] !== 'undefined') {
+			hint.text('Formulario seleccionado: ' + faqForms[formId]);
 		} else {
-
-			hint.text(
-				'No hay formulario seleccionado.'
-			);
+			hint.text('No hay formulario seleccionado.');
 		}
 	}
 
+	$('.js-faq-form-select').each(function() {
+		updateFaqFormHint(this);
+	});
 
-	/*
-	 * Initialize form hints.
-	 */
-	$('.js-faq-form-select').each(
-		function() {
+	$(document).on('change', '.js-faq-form-select', function() {
+		updateFaqFormHint(this);
+	});
 
-			updateFaqFormHint(
-				this
-			);
-		}
-	);
+	var fontAwesomeIcons = " . CJSON::encode($fontAwesomeIcons) . ";
+	var iconGrid = $('#faq-icon-grid');
+	var iconSearch = $('#faq-icon-search');
+	var iconEmpty = $('#faq-icon-empty');
+	var iconCount = $('#faq-icon-count');
+	var iconValue = $('#faq-icon-value');
 
-
-	/*
-	 * Update form hint when changing
-	 * the selected form.
-	 */
-	$(document).on(
-		'change',
-		'.js-faq-form-select',
-		function() {
-
-			updateFaqFormHint(
-				this
-			);
-		}
-	);
-
-
-	/* ======================================================
-	   FONT AWESOME
-	   ====================================================== */
-
-	var fontAwesomeIcons =
-		" . CJSON::encode($fontAwesomeIcons) . ";
-
-
-	var iconGrid =
-		$('#faq-icon-grid');
-
-	var iconSearch =
-		$('#faq-icon-search');
-
-	var iconEmpty =
-		$('#faq-icon-empty');
-
-	var iconCount =
-		$('#faq-icon-count');
-
-	var iconValue =
-		$('#faq-icon-value');
-
-
-	/*
-	 * Render Font Awesome icons.
-	 */
 	function renderIcons(filter) {
-
-		filter =
-			(filter || '')
-				.toLowerCase()
-				.trim();
-
-
+		filter = (filter || '').toLowerCase().trim();
 		iconGrid.empty();
 
+		var visibleCount = 0;
 
-		var visibleCount =
-			0;
-
-
-		$.each(
-			fontAwesomeIcons,
-			function(index, icon) {
-
-
-				/*
-				 * Apply search filter.
-				 */
-				if (
-					filter &&
-					icon
-						.toLowerCase()
-						.indexOf(filter) === -1
-				) {
-
-					return;
-				}
-
-
-				var button =
-					$('<button>', {
-
-						type:
-							'button',
-
-						class:
-							'admin-icon-picker__item',
-
-						'data-icon':
-							icon,
-
-						title:
-							icon
-					});
-
-
-				/*
-				 * Highlight current icon.
-				 */
-				if (
-					icon ===
-					iconValue.val()
-				) {
-
-					button.addClass(
-						'is-selected'
-					);
-				}
-
-
-				button.append(
-					$('<i>', {
-
-						class:
-							icon,
-
-						'aria-hidden':
-							'true'
-					})
-				);
-
-
-				iconGrid.append(
-					button
-				);
-
-
-				visibleCount++;
-			}
-		);
-
-
-		iconCount.text(
-			visibleCount +
-			' iconos disponibles'
-		);
-
-
-		if (
-			visibleCount === 0
-		) {
-
-			iconEmpty.addClass(
-				'is-visible'
-			);
-
-		} else {
-
-			iconEmpty.removeClass(
-				'is-visible'
-			);
-		}
-	}
-
-
-	/*
-	 * Select Font Awesome icon.
-	 */
-	iconGrid.on(
-		'click',
-		'.admin-icon-picker__item',
-		function() {
-
-
-			var button =
-				$(this);
-
-
-			var icon =
-				button.attr(
-					'data-icon'
-				);
-
-
-			if (!icon) {
+		$.each(fontAwesomeIcons, function(index, icon) {
+			if (filter && icon.toLowerCase().indexOf(filter) === -1) {
 				return;
 			}
 
+			var button = $('<button>', {
+				type: 'button',
+				class: 'admin-icon-picker__item',
+				'data-icon': icon,
+				title: icon
+			});
 
-			/*
-			 * Save selected icon.
-			 */
-			iconValue.val(
-				icon
-			);
-
-
-			/*
-			 * Update selected icon text.
-			 */
-			$('#faq-icon-selected-value')
-				.text(
-					icon
-				);
-
-
-			/*
-			 * Update preview.
-			 */
-			$('#faq-icon-selected-preview')
-				.html(
-					'<i class=\"' +
-					icon +
-					'\" aria-hidden=\"true\"></i>'
-				);
-
-
-			/*
-			 * Remove previous selection.
-			 */
-			iconGrid
-				.find(
-					'.admin-icon-picker__item'
-				)
-				.removeClass(
-					'is-selected'
-				);
-
-
-			/*
-			 * Highlight new selection.
-			 */
-			button.addClass(
-				'is-selected'
-			);
-		}
-	);
-
-
-	/*
-	 * Search icons.
-	 */
-	iconSearch.on(
-		'input',
-		function() {
-
-			renderIcons(
-				$(this).val()
-			);
-		}
-	);
-
-
-	/*
-	 * Initial icon rendering.
-	 */
-	renderIcons();
-
-
-	/* ======================================================
-	   FORM SUBMISSION CONTROL
-	   ======================================================
-	
-	   There are two different save actions:
-	
-	   1. Main FAQ save:
-	      - Saves the FAQ.
-	      - Does NOT validate translations.
-	      - Does NOT submit translations.
-	
-	   2. Translation save:
-	      - Saves only the selected language.
-	      - Does NOT validate other languages.
-	      - Does NOT submit other languages.
-	*/
-
-
-	/* ======================================================
-	   MAIN FAQ SAVE
-	   ====================================================== */
-
-	$(document).on(
-		'click',
-		'.js-save-faq',
-		function() {
-
-
-			/*
-			 * Disable every field inside every
-			 * translation card.
-			 *
-			 * Disabled fields:
-			 *
-			 * - are ignored by HTML5 validation
-			 * - are not included in POST
-			 */
-			$('.admin-form-translation-card')
-				.find(
-					'input, textarea, select'
-				)
-				.prop(
-					'disabled',
-					true
-				);
-
-
-			/*
-			 * Main FAQ fields remain enabled.
-			 */
-		}
-	);
-
-
-	/* ======================================================
-	   TRANSLATION SAVE
-	   ====================================================== */
-
-	$(document).on(
-		'click',
-		'.js-save-language',
-		function() {
-
-
-			var button =
-				$(this);
-
-
-			var currentCard =
-				button.closest(
-					'.admin-form-translation-card'
-				);
-
-
-			/*
-			 * Safety check.
-			 */
-			if (!currentCard.length) {
-				return true;
+			if (icon === iconValue.val()) {
+				button.addClass('is-selected');
 			}
 
+			button.append($('<i>', {
+				class: icon,
+				'aria-hidden': 'true'
+			}));
 
-			/*
-			 * Disable ALL translation fields
-			 * from OTHER cards.
-			 */
-			$('.admin-form-translation-card')
-				.not(currentCard)
-				.find(
-					'input, textarea, select'
-				)
-				.prop(
-					'disabled',
-					true
-				);
+			iconGrid.append(button);
+			visibleCount++;
+		});
 
+		iconCount.text(visibleCount + ' iconos disponibles');
 
-			/*
-			 * Make sure the selected card
-			 * remains enabled.
-			 */
-			currentCard
-				.find(
-					'input, textarea, select'
-				)
-				.prop(
-					'disabled',
-					false
-				);
-
-
-			/*
-			 * Main FAQ fields remain enabled.
-			 */
+		if (visibleCount === 0) {
+			iconEmpty.addClass('is-visible');
+		} else {
+			iconEmpty.removeClass('is-visible');
 		}
-	);
+	}
 
+	iconGrid.on('click', '.admin-icon-picker__item', function() {
+		var button = $(this);
+		var icon = button.attr('data-icon');
 
+		if (!icon) {
+			return;
+		}
+
+		iconValue.val(icon);
+		$('#faq-icon-selected-value').text(icon);
+		$('#faq-icon-selected-preview').html('<i class=\"' + icon + '\" aria-hidden=\"true\"></i>');
+		iconGrid.find('.admin-icon-picker__item').removeClass('is-selected');
+		button.addClass('is-selected');
+	});
+
+	iconSearch.on('input', function() {
+		renderIcons($(this).val());
+	});
+
+	renderIcons();
+
+	$(document).on('click', '.js-save-faq', function() {
+		$('.admin-form-translation-card').find('input, textarea, select').prop('disabled', true);
+	});
+
+	$(document).on('click', '.js-save-language', function() {
+		var button = $(this);
+		var currentCard = button.closest('.admin-form-translation-card');
+
+		if (!currentCard.length) {
+			return true;
+		}
+
+		$('.admin-form-translation-card').not(currentCard).find('input, textarea, select').prop('disabled', true);
+		currentCard.find('input, textarea, select').prop('disabled', false);
+	});
 })();
 "
 );
-
 ?>
 
 <div class="admin-form-page">
-
 	<?php
+    $form = $this->beginWidget(
+        'CActiveForm',
+        array(
+                            'id' => 'faqs-form',
+                            'enableAjaxValidation' => false,
+                            'htmlOptions' => array(
+                                'class' => 'admin-form',
+                            ),
+                        )
+    );
+?>
 
-	$form =
-		$this->beginWidget(
-			'CActiveForm',
-			array(
-				'id' =>
-				'faqs-form',
-
-				'enableAjaxValidation' =>
-				false,
-
-				'htmlOptions' =>
-				array(
-					'class' =>
-					'admin-form',
-				),
-			)
-		);
-
-	?>
-
-
-	<!-- ======================================================
-	     MAIN FAQ CARD
-	     ====================================================== -->
-
-	<div class="admin-form-card">
-
-
-		<!-- ==================================================
-		     HEADER
-		     ================================================== -->
-
-		<div class="admin-form-card__header">
-
-
-			<div class="admin-form-card__heading">
-
-
-				<div class="admin-form-card__icon">
-
-					<?php
-
-					echo $model->isNewRecord
-						? '<i class="fas fa-plus"></i>'
-						: '<i class="fas fa-pen"></i>';
-
-					?>
-
-				</div>
-
-
-				<div>
-
-					<h2 class="admin-form-card__title">
-						Información de la FAQ
-					</h2>
-
-
-					<p class="admin-form-card__description">
-
-						<?php
-
-						echo $model->isNewRecord
-							? 'Completa la información general de la nueva FAQ.'
-							: 'Modifica la información general de la FAQ.';
-
-						?>
-
-					</p>
-
-				</div>
-
-
+<div class="admin-form-card">
+	<div class="admin-form-card__header">
+		<div class="admin-form-card__heading">
+			<div class="admin-form-card__icon">
+				<?php echo $model->isNewRecord ? '<i class="fas fa-plus"></i>' : '<i class="fas fa-pen"></i>'; ?>
 			</div>
-
-
-			<!-- ==============================================
-			     ORDER + ACTIVE
-			     ============================================== -->
-
-			<div class="admin-form-card__header-actions">
-
-
-				<div class="admin-form-card__order">
-
-
-					<label
-						for="faq-sort-order"
-						class="admin-form-card__action-label">
-
-						Order
-
-					</label>
-
-
-					<?= $form->numberField(
-						$model,
-						'sort_order',
-						array(
-							'id' =>
-							'faq-sort-order',
-
-							'min' =>
-							0,
-
-							'class' =>
-							'admin-form-card__order-input',
-						)
-					); ?>
-
-
-					<?= $form->error(
-						$model,
-						'sort_order'
-					); ?>
-
-
-				</div>
-
-
-				<div class="admin-form-card__active">
-
-
-					<span class="admin-form-card__action-label">
-
-						Active
-
-					</span>
-
-
-					<label class="faq-switch faq-switch--header">
-
-
-						<?= CHtml::activeCheckBox(
-							$model,
-							'is_active',
-							array(
-								'uncheckValue' =>
-								'0',
-
-								'checked' =>
-								$model->isNewRecord
-									? true
-									: (bool)
-									$model->is_active,
-							)
-						); ?>
-
-
-						<span class="faq-switch__track"></span>
-
-
-					</label>
-
-
-				</div>
-
-
+			<div>
+				<h2 class="admin-form-card__title">Información de la FAQ</h2>
+				<p class="admin-form-card__description">
+					<?php echo $model->isNewRecord ? 'Completa la información general de la nueva FAQ.' : 'Modifica la información general de la FAQ.'; ?>
+				</p>
 			</div>
-
-
 		</div>
 
-
-		<!-- ==================================================
-		     BODY
-		     ================================================== -->
-
-		<div class="admin-form-card__body">
-
-
-			<?= $form->errorSummary(
-				$model,
-				'<strong>Por favor verifica la información:</strong>'
-			); ?>
-
-
-			<div class="admin-form-fields">
-
-
-				<!-- ==========================================
-				     ICON
-				     ========================================== -->
-
-				<div class="admin-form-field admin-form-field--full">
-
-
-					<label>
-						Icono
-					</label>
-
-
-					<div class="admin-icon-picker">
-
-
-						<?php
-
-						$currentIcon =
-							!empty($model->icon)
-							? $model->icon
-							: 'fas fa-question-circle';
-
-						?>
-
-
-						<?= CHtml::hiddenField(
-							'Faqs[icon]',
-							$currentIcon,
-							array(
-								'id' =>
-								'faq-icon-value',
-							)
-						); ?>
-
-
-						<div class="admin-icon-picker__selected">
-
-
-							<div
-								id="faq-icon-selected-preview"
-								class="admin-icon-picker__selected-icon">
-
-								<i
-									class="<?= CHtml::encode(
-												$currentIcon
-											); ?>"
-									aria-hidden="true"></i>
-
-							</div>
-
-
-							<div class="admin-icon-picker__selected-info">
-
-
-								<span class="admin-icon-picker__selected-label">
-
-									Icono seleccionado
-
-								</span>
-
-
-								<span
-									id="faq-icon-selected-value"
-									class="admin-icon-picker__selected-value">
-
-									<?= CHtml::encode(
-										$currentIcon
-									); ?>
-
-								</span>
-
-
-							</div>
-
-
-						</div>
-
-
-						<div class="admin-icon-picker__search">
-
-
-							<input
-								type="text"
-								id="faq-icon-search"
-								placeholder="Buscar icono..."
-								autocomplete="off">
-
-
-						</div>
-
-
-						<div
-							id="faq-icon-count"
-							class="admin-icon-picker__count">
-
-							Cargando iconos...
-
-						</div>
-
-
-						<div
-							id="faq-icon-grid"
-							class="admin-icon-picker__grid">
-						</div>
-
-
-						<div
-							id="faq-icon-empty"
-							class="admin-icon-picker__empty">
-
-							No se encontraron iconos.
-
-						</div>
-
-
-					</div>
-
-
-					<?= $form->error(
-						$model,
-						'icon'
-					); ?>
-
-
-				</div>
-
-
+		<div class="admin-form-card__header-actions">
+			<div class="admin-form-card__order">
+				<label for="faq-sort-order" class="admin-form-card__action-label">Order</label>
+				<?= $form->numberField($model, 'sort_order', array('id' => 'faq-sort-order', 'min' => 0, 'class' => 'admin-form-card__order-input')); ?>
+				<?= $form->error($model, 'sort_order'); ?>
 			</div>
-
-
+			<div class="admin-form-card__active">
+				<span class="admin-form-card__action-label">Active</span>
+				<label class="faq-switch faq-switch--header">
+					<?= CHtml::activeCheckBox($model, 'is_active', array('uncheckValue' => '0', 'checked' => $model->isNewRecord ? true : (bool) $model->is_active)); ?>
+					<span class="faq-switch__track"></span>
+				</label>
+			</div>
 		</div>
-
-
-		<!-- ==================================================
-		     MAIN FOOTER
-		     ================================================== -->
-
-		<div class="admin-form-main-footer">
-
-
-			<div class="admin-form-footer__note">
-
-				<span class="required">
-					*
-				</span>
-
-				Campos obligatorios
-
-			</div>
-
-
-			<div class="admin-form-actions">
-
-
-				<a
-					href="<?php echo $this->createUrl('index'); ?>"
-					class="admin-form-button admin-form-button--secondary">
-
-
-					<i
-						class="fas <?php echo $model->isNewRecord
-										? 'fa-times'
-										: 'fa-arrow-left'; ?>"
-						aria-hidden="true"></i>
-
-
-					<?php
-
-					echo $model->isNewRecord
-						? 'Cancelar'
-						: 'Volver';
-
-					?>
-
-
-				</a>
-
-
-				<button
-					type="submit"
-					class="admin-form-button admin-form-button--primary js-save-faq">
-
-
-					<i
-						class="fas <?php echo $model->isNewRecord
-										? 'fa-plus'
-										: 'fa-save'; ?>"
-						aria-hidden="true"></i>
-
-
-					<?php
-
-					echo $model->isNewRecord
-						? 'Crear FAQ'
-						: 'Guardar cambios';
-
-					?>
-
-
-				</button>
-
-
-			</div>
-
-
-		</div>
-
-
 	</div>
 
+	<div class="admin-form-card__body">
+		<?= $form->errorSummary($model, '<strong>Por favor verifica la información:</strong>'); ?>
 
-	<!-- ======================================================
-	     TRANSLATIONS
-	     ====================================================== -->
+		<div class="admin-form-fields">
+			<div class="admin-form-field admin-form-field--full">
+				<label>Icono</label>
+				<div class="admin-icon-picker">
+					<?php
+                $currentIcon = !empty($model->icon) ? $model->icon : 'fas fa-question-circle';
+?>
+					<?= CHtml::hiddenField('Faqs[icon]', $currentIcon, array('id' => 'faq-icon-value')); ?>
 
-	<?php if (!empty($languages)): ?>
-
-
-		<?php foreach ($languages as $language): ?>
-
-
-			<?php
-
-			$languageId =
-				(int) $language->id;
-
-			$languageKey =
-				(string) $language->id;
-
-
-			$currentTranslation =
-				isset(
-					$translationsByLanguage[$languageKey]
-				)
-				? $translationsByLanguage[$languageKey]
-				: new FaqTranslations;
-
-
-			$hasTranslation =
-				!$currentTranslation->isNewRecord;
-
-
-			$languageCode =
-				isset($language->code)
-				? $language->code
-				: substr(
-					(string)
-					$language->name,
-					0,
-					2
-				);
-
-			?>
-
-
-			<!-- ==============================================
-			     TRANSLATION CARD
-			     ============================================== -->
-
-			<div
-				class="admin-form-translation-card"
-				data-language-id="<?php echo $languageId; ?>">
-
-
-				<!-- ==========================================
-				     TRANSLATION HEADER
-				     ========================================== -->
-
-				<div class="admin-form-translation-card__header">
-
-
-					<div class="admin-form-translation-card__heading">
-
-
-						<div class="admin-form-translation-card__language">
-
-							<?php
-
-							echo CHtml::encode(
-								strtoupper(
-									$languageCode
-								)
-							);
-
-							?>
-
+					<div class="admin-icon-picker__selected">
+						<div id="faq-icon-selected-preview" class="admin-icon-picker__selected-icon">
+							<i class="<?= CHtml::encode($currentIcon); ?>" aria-hidden="true"></i>
 						</div>
-
-
-						<div>
-
-
-							<h2 class="admin-form-translation-card__title">
-
-								<?php
-
-								echo CHtml::encode(
-									isset(
-										$language->native_name
-									)
-										? $language->native_name
-										: $language->name
-								);
-
-								?>
-
-							</h2>
-
-
-							<p class="admin-form-translation-card__native">
-
-								<?php
-
-								echo CHtml::encode(
-									$language->name
-								);
-
-								?>
-
-							</p>
-
-
+						<div class="admin-icon-picker__selected-info">
+							<span class="admin-icon-picker__selected-label">Icono seleccionado</span>
+							<span id="faq-icon-selected-value" class="admin-icon-picker__selected-value"><?= CHtml::encode($currentIcon); ?></span>
 						</div>
-
-
 					</div>
 
-
-					<div
-						class="admin-form-translation-card__status<?php echo $hasTranslation
-																		? ' admin-form-translation-card__status--saved'
-																		: ''; ?>">
-
-
-						<i
-							class="fas <?php echo $hasTranslation
-											? 'fa-check'
-											: 'fa-circle'; ?>"
-							aria-hidden="true"></i>
-
-
-						<?php
-
-						echo $hasTranslation
-							? 'Guardado'
-							: 'Sin traducción';
-
-						?>
-
-
+					<div class="admin-icon-picker__search">
+						<input type="text" id="faq-icon-search" placeholder="Buscar icono..." autocomplete="off">
 					</div>
 
-
+					<div id="faq-icon-count" class="admin-icon-picker__count">Cargando iconos...</div>
+					<div id="faq-icon-grid" class="admin-icon-picker__grid"></div>
+					<div id="faq-icon-empty" class="admin-icon-picker__empty">No se encontraron iconos.</div>
 				</div>
 
-
-				<!-- ==========================================
-				     TRANSLATION BODY
-				     ========================================== -->
-
-				<div class="admin-form-translation-card__body">
-
-
-					<div class="admin-form-fields">
-
-
-						<!-- ======================================
-						     QUESTION
-						     ====================================== -->
-
-						<div class="admin-form-field admin-form-field--full">
-
-
-							<label
-								for="faq-question-<?php echo $languageId; ?>">
-
-								Pregunta
-
-								<span class="required">
-									*
-								</span>
-
-							</label>
-
-
-							<input
-								type="text"
-								id="faq-question-<?php echo $languageId; ?>"
-								name="FaqTranslations[<?php echo $languageId; ?>][question]"
-								value="<?php echo CHtml::encode(
-											$currentTranslation->question
-										); ?>"
-								maxlength="255"
-								required />
-
-
-							<?php if (
-								$currentTranslation->hasErrors(
-									'question'
-								)
-							): ?>
-
-
-								<span class="error">
-
-									<?php
-
-									echo CHtml::encode(
-										$currentTranslation->getError(
-											'question'
-										)
-									);
-
-									?>
-
-								</span>
-
-
-							<?php endif; ?>
-
-
-						</div>
-
-
-						<!-- ======================================
-						     ANSWER
-						     ====================================== -->
-
-						<div class="admin-form-field admin-form-field--full">
-
-
-							<label
-								for="faq-answer-<?php echo $languageId; ?>">
-
-								Respuesta
-
-								<span class="required">
-									*
-								</span>
-
-							</label>
-
-
-							<textarea
-								id="faq-answer-<?php echo $languageId; ?>"
-								name="FaqTranslations[<?php echo $languageId; ?>][answer]"
-								rows="8"
-								required><?php echo CHtml::encode(
-												$currentTranslation->answer
-											); ?></textarea>
-
-
-							<?php if (
-								$currentTranslation->hasErrors(
-									'answer'
-								)
-							): ?>
-
-
-								<span class="error">
-
-									<?php
-
-									echo CHtml::encode(
-										$currentTranslation->getError(
-											'answer'
-										)
-									);
-
-									?>
-
-								</span>
-
-
-							<?php endif; ?>
-
-
-						</div>
-
-
-						<!-- ======================================
-						     FORM TEXT
-						     ====================================== -->
-
-						<div class="admin-form-field">
-
-
-							<label
-								for="faq-form-text-<?php echo $languageId; ?>">
-
-								Texto del botón
-
-							</label>
-
-
-							<input
-								type="text"
-								id="faq-form-text-<?php echo $languageId; ?>"
-								name="FaqTranslations[<?php echo $languageId; ?>][form_text]"
-								value="<?php echo CHtml::encode(
-											$currentTranslation->form_text
-										); ?>"
-								maxlength="255"
-								placeholder="Ej. Solicitar información" />
-
-
-							<?php if (
-								$currentTranslation->hasErrors(
-									'form_text'
-								)
-							): ?>
-
-
-								<span class="error">
-
-									<?php
-
-									echo CHtml::encode(
-										$currentTranslation->getError(
-											'form_text'
-										)
-									);
-
-									?>
-
-								</span>
-
-
-							<?php endif; ?>
-
-
-						</div>
-
-
-						<!-- ======================================
-						     FORM ID
-						     ====================================== -->
-
-						<div class="admin-form-field">
-
-
-							<label
-								for="faq-form-<?php echo $languageId; ?>">
-
-								Formulario
-
-							</label>
-
-
-							<select
-								id="faq-form-<?php echo $languageId; ?>"
-								name="FaqTranslations[<?php echo $languageId; ?>][form_id]"
-								class="js-faq-form-select">
-
-
-								<option value="">
-									Sin formulario
-								</option>
-
-
-								<?php foreach (
-									$faqForms
-									as $faqForm
-								): ?>
-
-
-									<?php
-
-									$formId =
-										(int) $faqForm->id;
-
-									$formLabel =
-										isset(
-											$faqFormsData[$formId]
-										)
-										? $faqFormsData[$formId]
-										: '';
-
-									?>
-
-
-									<option
-										value="<?php echo $formId; ?>"
-										<?php echo (
-											(string)
-											$currentTranslation->form_id ===
-											(string)
-											$formId
-										)
-											? 'selected'
-											: ''; ?>>
-
-										<?php
-
-										echo CHtml::encode(
-											$formLabel
-										);
-
-										?>
-
-									</option>
-
-
-								<?php endforeach; ?>
-
-
-							</select>
-
-
-							<div class="admin-form-form-hint">
-
-
-								<i
-									class="fas fa-link"
-									aria-hidden="true"></i>
-
-
-								<span class="admin-form-form-hint-text">
-
-									No hay formulario seleccionado.
-
-								</span>
-
-
-							</div>
-
-
-						</div>
-
-
-					</div>
-
-
-				</div>
-
-
-				<!-- ==========================================
-				     TRANSLATION FOOTER
-				     ========================================== -->
-
-				<div class="admin-form-translation-card__footer">
-
-
-					<div class="admin-form-footer__note">
-
-						<span class="required">
-							*
-						</span>
-
-						Campos obligatorios
-
-					</div>
-
-
-					<div class="admin-form-actions">
-
-
-						<button
-							type="submit"
-							name="save_language"
-							value="<?php echo $languageId; ?>"
-							class="admin-form-button admin-form-button--primary js-save-language">
-
-
-							<i
-								class="fas fa-save"
-								aria-hidden="true"></i>
-
-
-							<?php
-
-							echo $hasTranslation
-								? 'Guardar cambios'
-								: 'Guardar traducción';
-
-							?>
-
-
-						</button>
-
-
-					</div>
-
-
-				</div>
-
-
+				<?= $form->error($model, 'icon'); ?>
 			</div>
+		</div>
+	</div>
 
-
-		<?php endforeach; ?>
-
-
-	<?php else: ?>
-
-
-		<div class="admin-form-card">
-
-
-			<div class="admin-form-empty">
-
-
-				<i
-					class="fas fa-language"
-					aria-hidden="true"></i>
-
-
-				No hay idiomas configurados.
-
-
-			</div>
-
-
+	<div class="admin-form-main-footer">
+		<div class="admin-form-footer__note">
+			<span class="required">*</span> Campos obligatorios
 		</div>
 
+		<div class="admin-form-actions">
+			<a href="<?php echo $this->createUrl('index'); ?>" class="admin-form-button admin-form-button--secondary">
+				<i class="fas <?php echo $model->isNewRecord ? 'fa-times' : 'fa-arrow-left'; ?>" aria-hidden="true"></i>
+				<?php echo $model->isNewRecord ? 'Cancelar' : 'Volver'; ?>
+			</a>
 
-	<?php endif; ?>
+			<button type="submit" class="admin-form-button admin-form-button--primary js-save-faq">
+				<i class="fas <?php echo $model->isNewRecord ? 'fa-plus' : 'fa-save'; ?>" aria-hidden="true"></i>
+				<?php echo $model->isNewRecord ? 'Crear FAQ' : 'Guardar cambios'; ?>
+			</button>
+		</div>
+	</div>
+</div>
 
+<?php if (!empty($languages)): ?>
+	<?php foreach ($languages as $language): ?>
+		<?php
+        $languageId = (int) $language->id;
+	    $languageKey = (string) $language->id;
+	    $currentTranslation = isset($translationsByLanguage[$languageKey]) ? $translationsByLanguage[$languageKey] : new FaqTranslations();
+	    $hasTranslation = !$currentTranslation->isNewRecord;
+	    $languageCode = isset($language->code) ? $language->code : substr((string) $language->name, 0, 2);
+	    ?>
 
-	<?php
+		<div class="admin-form-translation-card" data-language-id="<?php echo $languageId; ?>">
+			<div class="admin-form-translation-card__header">
+				<div class="admin-form-translation-card__heading">
+					<div class="admin-form-translation-card__language">
+						<?php echo CHtml::encode(strtoupper($languageCode)); ?>
+					</div>
+					<div>
+						<h2 class="admin-form-translation-card__title">
+							<?php echo CHtml::encode(isset($language->native_name) ? $language->native_name : $language->name); ?>
+						</h2>
+						<p class="admin-form-translation-card__native"><?php echo CHtml::encode($language->name); ?></p>
+					</div>
+				</div>
 
-	$this->endWidget();
+				<div class="admin-form-translation-card__status<?php echo $hasTranslation ? ' admin-form-translation-card__status--saved' : ''; ?>">
+					<i class="fas <?php echo $hasTranslation ? 'fa-check' : 'fa-circle'; ?>" aria-hidden="true"></i>
+					<?php echo $hasTranslation ? 'Guardado' : 'Sin traducción'; ?>
+				</div>
+			</div>
 
-	?>
+			<div class="admin-form-translation-card__body">
+				<div class="admin-form-fields">
+					<div class="admin-form-field admin-form-field--full">
+						<label for="faq-question-<?php echo $languageId; ?>">
+							Pregunta <span class="required">*</span>
+						</label>
+
+						<input
+							type="text"
+							id="faq-question-<?php echo $languageId; ?>"
+							name="FaqTranslations[<?php echo $languageId; ?>][question]"
+							value="<?php echo CHtml::encode($currentTranslation->question); ?>"
+							maxlength="255"
+							required />
+
+						<?php if ($currentTranslation->hasErrors('question')): ?>
+							<span class="error"><?php echo CHtml::encode($currentTranslation->getError('question')); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<div class="admin-form-field admin-form-field--full">
+						<label for="faq-answer-<?php echo $languageId; ?>">
+							Respuesta <span class="required">*</span>
+						</label>
+
+						<textarea
+							id="faq-answer-<?php echo $languageId; ?>"
+							name="FaqTranslations[<?php echo $languageId; ?>][answer]"
+							rows="8"
+							required><?php echo CHtml::encode($currentTranslation->answer); ?></textarea>
+
+						<?php if ($currentTranslation->hasErrors('answer')): ?>
+							<span class="error"><?php echo CHtml::encode($currentTranslation->getError('answer')); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<div class="admin-form-field">
+						<label for="faq-form-text-<?php echo $languageId; ?>">Texto del botón</label>
+
+						<input
+							type="text"
+							id="faq-form-text-<?php echo $languageId; ?>"
+							name="FaqTranslations[<?php echo $languageId; ?>][form_text]"
+							value="<?php echo CHtml::encode($currentTranslation->form_text); ?>"
+							maxlength="255"
+							placeholder="Ej. Solicitar información" />
+
+						<?php if ($currentTranslation->hasErrors('form_text')): ?>
+							<span class="error"><?php echo CHtml::encode($currentTranslation->getError('form_text')); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<div class="admin-form-field">
+						<label for="faq-form-<?php echo $languageId; ?>">Formulario</label>
+
+						<select
+							id="faq-form-<?php echo $languageId; ?>"
+							name="FaqTranslations[<?php echo $languageId; ?>][form_id]"
+							class="js-faq-form-select">
+							<option value="">Sin formulario</option>
+
+							<?php foreach ($faqForms as $faqForm): ?>
+								<?php
+	                            $formId = (int) $faqForm->id;
+							    $formLabel = isset($faqFormsData[$formId]) ? $faqFormsData[$formId] : '';
+							    ?>
+
+								<option
+									value="<?php echo $formId; ?>"
+									<?php echo ((string) $currentTranslation->form_id === (string) $formId) ? 'selected' : ''; ?>>
+									<?php echo CHtml::encode($formLabel); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+
+						<div class="admin-form-form-hint">
+							<i class="fas fa-link" aria-hidden="true"></i>
+							<span class="admin-form-form-hint-text">No hay formulario seleccionado.</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="admin-form-translation-card__footer">
+				<div class="admin-form-footer__note">
+					<span class="required">*</span> Campos obligatorios
+				</div>
+
+				<div class="admin-form-actions">
+					<button
+						type="submit"
+						name="save_language"
+						value="<?php echo $languageId; ?>"
+						class="admin-form-button admin-form-button--primary js-save-language">
+						<i class="fas fa-save" aria-hidden="true"></i>
+						<?php echo $hasTranslation ? 'Guardar cambios' : 'Guardar traducción'; ?>
+					</button>
+				</div>
+			</div>
+		</div>
+	<?php endforeach; ?>
+<?php else: ?>
+	<div class="admin-form-card">
+		<div class="admin-form-empty">
+			<i class="fas fa-language" aria-hidden="true"></i>
+			No hay idiomas configurados.
+		</div>
+	</div>
+<?php endif; ?>
+
+<?php $this->endWidget(); ?>
+
 
 </div>

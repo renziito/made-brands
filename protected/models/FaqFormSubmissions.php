@@ -8,6 +8,7 @@
  * @property string $form_id
  * @property string $ip_address
  * @property string $user_agent
+ * @property string $estado
  * @property string $created_at
  * @property string $updated_at
  *
@@ -35,11 +36,11 @@ class FaqFormSubmissions extends CActiveRecord
 		return array(
 			array('form_id, created_at, updated_at', 'required', 'message' => '{attribute} no debe estar vacio.'),
 			array('form_id', 'length', 'max'=>10),
-			array('ip_address', 'length', 'max'=>45),
+			array('ip_address, estado', 'length', 'max'=>45),
 			array('user_agent', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, form_id, ip_address, user_agent, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('id, form_id, ip_address, user_agent, estado, created_at, updated_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -66,6 +67,7 @@ class FaqFormSubmissions extends CActiveRecord
 			'form_id' => 'Form',
 			'ip_address' => 'Ip Address',
 			'user_agent' => 'User Agent',
+			'estado' => 'Estado',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
 		);
@@ -93,6 +95,7 @@ class FaqFormSubmissions extends CActiveRecord
 		$criteria->compare('form_id',$this->form_id,true);
 		$criteria->compare('ip_address',$this->ip_address,true);
 		$criteria->compare('user_agent',$this->user_agent,true);
+		$criteria->compare('estado',$this->estado,true);
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 

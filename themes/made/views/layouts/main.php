@@ -54,6 +54,10 @@ $themeUrl = Yii::app()->theme->baseUrl;
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/footer.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/login.css">
     <link rel="stylesheet" href="<?php echo $themeUrl; ?>/assets/css/responsive.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="<?php echo $themeUrl; ?>/assets/js/theme.js"></script>
 </head>
 
 <?php
@@ -302,9 +306,7 @@ $languageId = $language ? $language->id : null;
 
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="<?php echo $themeUrl; ?>/assets/js/theme.js"></script>
+
 </body>
 
 </html>

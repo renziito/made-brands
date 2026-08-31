@@ -8,8 +8,8 @@
 /* @var $faqForms FaqForms[] */
 
 $this->breadcrumbs = array(
-	'Faqs' => array('index'),
-	'Crear',
+    'Faqs' => array('index'),
+    'Crear',
 );
 
 ?>
@@ -20,17 +20,17 @@ $this->breadcrumbs = array(
 
 	<?php
 
-	$this->renderPartial(
-		'_form',
-		array(
-			'model' => $model,
-			'languages' => $languages,
-			'defaultLanguage' => $defaultLanguage,
-			'translation' => $translation,
-			'faqForms' => $faqForms,
-		)
-	);
+    $this->renderPartial(
+        '_form',
+        array(
+            'model' => $model,
+            'languages' => $languages,
+            'defaultLanguage' => $defaultLanguage,
+            'translation' => $translation,
+            'faqForms' => $faqForms,
+        )
+    );
 
-	?>
+?>
 
 </div>

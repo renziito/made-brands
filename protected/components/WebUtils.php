@@ -454,16 +454,11 @@ class WebUtils
 
             $faqItems[] = array(
                 'id' => 'faq-' . $faq->id,
-
                 'icon' => $faq->icon,
-
-                'question' => $translation
-                    ? $translation->question
-                    : '',
-
-                'answer' => $translation
-                    ? $translation->answer
-                    : '',
+                'question' => $translation ? $translation->question : '',
+                'answer' => $translation ? $translation->answer : '',
+                'form_id' => $translation ? $translation->form_id : null,
+                'form_text' => $translation ? $translation->form_text : null,
             );
         }
 

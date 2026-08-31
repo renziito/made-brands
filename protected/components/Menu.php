@@ -40,7 +40,7 @@ class Menu
                 'name'  => 'Catalogo',
                 'link'  => 'javascript:;',
                 'icon'  => 'fab fa-product-hunt',
-                'class' => self::isActive(['cpanel', ['brands', 'about', 'faq'], '*']),
+                'class' => self::isActive(['cpanel', ['brands', 'categories', 'products'], '*']),
                 'sub'   => [
                     [
                         'name'  => 'Marcas',
@@ -75,7 +75,21 @@ class Menu
                 'name'  => 'Fomularios',
                 'icon'  => ' fas fa-edit',
                 'class' => self::isActive(['cpanel', ['forms'], '*']),
-                'link'  => Yii::app()->createurl('cpanel/forms'),
+                'link'  => "javascript:;",
+                'sub'   => [
+                    [
+                        'name'  => 'Plantillas',
+                        'icon'  => ' fas fa-th-list',
+                        'class' => self::isActive(['cpanel', ['forms'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/forms'),
+                    ],
+                    [
+                        'name'  => 'Respuestas',
+                        'icon'  => ' fas fa-comment-dots',
+                        'class' => self::isActive(['cpanel', ['respuesta'], '*']),
+                        'link'  => Yii::app()->createurl('cpanel/respuesta'),
+                    ]
+                ]
             ],
             [
                 'name'  => 'Extras',
