@@ -96,7 +96,14 @@ class ExtrasController extends Controller
 			throw new CHttpException(400, 'Los datos de la traducción son inválidos.');
 		}
 
+		$now = date('Y-m-d H:i:s');
+
 		$menuItem = MenuItems::model()->findByPk($menuItemId);
+		if ($menuItem->created_at == null) {
+			$menuItem->created_at = $now;
+		}
+
+		$menuItem->updated_at = $now;
 
 		if ($menuItem === null) {
 			throw new CHttpException(404, 'El menu item no existe.');
@@ -115,10 +122,12 @@ class ExtrasController extends Controller
 
 		if ($translation === null) {
 			$translation = new MenuItemTranslations;
+			$translation->created_at = $now;
 			$translation->menu_item_id = $menuItemId;
 			$translation->language_id = $languageId;
 		}
 
+		$translation->updated_at = $now;
 		$translation->label = $label;
 
 		if (!$translation->save()) {

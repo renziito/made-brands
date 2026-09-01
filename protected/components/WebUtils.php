@@ -4,7 +4,7 @@ class WebUtils
 {
     public static function getHero($languageId)
     {
-        return    HeroSlides::model()->with(array(
+        return HeroSlides::model()->with(array(
             'heroSlideTranslations' => array(
                 'condition' => 'heroSlideTranslations.language_id = :language',
                 'params' => array(
@@ -196,6 +196,7 @@ class WebUtils
         );
     }
 
+
     public static function getBusinesses($languageId)
     {
         $businessesModels = Businesses::model()->with(array(
@@ -257,6 +258,7 @@ class WebUtils
         return $businesses;
     }
 
+
     public static function getProductCategories($languageId)
     {
         $categoryModels = Categories::model()->with(array(
@@ -307,7 +309,7 @@ class WebUtils
                     : '',
 
                 'image' => !empty($category->image)
-                    ?  $category->image
+                    ? $category->image
                     : '',
 
                 'alt' => $translation
@@ -326,14 +328,19 @@ class WebUtils
         return $productCategories;
     }
 
+
     public static function getBrandSection($languageId)
     {
         $section = BrandsSection::model()->find(
             'language_id = :language',
-            array(':language' => $languageId,)
+            array(
+                ':language' => $languageId,
+            )
         );
 
+
         if (!$section) {
+
             return array(
                 'image' => '',
                 'eyebrow' => '',
@@ -343,9 +350,10 @@ class WebUtils
             );
         }
 
+
         return array(
             'image' => !empty($section->image)
-                ?  $section->image
+                ? $section->image
                 : '',
 
             'eyebrow' => $section->eyebrow,
@@ -357,6 +365,7 @@ class WebUtils
             'featuredText' => $section->featured_label,
         );
     }
+
 
     public static function getFeaturedBrands()
     {
@@ -380,7 +389,9 @@ class WebUtils
 
             $featuredBrands[] = array(
                 'name' => $brand->name,
+
                 'website_url' => $brand->website_url,
+
                 'image' => !empty($brand->logo)
                     ? $brand->logo
                     : '',
@@ -390,6 +401,7 @@ class WebUtils
 
         return $featuredBrands;
     }
+
 
     public static function getBrands()
     {
@@ -421,6 +433,7 @@ class WebUtils
 
         return $brands;
     }
+
 
     public static function getFaqItems($languageId)
     {
@@ -454,17 +467,35 @@ class WebUtils
 
             $faqItems[] = array(
                 'id' => 'faq-' . $faq->id,
+
                 'icon' => $faq->icon,
-                'question' => $translation ? $translation->question : '',
-                'answer' => $translation ? $translation->answer : '',
-                'form_id' => $translation ? $translation->form_id : null,
-                'form_text' => $translation ? $translation->form_text : null,
+
+                'question' =>
+                $translation
+                    ? $translation->question
+                    : '',
+
+                'answer' =>
+                $translation
+                    ? $translation->answer
+                    : '',
+
+                'form_id' =>
+                $translation
+                    ? $translation->form_id
+                    : null,
+
+                'form_text' =>
+                $translation
+                    ? $translation->form_text
+                    : null,
             );
         }
 
 
         return $faqItems;
     }
+
 
     public static function getContactItems($languageId)
     {
@@ -478,27 +509,38 @@ class WebUtils
                 'joinType' => 'INNER JOIN',
                 'condition' => 'contactItemTranslations.language_id = :languageId',
                 'params' => array(
-                    ':languageId' => $languageId,
+                    ':languageId' => (int) $languageId,
                 ),
             ),
         ))->findAll($criteria);
 
-
         $result = array();
 
         foreach ($items as $item) {
+
+            if (
+                empty($item->contactItemTranslations) ||
+                !isset($item->contactItemTranslations[0])
+            ) {
+                continue;
+            }
+
+            $translation =
+                $item->contactItemTranslations[0];
+
             $result[] = array(
-                'id' => $item->id,
+                'id' => (int) $item->id,
                 'icon' => $item->icon,
-                'label' => $item->contactItemTranslations[0]->label,
-                'label_size' => $item->contactItemTranslations[0]->label_size,
-                'value' => $item->contactItemTranslations[0]->value,
-                'value_size' => $item->contactItemTranslations[0]->value_size,
+                'label' => $translation->label,
+                'label_size' => $translation->label_size,
+                'value' => $translation->value,
+                'value_size' => $translation->value_size,
             );
         }
 
         return $result;
     }
+
 
     public static function getContactCta($languageId)
     {
@@ -506,119 +548,676 @@ class WebUtils
 
         $criteria->condition = 't.is_active = 1';
 
+
         $contactCta = ContactCta::model()->with(array(
             'contactCtaTranslations' => array(
-                'joinType' => 'INNER JOIN',
-                'condition' => 'contactCtaTranslations.language_id = :languageId',
+                'joinType' => 'LEFT JOIN',
+
+                'condition' =>
+                'contactCtaTranslations.language_id = :languageId',
+
                 'params' => array(
-                    ':languageId' => $languageId,
+                    ':languageId' => (int) $languageId,
                 ),
             ),
         ))->find($criteria);
 
+
+        /*
+     * ==========================================================
+     * CONTACT CTA DOES NOT EXIST
+     * ==========================================================
+     */
+
+        if ($contactCta === null) {
+
+            $contactCta = new ContactCta();
+
+            $contactCta->id = 0;
+
+            $contactCta->is_active = 1;
+
+            $contactCta->url = '#';
+
+            $contactCta->icon = 'fa fa-arrow-right';
+
+
+            $contactCta->contactCtaTranslations = array(
+                self::createContactCtaPlaceholderTranslation(
+                    0,
+                    $languageId
+                ),
+            );
+
+
+            return $contactCta;
+        }
+
+
+        /*
+     * ==========================================================
+     * TRANSLATION
+     * ==========================================================
+     */
+
+        if (
+            empty($contactCta->contactCtaTranslations) ||
+            !isset(
+                $contactCta->contactCtaTranslations[0]
+            )
+        ) {
+
+            $contactCta->contactCtaTranslations = array(
+                self::createContactCtaPlaceholderTranslation(
+                    $contactCta->id,
+                    $languageId
+                ),
+            );
+        }
+
+
         return $contactCta;
     }
 
-    public static function getSocialLinks()
-    {
-        $criteria = new CDbCriteria();
 
-        $criteria->condition = 't.is_active = 1';
-        $criteria->order = 't.sort_order ASC';
+    /**
+     * Creates a placeholder translation for Contact CTA.
+     */
+    private static function createContactCtaPlaceholderTranslation(
+        $contactCtaId,
+        $languageId
+    ) {
+        $translation =
+            new ContactCtaTranslations();
 
-        return SocialLinks::model()->findAll($criteria);
+
+        $translation->id =
+            0;
+
+
+        $translation->contact_cta_id =
+            (int) $contactCtaId;
+
+
+        $translation->language_id =
+            (int) $languageId;
+
+
+        $translation->title =
+            '[contact_cta_title]';
+
+
+        $translation->title_size =
+            '';
+
+
+        $translation->text =
+            '[contact_cta_text]';
+
+
+        $translation->text_size =
+            '';
+
+
+        $translation->button_text =
+            '[contact_cta_button_text]';
+
+
+        $translation->button_text_size =
+            '';
+
+
+        return $translation;
     }
 
-    public static function getSiteSetting($key, $default = null)
+
+    public static function getSocialLinks()
     {
-        $setting = SiteSettings::model()->find(
-            'LOWER(setting_key) = LOWER(:key)',
-            array(
-                ':key' => $key,
-            )
+        $criteria =
+            new CDbCriteria();
+
+
+        $criteria->condition =
+            't.is_active = 1';
+
+
+        $criteria->order =
+            't.sort_order ASC';
+
+
+        return SocialLinks::model()->findAll(
+            $criteria
         );
+    }
+
+
+    public static function getSiteSetting(
+        $key,
+        $default = null
+    ) {
+        $setting =
+            SiteSettings::model()->find(
+                'LOWER(setting_key) = LOWER(:key)',
+                array(
+                    ':key' =>
+                    $key,
+                )
+            );
+
 
         if ($setting === null) {
+
             return $default;
         }
+
 
         return $setting->setting_value;
     }
 
-    public static function getMenuItemByKey($key, $languageId)
-    {
-        $item = MenuItems::model()->with(array(
-            'menuItemTranslations' => array(
-                'condition' => 'menuItemTranslations.language_id = :language',
-                'params' => array(
-                    ':language' => (int) $languageId,
+
+    public static function getMenuItemByKey(
+        $key,
+        $languageId
+    ) {
+        $item =
+            MenuItems::model()->with(array(
+                'menuItemTranslations' => array(
+                    'condition' =>
+                    'menuItemTranslations.language_id = :language',
+
+                    'params' => array(
+                        ':language' =>
+                        (int) $languageId,
+                    ),
                 ),
-            ),
-        ))->find(array(
-            'condition' => '`key` = :key AND active = 1',
-            'params' => array(
-                ':key' => $key,
-            ),
-        ));
+            ))->find(array(
+                'condition' =>
+                '`key` = :key AND active = 1',
+
+                'params' => array(
+                    ':key' =>
+                    $key,
+                ),
+            ));
+
+
+        /*
+     * If the menu item does not exist, return a placeholder.
+     */
 
         if ($item === null) {
-            return null;
-        }
 
-        $translation = null;
+            return array(
+                'id' =>
+                0,
 
-        if (!empty($item->menuItemTranslations)) {
-            $translation = $item->menuItemTranslations[0];
-        }
+                'key' =>
+                $key,
 
-        return array(
-            'id' => (int) $item->id,
-            'key' => $item->key,
-            'label' => $translation !== null
-                ? $translation->label
-                : '',
-            'is_menu' => (int) $item->is_menu,
-            'is_button' => (int) $item->is_button,
-            'link' => $item->link,
-            'sort_order' => (int) $item->sort_order,
-        );
-    }
+                'label' =>
+                '[' . $key . ']',
 
-    public static function getMenu($languageId)
-    {
-        $items = MenuItems::model()->with(array(
-            'menuItemTranslations' => array(
-                'condition' => 'menuItemTranslations.language_id = :language',
-                'params' => array(
-                    ':language' => (int) $languageId,
-                ),
-            ),
-        ))->findAll(array(
-            'condition' => 'active = 1 AND is_menu = 1',
-            'order' => 'sort_order ASC',
-        ));
+                'is_menu' =>
+                0,
 
-        $menu = array();
+                'is_button' =>
+                0,
 
-        foreach ($items as $item) {
-            $translation = null;
+                'link' =>
+                '',
 
-            if (!empty($item->menuItemTranslations)) {
-                $translation = $item->menuItemTranslations[0];
-            }
-            $menu[] = array(
-                'id' => (int) $item->id,
-                'key' => $item->key,
-                'label' => $translation !== null
-                    ? $translation->label
-                    : '',
-                'is_menu' => (int) $item->is_menu,
-                'is_button' => (int) $item->is_button,
-                'link' => $item->link,
-                'sort_order' => (int) $item->sort_order,
+                'sort_order' =>
+                0,
             );
         }
 
+
+        $translation =
+            null;
+
+
+        if (
+            !empty($item->menuItemTranslations)
+        ) {
+
+            $translation =
+                $item->menuItemTranslations[0];
+        }
+
+
+        /*
+     * If the menu item exists but the translation does not,
+     * return a visible placeholder.
+     */
+
+        $label =
+            $translation !== null
+            ? trim(
+                (string)
+                $translation->label
+            )
+            : '';
+
+
+        if (
+            $label === ''
+        ) {
+
+            $label =
+                '[' . $key . ']';
+        }
+
+
+        return array(
+            'id' =>
+            (int) $item->id,
+
+            'key' =>
+            $item->key,
+
+            'label' =>
+            $label,
+
+            'is_menu' =>
+            (int) $item->is_menu,
+
+            'is_button' =>
+            (int) $item->is_button,
+
+            'link' =>
+            $item->link,
+
+            'sort_order' =>
+            (int) $item->sort_order,
+        );
+    }
+
+
+    public static function getMenu($languageId)
+    {
+        $items =
+            MenuItems::model()->with(array(
+                'menuItemTranslations' => array(
+                    'condition' =>
+                    'menuItemTranslations.language_id = :language',
+
+                    'params' => array(
+                        ':language' =>
+                        (int) $languageId,
+                    ),
+                ),
+            ))->findAll(array(
+                'condition' =>
+                'active = 1 AND is_menu = 1',
+
+                'order' =>
+                'sort_order ASC',
+            ));
+
+
+        $menu =
+            array();
+
+
+        foreach (
+            $items
+            as $item
+        ) {
+
+            $translation =
+                null;
+
+
+            if (
+                !empty($item->menuItemTranslations)
+            ) {
+
+                $translation =
+                    $item->menuItemTranslations[0];
+            }
+
+
+            $menu[] =
+                array(
+                    'id' =>
+                    (int) $item->id,
+
+                    'key' =>
+                    $item->key,
+
+                    'label' =>
+                    $translation !== null
+                        ? $translation->label
+                        : '',
+
+                    'is_menu' =>
+                    (int) $item->is_menu,
+
+                    'is_button' =>
+                    (int) $item->is_button,
+
+                    'link' =>
+                    $item->link,
+
+                    'sort_order' =>
+                    (int) $item->sort_order,
+                );
+        }
+
+
         return $menu;
+    }
+
+
+    public static function getActiveLanguages()
+    {
+        return Languages::model()->findAll(
+            array(
+                'condition' =>
+                'is_active = 1',
+
+                'order' =>
+                'sort_order ASC, id ASC',
+            )
+        );
+    }
+
+
+    public static function getHeroHtml($languageId)
+    {
+        $heroSlides =
+            self::getHero(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_hero',
+            array(
+                'heroSlidesModels' =>
+                $heroSlides,
+
+                'languageId' =>
+                $languageId
+            ),
+            true
+        );
+    }
+
+
+    public static function getIntroHtml($languageId)
+    {
+        $introContent =
+            self::getIntro(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_intro',
+            array(
+                'introContent' =>
+                $introContent,
+
+                'languageId' =>
+                $languageId
+            ),
+            true
+        );
+    }
+
+
+    public static function getBusinessHtml($languageId)
+    {
+        $businesses =
+            self::getBusinesses(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_business',
+            array(
+                'businesses' =>
+                $businesses,
+
+                'languageId' =>
+                $languageId,
+            ),
+            true
+        );
+    }
+
+
+    public static function getProductsHtml($languageId)
+    {
+        $featuredCategories =
+            self::getProductCategories(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_products',
+            array(
+                'featuredCategories' =>
+                $featuredCategories,
+
+                'languageId' =>
+                $languageId,
+            ),
+            true
+        );
+    }
+
+
+    /**
+     * Renders the public product catalog for AJAX language changes.
+     *
+     * The controller already contains the complete catalog data
+     * preparation logic, including:
+     *
+     * - categories
+     * - subcategories
+     * - brands
+     * - translated products
+     * - filters
+     * - pagination
+     * - selected product
+     *
+     * We reuse that logic through getProductosViewData()
+     * and only render the catalog partial here.
+     */
+    public static function getProductosHtml($languageId)
+    {
+        $controller =
+            Yii::app()->controller;
+
+
+        $viewData =
+            $controller->getProductosViewData();
+
+
+        $viewData['languageId'] =
+            $languageId;
+
+
+        return $controller->renderPartial(
+            'partials/_productos_catalog',
+            $viewData,
+            true
+        );
+    }
+
+
+    public static function getClientsHtml($languageId)
+    {
+        $brandSection =
+            self::getBrandSection(
+                $languageId
+            );
+
+
+        $featuredBrands =
+            self::getFeaturedBrands();
+
+
+        $brands =
+            self::getBrands();
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_clients',
+            array(
+                'brandSection' =>
+                $brandSection,
+
+                'featuredBrands' =>
+                $featuredBrands,
+
+                'brands' =>
+                $brands,
+
+                'languageId' =>
+                $languageId,
+            ),
+            true
+        );
+    }
+
+
+    public static function getFaqHtml($languageId)
+    {
+        $faqItems =
+            self::getFaqItems(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderPartial(
+            'partials/_faq',
+            array(
+                'faqItems' =>
+                $faqItems,
+
+                'languageId' =>
+                $languageId,
+            ),
+            true
+        );
+    }
+
+
+    public static function getMenuHtml($languageId)
+    {
+        $menuItems =
+            self::getMenu(
+                $languageId
+            );
+
+
+        $languageCode =
+            Yii::app()->session->get(
+                'language',
+                'es'
+            );
+
+
+        $languages =
+            self::getActiveLanguages();
+
+
+        $isHome =
+            Yii::app()->controller->getRoute()
+            ===
+            'site/index';
+
+
+        $sectionUrl =
+            function ($section) use ($isHome) {
+
+                return $isHome
+                    ? '#' . $section
+                    : Yii::app()->controller->createUrl(
+                        'site/index'
+                    ) . '#' . $section;
+            };
+
+
+        return Yii::app()->controller->renderFile(
+            Yii::app()->theme->viewPath .
+                '/partials/_site_menu.php',
+
+            array(
+                'menuItems' =>
+                $menuItems,
+
+                'isHome' =>
+                $isHome,
+
+                'languageCode' =>
+                $languageCode,
+
+                'languages' =>
+                $languages,
+
+                'sectionUrl' =>
+                $sectionUrl,
+            ),
+
+            true
+        );
+    }
+
+
+    public static function getFooterContactHtml(
+        $languageId
+    ) {
+        $contactItems =
+            self::getContactItems(
+                $languageId
+            );
+
+
+        $contactCta =
+            self::getContactCta(
+                $languageId
+            );
+
+
+        return Yii::app()->controller->renderFile(
+            Yii::app()->theme->viewPath .
+                '/partials/_footer_contact.php',
+
+            array(
+                'contactItems' =>
+                $contactItems,
+
+                'contactCta' =>
+                $contactCta,
+
+                'languageId' =>
+                $languageId,
+            ),
+
+            true
+        );
+    }
+
+
+    public static function getCopyrightHtml(
+        $languageId
+    ) {
+        return Yii::app()->controller->renderFile(
+            Yii::app()->theme->viewPath .
+                '/partials/_footer_copyright.php',
+
+            array(
+                'languageId' =>
+                $languageId,
+            ),
+
+            true
+        );
     }
 }

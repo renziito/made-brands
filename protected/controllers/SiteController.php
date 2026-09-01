@@ -5,8 +5,18 @@ class SiteController extends Controller
 	public function actionIndex()
 	{
 		$languageCode = Yii::app()->session->get('language', 'es');
-		$language = Languages::model()->find('code = :code', array(':code' => $languageCode));
-		$languageId = $language ? $language->id : null;
+
+		$language = Languages::model()->find(
+			'code = :code',
+			array(
+				':code' => $languageCode
+			)
+		);
+
+		$languageId = $language
+			? $language->id
+			: null;
+
 
 		$heroSlides = WebUtils::getHero($languageId);
 		$introContent = WebUtils::getIntro($languageId);
@@ -17,17 +27,334 @@ class SiteController extends Controller
 		$brands = WebUtils::getBrands();
 		$faqItems = WebUtils::getFaqItems($languageId);
 
-		$this->render('index', array(
-			'languageId' => $languageId,
-			'heroSlides' => $heroSlides,
-			'introContent' => $introContent,
-			'businesses' => $businesses,
-			'featuredCategories' => $featuredCategories,
-			'brandSection' => $brandSection,
-			'featuredBrands' => $featuredBrands,
-			'brands' => $brands,
-			'faqItems' => $faqItems
-		));
+
+		$this->render(
+			'index',
+			array(
+				'languageId' =>
+				$languageId,
+
+				'heroSlides' =>
+				$heroSlides,
+
+				'introContent' =>
+				$introContent,
+
+				'businesses' =>
+				$businesses,
+
+				'featuredCategories' =>
+				$featuredCategories,
+
+				'brandSection' =>
+				$brandSection,
+
+				'featuredBrands' =>
+				$featuredBrands,
+
+				'brands' =>
+				$brands,
+
+				'faqItems' =>
+				$faqItems
+			)
+		);
+	}
+
+
+	/**
+	 * Changes the current language through AJAX.
+	 *
+	 * The selected language is stored in the session.
+	 *
+	 * Homepage sections are regenerated through their
+	 * corresponding WebUtils methods.
+	 *
+	 * Product catalog pages are regenerated through
+	 * WebUtils::getProductosHtml().
+	 */
+	public function actionChangeLanguage()
+	{
+		header(
+			'Content-Type: application/json; charset=UTF-8'
+		);
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| REQUEST METHOD
+		|--------------------------------------------------------------------------
+		*/
+
+		if (!Yii::app()->request->isPostRequest) {
+
+			echo CJSON::encode(
+				array(
+					'success' => false,
+
+					'message' =>
+					'Método de solicitud no permitido.'
+				)
+			);
+
+			Yii::app()->end();
+		}
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| LANGUAGE CODE
+		|--------------------------------------------------------------------------
+		*/
+
+		$languageCode = trim(
+			(string) Yii::app()->request->getPost(
+				'language',
+				''
+			)
+		);
+
+
+		$languageCode = strtolower(
+			$languageCode
+		);
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| VALIDATE LANGUAGE CODE
+		|--------------------------------------------------------------------------
+		*/
+
+		if ($languageCode === '') {
+
+			echo CJSON::encode(
+				array(
+					'success' => false,
+
+					'message' =>
+					'No se recibió un idioma válido.'
+				)
+			);
+
+			Yii::app()->end();
+		}
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| FIND ACTIVE LANGUAGE
+		|--------------------------------------------------------------------------
+		*/
+
+		$language = Languages::model()->find(
+			'LOWER(code) = :code AND is_active = 1',
+			array(
+				':code' =>
+				$languageCode
+			)
+		);
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| LANGUAGE NOT AVAILABLE
+		|--------------------------------------------------------------------------
+		*/
+
+		if ($language === null) {
+
+			echo CJSON::encode(
+				array(
+					'success' => false,
+
+					'message' =>
+					'El idioma seleccionado no está disponible.'
+				)
+			);
+
+			Yii::app()->end();
+		}
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| SAVE LANGUAGE IN SESSION
+		|--------------------------------------------------------------------------
+		*/
+
+		Yii::app()->session['language'] =
+			$language->code;
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| LANGUAGE ID
+		|--------------------------------------------------------------------------
+		*/
+
+		$languageId =
+			(int) $language->id;
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| HOMEPAGE HTML
+		|--------------------------------------------------------------------------
+		*/
+
+		$heroHtml =
+			WebUtils::getHeroHtml(
+				$languageId
+			);
+
+		$introHtml =
+			WebUtils::getIntroHtml(
+				$languageId
+			);
+
+		$businessHtml =
+			WebUtils::getBusinessHtml(
+				$languageId
+			);
+
+		$productsHtml =
+			WebUtils::getProductsHtml(
+				$languageId
+			);
+
+		$clientsHtml =
+			WebUtils::getClientsHtml(
+				$languageId
+			);
+
+		$faqHtml =
+			WebUtils::getFaqHtml(
+				$languageId
+			);
+
+		$menuHtml =
+			WebUtils::getMenuHtml(
+				$languageId
+			);
+
+		$footerContactHtml =
+			WebUtils::getFooterContactHtml(
+				$languageId
+			);
+
+		$copyrightHtml =
+			WebUtils::getCopyrightHtml(
+				$languageId
+			);
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| PRODUCT CATALOG HTML
+		|--------------------------------------------------------------------------
+		|
+		| This is intentionally generated separately from the
+		| homepage product section.
+		|
+		| WebUtils::getProductosHtml() will render the catalog
+		| partial using the current URL filters.
+		|
+		*/
+
+		$catalogHtml =
+			WebUtils::getProductosHtml(
+				$languageId
+			);
+
+
+		/*
+		|--------------------------------------------------------------------------
+		| AJAX RESPONSE
+		|--------------------------------------------------------------------------
+		*/
+
+		echo CJSON::encode(
+			array(
+				'success' =>
+				true,
+
+				'language' =>
+				strtolower(
+					trim(
+						(string)
+						$language->code
+					)
+				),
+
+				'languageId' =>
+				$languageId,
+
+				'html' =>
+				array(
+
+					/*
+					|--------------------------------------------------------------------------
+					| GENERAL MENU
+					|--------------------------------------------------------------------------
+					*/
+
+					'menu' =>
+					$menuHtml,
+
+
+					/*
+					|--------------------------------------------------------------------------
+					| HOMEPAGE
+					|--------------------------------------------------------------------------
+					*/
+
+					'hero' =>
+					$heroHtml,
+
+					'intro' =>
+					$introHtml,
+
+					'business' =>
+					$businessHtml,
+
+					'products' =>
+					$productsHtml,
+
+					'clients' =>
+					$clientsHtml,
+
+					'faq' =>
+					$faqHtml,
+
+
+					/*
+					|--------------------------------------------------------------------------
+					| FOOTER
+					|--------------------------------------------------------------------------
+					*/
+
+					'footerContact' =>
+					$footerContactHtml,
+
+					'copyright' =>
+					$copyrightHtml,
+
+
+					/*
+					|--------------------------------------------------------------------------
+					| PRODUCT CATALOG
+					|--------------------------------------------------------------------------
+					*/
+
+					'catalog' =>
+					$catalogHtml,
+				)
+			)
+		);
+
+
+		Yii::app()->end();
 	}
 
 
@@ -36,27 +363,69 @@ class SiteController extends Controller
 	 */
 	public function actionError()
 	{
-		if ($error = Yii::app()->errorHandler->error) {
-			if (Yii::app()->request->isAjaxRequest)
+		if (
+			$error =
+			Yii::app()->errorHandler->error
+		) {
+
+			if (
+				Yii::app()->request->isAjaxRequest
+			) {
+
 				echo $error['message'];
-			else
-				$this->render('error', $error);
+			} else {
+
+				$this->render(
+					'error',
+					$error
+				);
+			}
 		}
 	}
 
+
 	/**
-	 * Displays the login page
+	 * Displays the login page.
 	 */
 	public function actionLogin()
 	{
-		$model = new LoginForm;
-		if (isset($_POST['LoginForm'])) {
-			$model->attributes = $_POST['LoginForm'];
-			if ($model->validate() && $model->login())
-				$this->redirect(Yii::app()->createAbsoluteUrl('cpanel'));
+		$model =
+			new LoginForm;
+
+
+		if (
+			isset(
+				$_POST['LoginForm']
+			)
+		) {
+
+			$model->attributes =
+				$_POST['LoginForm'];
+
+
+			if (
+				$model->validate() &&
+				$model->login()
+			) {
+
+				$this->redirect(
+					Yii::app()->createAbsoluteUrl(
+						'cpanel'
+					)
+				);
+			}
 		}
-		$this->render('login', array('model' => $model));
+
+
+		$this->render(
+			'login',
+			array(
+				'model' =>
+				$model
+			)
+		);
 	}
+
 
 	/**
 	 * Logs out the current user and redirect to homepage.
@@ -64,8 +433,13 @@ class SiteController extends Controller
 	public function actionLogout()
 	{
 		Yii::app()->user->logout();
-		$this->redirect(Yii::app()->homeUrl);
+
+
+		$this->redirect(
+			Yii::app()->homeUrl
+		);
 	}
+
 
 	/**
 	 * Displays the public product catalog.
@@ -83,35 +457,71 @@ class SiteController extends Controller
 	 */
 	public function actionProductos()
 	{
+		$productViewData =
+			$this->getProductosViewData();
+
+
+		$this->render(
+			'productos',
+			$productViewData
+		);
+	}
+
+
+	/**
+	 * Builds all public product catalog data.
+	 *
+	 * This method is shared by:
+	 *
+	 * - actionProductos()
+	 * - WebUtils::getProductosHtml()
+	 *
+	 * so the catalog uses exactly the same translation,
+	 * filter, product and pagination logic whether the
+	 * page is loaded normally or updated through AJAX.
+	 */
+	public function getProductosViewData()
+	{
 		/*
 		 * ==========================================================
 		 * LANGUAGE
 		 * ==========================================================
 		 */
 
-		$languageCode = Yii::app()->session->get(
-			'language',
-			'es'
-		);
+		$languageCode =
+			Yii::app()->session->get(
+				'language',
+				'es'
+			);
 
-		$language = Languages::model()->find(
-			'code = :code',
-			array(
-				':code' => $languageCode,
-			)
-		);
 
-		$languageId = $language
+		$language =
+			Languages::model()->find(
+				'code = :code',
+				array(
+					':code' =>
+					$languageCode,
+				)
+			);
+
+
+		$languageId =
+			$language
 			? (int) $language->id
 			: null;
 
-		$defaultLanguage = Languages::model()->findByAttributes(
-			array(
-				'is_default' => 1,
-			)
-		);
 
-		$defaultLanguageId = $defaultLanguage
+		$defaultLanguage =
+			Languages::model()->findByAttributes(
+				array(
+					'is_default' =>
+					1,
+				)
+			);
+
+
+		$defaultLanguageId =
+			$defaultLanguage
 			? (int) $defaultLanguage->id
 			: $languageId;
 
@@ -122,97 +532,158 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$categoryFilter = trim((string) Yii::app()->request->getQuery(
-			'categoria',
-			''
-		));
+		$categoryFilter =
+			trim(
+				(string)
+				Yii::app()->request->getQuery(
+					'categoria',
+					''
+				)
+			);
 
-		$subcategoryFilter = trim((string) Yii::app()->request->getQuery(
-			'subcategoria',
-			''
-		));
 
-		$brandFilter = trim((string) Yii::app()->request->getQuery(
-			'marca',
-			''
-		));
+		$subcategoryFilter =
+			trim(
+				(string)
+				Yii::app()->request->getQuery(
+					'subcategoria',
+					''
+				)
+			);
 
-		$orderFilter = trim((string) Yii::app()->request->getQuery(
-			'orden',
-			'recientes'
-		));
 
-		$productFilter = trim((string) Yii::app()->request->getQuery(
-			'producto',
-			''
-		));
+		$brandFilter =
+			trim(
+				(string)
+				Yii::app()->request->getQuery(
+					'marca',
+					''
+				)
+			);
+
+
+		$orderFilter =
+			trim(
+				(string)
+				Yii::app()->request->getQuery(
+					'orden',
+					'recientes'
+				)
+			);
+
+
+		$productFilter =
+			trim(
+				(string)
+				Yii::app()->request->getQuery(
+					'producto',
+					''
+				)
+			);
 
 
 		/*
 		 * ==========================================================
 		 * CATEGORIES
 		 * ==========================================================
-		 *
-		 * Categories do not have their own slug column.
-		 * The public URL therefore uses either:
-		 *
-		 * - numeric ID
-		 * - translated name converted to a URL slug
-		 *
 		 */
 
-		$categories = Categories::model()->findAll(array(
-			'condition' => 'is_active = 1',
-			'order' => 'sort_order ASC, id ASC',
-		));
+		$categories =
+			Categories::model()->findAll(
+				array(
+					'condition' =>
+					'is_active = 1',
 
-		$categoryIds = array();
+					'order' =>
+					'sort_order ASC, id ASC',
+				)
+			);
 
-		foreach ($categories as $category) {
-			$categoryIds[] = (int) $category->id;
+
+		$categoryIds =
+			array();
+
+
+		foreach (
+			$categories
+			as $category
+		) {
+
+			$categoryIds[] =
+				(int)
+				$category->id;
 		}
 
 
 		/*
 		 * Category translations.
 		 */
-		$categoryTranslations = array();
+
+		$categoryTranslations =
+			array();
+
 
 		if ($categoryIds) {
 
-			$criteria = new CDbCriteria;
+			$criteria =
+				new CDbCriteria;
+
 
 			$criteria->addInCondition(
 				'category_id',
 				$categoryIds
 			);
 
+
 			$criteria->addCondition(
 				'language_id IN (:current_language, :default_language)'
 			);
 
+
 			$criteria->params[':current_language'] =
-				(int) $languageId;
+				(int)
+				$languageId;
+
 
 			$criteria->params[':default_language'] =
-				(int) $defaultLanguageId;
+				(int)
+				$defaultLanguageId;
 
-			$rows = CategoryTranslations::model()->findAll(
-				$criteria
-			);
 
-			foreach ($rows as $row) {
+			$rows =
+				CategoryTranslations::model()->findAll(
+					$criteria
+				);
 
-				$categoryId = (int) $row->category_id;
-				$translationLanguageId = (int) $row->language_id;
 
-				if (!isset(
-					$categoryTranslations[$categoryId]
-				)) {
-					$categoryTranslations[$categoryId] = array();
+			foreach (
+				$rows
+				as $row
+			) {
+
+				$categoryId =
+					(int)
+					$row->category_id;
+
+
+				$translationLanguageId =
+					(int)
+					$row->language_id;
+
+
+				if (
+					!isset(
+						$categoryTranslations[$categoryId]
+					)
+				) {
+
+					$categoryTranslations[$categoryId] =
+						array();
 				}
 
-				$categoryTranslations[$categoryId][$translationLanguageId] = $row;
+
+				$categoryTranslations[$categoryId][$translationLanguageId] =
+					$row;
 			}
 		}
 
@@ -220,53 +691,104 @@ class SiteController extends Controller
 		/*
 		 * Prepare public category names.
 		 */
-		$categoryData = array();
-		$categoryNameById = array();
-		$categorySlugById = array();
 
-		foreach ($categories as $category) {
+		$categoryData =
+			array();
 
-			$id = (int) $category->id;
+		$categoryNameById =
+			array();
 
-			$name = '';
+		$categorySlugById =
+			array();
+
+
+		foreach (
+			$categories
+			as $category
+		) {
+
+			$id =
+				(int)
+				$category->id;
+
+
+			$name =
+				'';
+
 
 			if (
-				isset($categoryTranslations[$id]) &&
-				isset($categoryTranslations[$id][$languageId])
+				isset(
+					$categoryTranslations[$id]
+				) &&
+				isset(
+					$categoryTranslations[$id][$languageId]
+				)
 			) {
+
 				$name =
 					trim(
-						(string) $categoryTranslations[$id][$languageId]->name
+						(string)
+						$categoryTranslations[$id][$languageId]->name
 					);
 			}
+
 
 			if (
 				$name === '' &&
-				isset($categoryTranslations[$id]) &&
-				isset($categoryTranslations[$id][$defaultLanguageId])
+				isset(
+					$categoryTranslations[$id]
+				) &&
+				isset(
+					$categoryTranslations[$id][$defaultLanguageId]
+				)
 			) {
+
 				$name =
 					trim(
-						(string) $categoryTranslations[$id][$defaultLanguageId]->name
+						(string)
+						$categoryTranslations[$id][$defaultLanguageId]->name
 					);
 			}
 
+
 			if ($name === '') {
-				$name = 'Categoría #' . $id;
+
+				$name =
+					'Categoría #' . $id;
 			}
 
-			$slug = $this->publicSlug($name);
 
-			$categoryData[] = array(
-				'model' => $category,
-				'id' => $id,
-				'name' => $name,
-				'slug' => $slug,
-				'subcategories' => array(),
-			);
+			$slug =
+				$this->publicSlug(
+					$name
+				);
 
-			$categoryNameById[$id] = $name;
-			$categorySlugById[$id] = $slug;
+
+			$categoryData[] =
+				array(
+					'model' =>
+					$category,
+
+					'id' =>
+					$id,
+
+					'name' =>
+					$name,
+
+					'slug' =>
+					$slug,
+
+					'subcategories' =>
+					array(),
+				);
+
+
+			$categoryNameById[$id] =
+				$name;
+
+
+			$categorySlugById[$id] =
+				$slug;
 		}
 
 
@@ -276,118 +798,227 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$subcategories = Subcategories::model()->findAll(array(
-			'condition' => 'is_active = 1',
-			'order' => 'category_id ASC, sort_order ASC, id ASC',
-		));
+		$subcategories =
+			Subcategories::model()->findAll(
+				array(
+					'condition' =>
+					'is_active = 1',
 
-		$subcategoryIds = array();
+					'order' =>
+					'category_id ASC, sort_order ASC, id ASC',
+				)
+			);
 
-		foreach ($subcategories as $subcategory) {
-			$subcategoryIds[] = (int) $subcategory->id;
+
+		$subcategoryIds =
+			array();
+
+
+		foreach (
+			$subcategories
+			as $subcategory
+		) {
+
+			$subcategoryIds[] =
+				(int)
+				$subcategory->id;
 		}
 
-		$subcategoryTranslations = array();
+
+		$subcategoryTranslations =
+			array();
+
 
 		if ($subcategoryIds) {
 
-			$criteria = new CDbCriteria;
+			$criteria =
+				new CDbCriteria;
+
 
 			$criteria->addInCondition(
 				'subcategory_id',
 				$subcategoryIds
 			);
 
+
 			$criteria->addCondition(
 				'language_id IN (:current_language, :default_language)'
 			);
 
+
 			$criteria->params[':current_language'] =
-				(int) $languageId;
+				(int)
+				$languageId;
+
 
 			$criteria->params[':default_language'] =
-				(int) $defaultLanguageId;
+				(int)
+				$defaultLanguageId;
 
-			$rows = SubcategoryTranslations::model()->findAll(
-				$criteria
-			);
 
-			foreach ($rows as $row) {
+			$rows =
+				SubcategoryTranslations::model()->findAll(
+					$criteria
+				);
+
+
+			foreach (
+				$rows
+				as $row
+			) {
 
 				$subcategoryId =
-					(int) $row->subcategory_id;
+					(int)
+					$row->subcategory_id;
+
 
 				$translationLanguageId =
-					(int) $row->language_id;
+					(int)
+					$row->language_id;
 
-				if (!isset(
-					$subcategoryTranslations[$subcategoryId]
-				)) {
+
+				if (
+					!isset(
+						$subcategoryTranslations[$subcategoryId]
+					)
+				) {
+
 					$subcategoryTranslations[$subcategoryId] =
 						array();
 				}
 
-				$subcategoryTranslations[$subcategoryId][$translationLanguageId] = $row;
+
+				$subcategoryTranslations[$subcategoryId][$translationLanguageId] =
+					$row;
 			}
 		}
 
 
-		$subcategoryData = array();
-		$subcategoryNameById = array();
-		$subcategorySlugById = array();
-		$subcategoryCategoryById = array();
+		$subcategoryData =
+			array();
 
-		foreach ($subcategories as $subcategory) {
+		$subcategoryNameById =
+			array();
 
-			$id = (int) $subcategory->id;
-			$categoryId = (int) $subcategory->category_id;
+		$subcategorySlugById =
+			array();
 
-			$name = '';
+		$subcategoryCategoryById =
+			array();
+
+
+		foreach (
+			$subcategories
+			as $subcategory
+		) {
+
+			$id =
+				(int)
+				$subcategory->id;
+
+
+			$categoryId =
+				(int)
+				$subcategory->category_id;
+
+
+			$name =
+				'';
+
 
 			if (
-				isset($subcategoryTranslations[$id]) &&
-				isset($subcategoryTranslations[$id][$languageId])
+				isset(
+					$subcategoryTranslations[$id]
+				) &&
+				isset(
+					$subcategoryTranslations[$id][$languageId]
+				)
 			) {
+
 				$name =
 					trim(
-						(string) $subcategoryTranslations[$id][$languageId]->name
+						(string)
+						$subcategoryTranslations[$id][$languageId]->name
 					);
 			}
+
 
 			if (
 				$name === '' &&
-				isset($subcategoryTranslations[$id]) &&
-				isset($subcategoryTranslations[$id][$defaultLanguageId])
+				isset(
+					$subcategoryTranslations[$id]
+				) &&
+				isset(
+					$subcategoryTranslations[$id][$defaultLanguageId]
+				)
 			) {
+
 				$name =
 					trim(
-						(string) $subcategoryTranslations[$id][$defaultLanguageId]->name
+						(string)
+						$subcategoryTranslations[$id][$defaultLanguageId]->name
 					);
 			}
 
+
 			if ($name === '') {
-				$name = 'Subcategoría #' . $id;
+
+				$name =
+					'Subcategoría #' . $id;
 			}
 
-			$slug = $this->publicSlug($name);
 
-			$data = array(
-				'model' => $subcategory,
-				'id' => $id,
-				'category_id' => $categoryId,
-				'name' => $name,
-				'slug' => $slug,
-			);
+			$slug =
+				$this->publicSlug(
+					$name
+				);
 
-			$subcategoryData[] = $data;
 
-			$subcategoryNameById[$id] = $name;
-			$subcategorySlugById[$id] = $slug;
-			$subcategoryCategoryById[$id] = $categoryId;
+			$data =
+				array(
+					'model' =>
+					$subcategory,
 
-			foreach ($categoryData as &$categoryItem) {
+					'id' =>
+					$id,
 
-				if ((int) $categoryItem['id'] === $categoryId) {
+					'category_id' =>
+					$categoryId,
+
+					'name' =>
+					$name,
+
+					'slug' =>
+					$slug,
+				);
+
+
+			$subcategoryData[] =
+				$data;
+
+
+			$subcategoryNameById[$id] =
+				$name;
+
+
+			$subcategorySlugById[$id] =
+				$slug;
+
+
+			$subcategoryCategoryById[$id] =
+				$categoryId;
+
+
+			foreach (
+				$categoryData
+				as &$categoryItem
+			) {
+
+				if (
+					(int)
+					$categoryItem['id'] ===
+					$categoryId
+				) {
 
 					$categoryItem['subcategories'][] =
 						$data;
@@ -396,7 +1027,10 @@ class SiteController extends Controller
 				}
 			}
 
-			unset($categoryItem);
+
+			unset(
+				$categoryItem
+			);
 		}
 
 
@@ -406,24 +1040,51 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$selectedCategoryId = null;
+		$selectedCategoryId =
+			null;
 
-		if ($categoryFilter !== '') {
 
-			if (ctype_digit($categoryFilter)) {
+		if (
+			$categoryFilter !== ''
+		) {
 
-				$candidateId = (int) $categoryFilter;
+			if (
+				ctype_digit(
+					$categoryFilter
+				)
+			) {
 
-				if (isset($categoryNameById[$candidateId])) {
-					$selectedCategoryId = $candidateId;
+				$candidateId =
+					(int)
+					$categoryFilter;
+
+
+				if (
+					isset(
+						$categoryNameById[$candidateId]
+					)
+				) {
+
+					$selectedCategoryId =
+						$candidateId;
 				}
 			} else {
 
-				foreach ($categorySlugById as $id => $slug) {
+				foreach (
+					$categorySlugById
+					as $id => $slug
+				) {
 
-					if ($slug === $this->publicSlug($categoryFilter)) {
+					if (
+						$slug ===
+						$this->publicSlug(
+							$categoryFilter
+						)
+					) {
 
-						$selectedCategoryId = (int) $id;
+						$selectedCategoryId =
+							(int)
+							$id;
 
 						break;
 					}
@@ -438,56 +1099,85 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$selectedSubcategoryId = null;
+		$selectedSubcategoryId =
+			null;
 
-		if ($subcategoryFilter !== '') {
 
-			if (ctype_digit($subcategoryFilter)) {
+		if (
+			$subcategoryFilter !== ''
+		) {
 
-				$candidateId = (int) $subcategoryFilter;
+			if (
+				ctype_digit(
+					$subcategoryFilter
+				)
+			) {
 
-				if (isset($subcategoryNameById[$candidateId])) {
+				$candidateId =
+					(int)
+					$subcategoryFilter;
+
+
+				if (
+					isset(
+						$subcategoryNameById[$candidateId]
+					)
+				) {
 
 					$selectedSubcategoryId =
 						$candidateId;
 				}
 			} else {
 
-				foreach ($subcategorySlugById as $id => $slug) {
+				foreach (
+					$subcategorySlugById
+					as $id => $slug
+				) {
 
 					if (
 						$slug ===
-						$this->publicSlug($subcategoryFilter)
+						$this->publicSlug(
+							$subcategoryFilter
+						)
 					) {
 
 						$selectedSubcategoryId =
-							(int) $id;
+							(int)
+							$id;
 
 						break;
 					}
 				}
 			}
 
+
 			/*
-			 * If a subcategory was selected together with a
-			 * category, make sure both filters are consistent.
+			 * If a subcategory was selected together
+			 * with a category, make sure both filters
+			 * are consistent.
 			 */
+
 			if (
 				$selectedSubcategoryId !== null &&
 				$selectedCategoryId !== null &&
 				isset(
 					$subcategoryCategoryById[$selectedSubcategoryId]
 				) &&
-				(int) $subcategoryCategoryById[$selectedSubcategoryId] !== $selectedCategoryId
+				(int)
+				$subcategoryCategoryById[$selectedSubcategoryId] !==
+				$selectedCategoryId
 			) {
 
-				$selectedSubcategoryId = null;
+				$selectedSubcategoryId =
+					null;
 			}
 
+
 			/*
-			 * Selecting a subcategory also selects its parent
-			 * category automatically.
+			 * Selecting a subcategory also selects
+			 * its parent category automatically.
 			 */
+
 			if (
 				$selectedSubcategoryId !== null &&
 				$selectedCategoryId === null &&
@@ -497,7 +1187,8 @@ class SiteController extends Controller
 			) {
 
 				$selectedCategoryId =
-					(int) $subcategoryCategoryById[$selectedSubcategoryId];
+					(int)
+					$subcategoryCategoryById[$selectedSubcategoryId];
 			}
 		}
 
@@ -508,30 +1199,64 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$brands = Brands::model()->findAll(array(
-			'condition' => 'is_active = 1',
-			'order' => 'sort_order ASC, name ASC, id ASC',
-		));
+		$brands =
+			Brands::model()->findAll(
+				array(
+					'condition' =>
+					'is_active = 1',
 
-		$brandIdsBySlug = array();
+					'order' =>
+					'sort_order ASC, name ASC, id ASC',
+				)
+			);
 
-		foreach ($brands as $brand) {
 
-			$brandIdsBySlug[$this->publicSlug($brand->slug)] = (int) $brand->id;
+		$brandIdsBySlug =
+			array();
+
+
+		foreach (
+			$brands
+			as $brand
+		) {
+
+			$brandIdsBySlug[$this->publicSlug(
+				$brand->slug
+			)] =
+				(int)
+				$brand->id;
 		}
 
-		$selectedBrandId = null;
 
-		if ($brandFilter !== '') {
+		$selectedBrandId =
+			null;
 
-			if (ctype_digit($brandFilter)) {
 
-				foreach ($brands as $brand) {
+		if (
+			$brandFilter !== ''
+		) {
 
-					if ((int) $brand->id === (int) $brandFilter) {
+			if (
+				ctype_digit(
+					$brandFilter
+				)
+			) {
+
+				foreach (
+					$brands
+					as $brand
+				) {
+
+					if (
+						(int)
+						$brand->id ===
+						(int)
+						$brandFilter
+					) {
 
 						$selectedBrandId =
-							(int) $brand->id;
+							(int)
+							$brand->id;
 
 						break;
 					}
@@ -539,9 +1264,16 @@ class SiteController extends Controller
 			} else {
 
 				$brandSlug =
-					$this->publicSlug($brandFilter);
+					$this->publicSlug(
+						$brandFilter
+					);
 
-				if (isset($brandIdsBySlug[$brandSlug])) {
+
+				if (
+					isset(
+						$brandIdsBySlug[$brandSlug]
+					)
+				) {
 
 					$selectedBrandId =
 						$brandIdsBySlug[$brandSlug];
@@ -556,15 +1288,18 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$criteria = new CDbCriteria;
+		$criteria =
+			new CDbCriteria;
+
 
 		$criteria->addCondition(
 			"(status = 'published' OR status = 'publicado')"
 		);
 
 
-
-		if ($selectedCategoryId !== null) {
+		if (
+			$selectedCategoryId !== null
+		) {
 
 			$criteria->addCondition(
 				'id IN (
@@ -574,12 +1309,15 @@ class SiteController extends Controller
 				)'
 			);
 
+
 			$criteria->params[':catalog_category_id'] =
 				$selectedCategoryId;
 		}
 
 
-		if ($selectedSubcategoryId !== null) {
+		if (
+			$selectedSubcategoryId !== null
+		) {
 
 			$criteria->addCondition(
 				'id IN (
@@ -589,16 +1327,20 @@ class SiteController extends Controller
 				)'
 			);
 
+
 			$criteria->params[':catalog_subcategory_id'] =
 				$selectedSubcategoryId;
 		}
 
 
-		if ($selectedBrandId !== null) {
+		if (
+			$selectedBrandId !== null
+		) {
 
 			$criteria->addCondition(
 				'brand_id = :catalog_brand_id'
 			);
+
 
 			$criteria->params[':catalog_brand_id'] =
 				$selectedBrandId;
@@ -608,33 +1350,47 @@ class SiteController extends Controller
 		switch ($orderFilter) {
 
 			case 'nombre':
+
 				$criteria->order =
 					'LOWER(slug) ASC, id ASC';
+
 				break;
+
 
 			case 'antiguos':
+
 				$criteria->order =
 					'published_at ASC, id ASC';
+
 				break;
+
 
 			case 'orden':
+
 				$criteria->order =
 					'sort_order ASC, id ASC';
+
 				break;
 
+
 			case 'recientes':
+
 			default:
-				$orderFilter = 'recientes';
+
+				$orderFilter =
+					'recientes';
 
 				$criteria->order =
 					'published_at DESC, sort_order DESC, id DESC';
+
 				break;
 		}
 
 
-		$products = Products::model()->findAll(
-			$criteria
-		);
+		$products =
+			Products::model()->findAll(
+				$criteria
+			);
 
 
 		/*
@@ -643,49 +1399,86 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productIds = array();
+		$productIds =
+			array();
 
-		foreach ($products as $product) {
-			$productIds[] = (int) $product->id;
+
+		foreach (
+			$products
+			as $product
+		) {
+
+			$productIds[] =
+				(int)
+				$product->id;
 		}
 
-		$productTranslations = array();
+
+		$productTranslations =
+			array();
+
 
 		if ($productIds) {
 
-			$criteriaTranslations = new CDbCriteria;
+			$criteriaTranslations =
+				new CDbCriteria;
+
 
 			$criteriaTranslations->addInCondition(
 				'product_id',
 				$productIds
 			);
 
+
 			$criteriaTranslations->addCondition(
 				'language_id IN (:product_current_language, :product_default_language)'
 			);
 
-			$criteriaTranslations->params[':product_current_language'] = (int) $languageId;
 
-			$criteriaTranslations->params[':product_default_language'] = (int) $defaultLanguageId;
+			$criteriaTranslations->params[':product_current_language'] =
+				(int)
+				$languageId;
 
-			$rows = ProductTranslations::model()->findAll(
-				$criteriaTranslations
-			);
 
-			foreach ($rows as $row) {
+			$criteriaTranslations->params[':product_default_language'] =
+				(int)
+				$defaultLanguageId;
 
-				$productId = (int) $row->product_id;
+
+			$rows =
+				ProductTranslations::model()->findAll(
+					$criteriaTranslations
+				);
+
+
+			foreach (
+				$rows
+				as $row
+			) {
+
+				$productId =
+					(int)
+					$row->product_id;
+
+
 				$translationLanguageId =
-					(int) $row->language_id;
+					(int)
+					$row->language_id;
 
-				if (!isset(
-					$productTranslations[$productId]
-				)) {
+
+				if (
+					!isset(
+						$productTranslations[$productId]
+					)
+				) {
+
 					$productTranslations[$productId] =
 						array();
 				}
 
-				$productTranslations[$productId][$translationLanguageId] = $row;
+
+				$productTranslations[$productId][$translationLanguageId] =
+					$row;
 			}
 		}
 
@@ -696,33 +1489,57 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productCategories = array();
-		$productSubcategories = array();
+		$productCategories =
+			array();
+
+
+		$productSubcategories =
+			array();
+
 
 		if ($productIds) {
 
 			$criteriaProductCategories =
 				new CDbCriteria;
 
+
 			$criteriaProductCategories->addInCondition(
 				'product_id',
 				$productIds
 			);
+
 
 			$rows =
 				ProductCategories::model()->findAll(
 					$criteriaProductCategories
 				);
 
-			foreach ($rows as $row) {
 
-				$productId = (int) $row->product_id;
-				$categoryId = (int) $row->category_id;
+			foreach (
+				$rows
+				as $row
+			) {
 
-				if (!isset($productCategories[$productId])) {
+				$productId =
+					(int)
+					$row->product_id;
+
+
+				$categoryId =
+					(int)
+					$row->category_id;
+
+
+				if (
+					!isset(
+						$productCategories[$productId]
+					)
+				) {
+
 					$productCategories[$productId] =
 						array();
 				}
+
 
 				$productCategories[$productId][] =
 					$categoryId;
@@ -732,28 +1549,44 @@ class SiteController extends Controller
 			$criteriaProductSubcategories =
 				new CDbCriteria;
 
+
 			$criteriaProductSubcategories->addInCondition(
 				'product_id',
 				$productIds
 			);
+
 
 			$rows =
 				ProductSubcategories::model()->findAll(
 					$criteriaProductSubcategories
 				);
 
-			foreach ($rows as $row) {
 
-				$productId = (int) $row->product_id;
+			foreach (
+				$rows
+				as $row
+			) {
+
+				$productId =
+					(int)
+					$row->product_id;
+
+
 				$subcategoryId =
-					(int) $row->subcategory_id;
+					(int)
+					$row->subcategory_id;
 
-				if (!isset(
-					$productSubcategories[$productId]
-				)) {
+
+				if (
+					!isset(
+						$productSubcategories[$productId]
+					)
+				) {
+
 					$productSubcategories[$productId] =
 						array();
 				}
+
 
 				$productSubcategories[$productId][] =
 					$subcategoryId;
@@ -767,16 +1600,28 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productData = array();
+		$productData =
+			array();
 
-		foreach ($products as $product) {
 
-			$productId = (int) $product->id;
+		foreach (
+			$products
+			as $product
+		) {
 
-			$translation = null;
+			$productId =
+				(int)
+				$product->id;
+
+
+			$translation =
+				null;
+
 
 			if (
-				isset($productTranslations[$productId]) &&
+				isset(
+					$productTranslations[$productId]
+				) &&
 				isset(
 					$productTranslations[$productId][$languageId]
 				)
@@ -785,7 +1630,9 @@ class SiteController extends Controller
 				$translation =
 					$productTranslations[$productId][$languageId];
 			} elseif (
-				isset($productTranslations[$productId]) &&
+				isset(
+					$productTranslations[$productId]
+				) &&
 				isset(
 					$productTranslations[$productId][$defaultLanguageId]
 				)
@@ -796,20 +1643,30 @@ class SiteController extends Controller
 			}
 
 
-			$name = $translation
-				? trim((string) $translation->name)
+			$name =
+				$translation
+				? trim(
+					(string)
+					$translation->name
+				)
 				: '';
 
-			if ($name === '') {
+
+			if (
+				$name === ''
+			) {
+
 				$name =
-					'Producto #' . $productId;
+					'Producto #' .
+					$productId;
 			}
 
 
 			$shortDescription =
 				$translation
 				? trim(
-					(string) $translation->short_description
+					(string)
+					$translation->short_description
 				)
 				: '';
 
@@ -817,28 +1674,41 @@ class SiteController extends Controller
 			$description =
 				$translation
 				? trim(
-					(string) $translation->description
+					(string)
+					$translation->description
 				)
 				: '';
 
 
-			$categoriesForProduct = array();
+			$categoriesForProduct =
+				array();
 
-			if (isset($productCategories[$productId])) {
+
+			if (
+				isset(
+					$productCategories[$productId]
+				)
+			) {
 
 				foreach (
 					$productCategories[$productId]
 					as $categoryId
 				) {
 
-					if (isset($categoryNameById[$categoryId])) {
+					if (
+						isset(
+							$categoryNameById[$categoryId]
+						)
+					) {
 
 						$categoriesForProduct[] =
 							array(
 								'id' =>
 								$categoryId,
+
 								'name' =>
 								$categoryNameById[$categoryId],
+
 								'slug' =>
 								$categorySlugById[$categoryId],
 							);
@@ -847,7 +1717,9 @@ class SiteController extends Controller
 			}
 
 
-			$subcategoriesForProduct = array();
+			$subcategoriesForProduct =
+				array();
+
 
 			if (
 				isset(
@@ -870,10 +1742,13 @@ class SiteController extends Controller
 							array(
 								'id' =>
 								$subcategoryId,
+
 								'name' =>
 								$subcategoryNameById[$subcategoryId],
+
 								'slug' =>
 								$subcategorySlugById[$subcategoryId],
+
 								'category_id' =>
 								$subcategoryCategoryById[$subcategoryId],
 							);
@@ -882,27 +1757,45 @@ class SiteController extends Controller
 			}
 
 
-			$brand = $product->brand;
+			$brand =
+				$product->brand;
 
-			$productData[] = array(
-				'model' => $product,
-				'id' => $productId,
-				'name' => $name,
-				'slug' => $product->slug,
-				'short_description' =>
-				$shortDescription,
-				'description' =>
-				$description,
-				'main_image' =>
-				$product->main_image,
-				'infographic_image' =>
-				$product->infographic_image,
-				'brand' => $brand,
-				'categories' =>
-				$categoriesForProduct,
-				'subcategories' =>
-				$subcategoriesForProduct,
-			);
+
+			$productData[] =
+				array(
+					'model' =>
+					$product,
+
+					'id' =>
+					$productId,
+
+					'name' =>
+					$name,
+
+					'slug' =>
+					$product->slug,
+
+					'short_description' =>
+					$shortDescription,
+
+					'description' =>
+					$description,
+
+					'main_image' =>
+					$product->main_image,
+
+					'infographic_image' =>
+					$product->infographic_image,
+
+					'brand' =>
+					$brand,
+
+					'categories' =>
+					$categoriesForProduct,
+
+					'subcategories' =>
+					$subcategoriesForProduct,
+				);
 		}
 
 
@@ -912,16 +1805,23 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$dataProvider = new CArrayDataProvider(
-			$productData,
-			array(
-				'keyField' => 'id',
-				'pagination' => array(
-					'pageSize' => 12,
-					'pageVar' => 'pagina',
-				),
-			)
-		);
+		$dataProvider =
+			new CArrayDataProvider(
+				$productData,
+				array(
+					'keyField' =>
+					'id',
+
+					'pagination' =>
+					array(
+						'pageSize' =>
+						12,
+
+						'pageVar' =>
+						'pagina',
+					),
+				)
+			);
 
 
 		/*
@@ -930,18 +1830,30 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$selectedProduct = null;
+		$selectedProduct =
+			null;
 
-		if ($productFilter !== '') {
 
-			foreach ($productData as $item) {
+		if (
+			$productFilter !== ''
+		) {
+
+			foreach (
+				$productData
+				as $item
+			) {
 
 				if (
-					$this->publicSlug($item['slug']) ===
-					$this->publicSlug($productFilter)
+					$this->publicSlug(
+						$item['slug']
+					) ===
+					$this->publicSlug(
+						$productFilter
+					)
 				) {
 
-					$selectedProduct = $item;
+					$selectedProduct =
+						$item;
 
 					break;
 				}
@@ -951,30 +1863,58 @@ class SiteController extends Controller
 
 		/*
 		 * ==========================================================
-		 * VIEW
+		 * RETURN VIEW DATA
 		 * ==========================================================
 		 */
 
-		$this->render(
-			'productos',
-			array(
-				'languageId' =>				$languageId,
-				'language' =>				$language,
-				'categories' =>				$categoryData,
-				'subcategories' =>				$subcategoryData,
-				'brands' =>				$brands,
-				'products' =>				$productData,
-				'dataProvider' =>				$dataProvider,
-				'selectedProduct' =>				$selectedProduct,
-				'selectedCategoryId' =>				$selectedCategoryId,
-				'selectedSubcategoryId' =>				$selectedSubcategoryId,
-				'selectedBrandId' =>				$selectedBrandId,
-				'categoryFilter' =>				$categoryFilter,
-				'subcategoryFilter' =>				$subcategoryFilter,
-				'brandFilter' =>				$brandFilter,
-				'orderFilter' =>				$orderFilter,
-				'productFilter' =>				$productFilter,
-			)
+		return array(
+			'languageId' =>
+			$languageId,
+
+			'language' =>
+			$language,
+
+			'categories' =>
+			$categoryData,
+
+			'subcategories' =>
+			$subcategoryData,
+
+			'brands' =>
+			$brands,
+
+			'products' =>
+			$productData,
+
+			'dataProvider' =>
+			$dataProvider,
+
+			'selectedProduct' =>
+			$selectedProduct,
+
+			'selectedCategoryId' =>
+			$selectedCategoryId,
+
+			'selectedSubcategoryId' =>
+			$selectedSubcategoryId,
+
+			'selectedBrandId' =>
+			$selectedBrandId,
+
+			'categoryFilter' =>
+			$categoryFilter,
+
+			'subcategoryFilter' =>
+			$subcategoryFilter,
+
+			'brandFilter' =>
+			$brandFilter,
+
+			'orderFilter' =>
+			$orderFilter,
+
+			'productFilter' =>
+			$productFilter,
 		);
 	}
 
@@ -984,30 +1924,61 @@ class SiteController extends Controller
 	 */
 	protected function publicSlug($value)
 	{
-		$value = trim((string) $value);
+		$value =
+			trim(
+				(string)
+				$value
+			);
 
-		$value = strtolower($value);
 
-		$value = strtr(
-			$value,
-			array(
-				'á' => 'a',
-				'é' => 'e',
-				'í' => 'i',
-				'ó' => 'o',
-				'ú' => 'u',
-				'ü' => 'u',
-				'ñ' => 'n',
-			)
-		);
+		$value =
+			strtolower(
+				$value
+			);
 
-		$value = preg_replace(
-			'/[^a-z0-9]+/',
-			'-',
-			$value
-		);
 
-		$value = trim($value, '-');
+		$value =
+			strtr(
+				$value,
+				array(
+					'á' =>
+					'a',
+
+					'é' =>
+					'e',
+
+					'í' =>
+					'i',
+
+					'ó' =>
+					'o',
+
+					'ú' =>
+					'u',
+
+					'ü' =>
+					'u',
+
+					'ñ' =>
+					'n',
+				)
+			);
+
+
+		$value =
+			preg_replace(
+				'/[^a-z0-9]+/',
+				'-',
+				$value
+			);
+
+
+		$value =
+			trim(
+				$value,
+				'-'
+			);
+
 
 		return $value;
 	}

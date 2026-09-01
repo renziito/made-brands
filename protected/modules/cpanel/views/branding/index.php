@@ -19,8 +19,8 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 <style>
     /* =========================================================
-	   BRANDING PAGE
-	========================================================= */
+       BRANDING PAGE
+    ========================================================= */
 
     .branding-page {
         max-width: 1100px;
@@ -46,58 +46,193 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     /* =========================================================
-	   CARDS
-	========================================================= */
+       CARDS
+    ========================================================= */
 
     .branding-card {
         position: relative;
         background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
+        border: 1px solid #dfe3e8;
+        border-radius: 13px;
         margin-bottom: 22px;
-        overflow: visible;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
     }
 
+
+    /* =========================================================
+       CARD HEADER
+    ========================================================= */
 
     .branding-card-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 20px;
-        padding: 22px 24px;
-        border-bottom: 1px solid #eeeeee;
+        min-height: 94px;
+        padding: 20px 24px;
+        box-sizing: border-box;
+        background: #ffffff;
+    }
+
+
+    .branding-card-header-main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+    }
+
+
+    .branding-card-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 45px;
+        width: 45px;
+        height: 45px;
+        border-radius: 9px;
+        background: #f5f6f8;
+        color: #1f3b63;
+        font-size: 26px;
+        font-weight: 400;
+        line-height: 1;
+    }
+
+
+    .branding-card-header-content {
+        min-width: 0;
     }
 
 
     .branding-card-header h2 {
         margin: 0 0 5px;
-        font-size: 20px;
-        font-weight: 600;
-        color: #222222;
+        font-size: 17px;
+        line-height: 1.25;
+        font-weight: 500;
+        color: #111827;
     }
 
 
     .branding-card-header p {
         margin: 0;
-        font-size: 13px;
-        color: #737373;
-    }
-
-
-    .branding-card-body {
-        padding: 24px;
+        font-size: 14px;
+        line-height: 1.4;
+        color: #9aa5b5;
     }
 
 
     /* =========================================================
-	   FORM GRID
-	========================================================= */
+       CARD BODY
+    ========================================================= */
+
+    .branding-card-body {
+        padding: 30px 24px;
+        border-top: 1px solid #e1e5ea;
+        background: #ffffff;
+    }
+
+
+    /* =========================================================
+       CARD FOOTER
+    ========================================================= */
+
+    .branding-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        min-height: 88px;
+        padding: 18px 24px;
+        box-sizing: border-box;
+        border-top: 1px solid #e1e5ea;
+        background: #f8f9fa;
+    }
+
+
+    .branding-card-footer-info {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #9aa5b5;
+    }
+
+
+    /* =========================================================
+       SAVE BUTTON
+    ========================================================= */
+
+    .branding-save-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex: 0 0 auto;
+        min-width: 101px;
+        height: 48px;
+        padding: 0 18px;
+        border: 1px solid #111827;
+        border-radius: 8px;
+        background: #111827;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1;
+        cursor: pointer;
+        box-sizing: border-box;
+        text-decoration: none;
+        transition:
+            background-color .15s ease,
+            border-color .15s ease,
+            box-shadow .15s ease,
+            transform .05s ease;
+    }
+
+
+    .branding-save-button::before {
+        content: "+";
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        margin-top: -2px;
+    }
+
+
+    .branding-save-button:hover {
+        background: #1f2937;
+        border-color: #1f2937;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+
+    .branding-save-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, .12);
+    }
+
+
+    .branding-save-button:active {
+        transform: translateY(1px);
+    }
+
+
+    .branding-save-button:disabled {
+        opacity: .55;
+        cursor: wait;
+        transform: none;
+    }
+
+
+    /* =========================================================
+       FORM GRID
+    ========================================================= */
 
     .branding-page .admin-form-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px;
+        gap: 24px;
     }
 
 
@@ -108,21 +243,23 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
     .branding-page .admin-form-field>label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 9px;
         font-size: 13px;
-        font-weight: 600;
-        color: #444444;
+        line-height: 1.3;
+        font-weight: 500;
+        color: #243b5a;
     }
 
 
     .branding-field {
         width: 100%;
-        height: 40px;
-        padding: 0 12px;
-        border: 1px solid #d9d9d9;
-        border-radius: 7px;
+        height: 50px;
+        padding: 0 13px;
+        border: 1px solid #ccd3dc;
+        border-radius: 8px;
         background: #ffffff;
         box-sizing: border-box;
+        font-family: inherit;
         font-size: 14px;
         color: #333333;
         outline: none;
@@ -132,46 +269,20 @@ $getBranding = function ($key, $default = '') use ($branding) {
     }
 
 
+    .branding-field::placeholder {
+        color: #c2c8d0;
+    }
+
+
     .branding-field:focus {
-        border-color: #999999;
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, .05);
+        border-color: #8c98a8;
+        box-shadow: 0 0 0 3px rgba(36, 59, 90, .06);
     }
 
 
     /* =========================================================
-	   SAVE BUTTON
-	========================================================= */
-
-    .branding-save-button {
-        flex: 0 0 auto;
-        height: 34px;
-        padding: 0 14px;
-        border: 1px solid #d5d5d5;
-        border-radius: 6px;
-        background: #be5050;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all .15s ease;
-    }
-
-
-    .branding-save-button:hover {
-        background: #f5f5f5;
-        border-color: #bbbbbb;
-    }
-
-
-    .branding-save-button:disabled {
-        opacity: .55;
-        cursor: wait;
-    }
-
-
-    /* =========================================================
-	   COLORS
-	========================================================= */
+       COLORS
+    ========================================================= */
 
     .branding-color-field {
         display: flex;
@@ -181,11 +292,11 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     .branding-color-picker {
-        width: 46px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         padding: 3px;
-        border: 1px solid #d9d9d9;
-        border-radius: 7px;
+        border: 1px solid #ccd3dc;
+        border-radius: 8px;
         background: #ffffff;
         cursor: pointer;
         box-sizing: border-box;
@@ -198,8 +309,8 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     /* =========================================================
-	   GOOGLE FONT SELECTOR
-	========================================================= */
+       GOOGLE FONT SELECTOR
+    ========================================================= */
 
     .branding-font-selector {
         position: relative;
@@ -213,7 +324,7 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
     .branding-font-search-icon {
         position: absolute;
-        left: 13px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #888888;
@@ -224,7 +335,7 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     .branding-font-search-input {
-        padding-left: 38px;
+        padding-left: 39px;
     }
 
 
@@ -306,8 +417,8 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     /* =========================================================
-	   SELECTED FONT
-	========================================================= */
+       SELECTED FONT
+    ========================================================= */
 
     .branding-font-selected {
         margin-top: 10px;
@@ -337,86 +448,22 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     /* =========================================================
-	   TOAST
-	========================================================= */
-
-    .branding-toast {
-        position: fixed;
-        right: 25px;
-        bottom: 25px;
-        z-index: 99999;
-        min-width: 240px;
-        max-width: 380px;
-        padding: 13px 17px;
-        border-radius: 8px;
-        background: #222222;
-        color: #ffffff;
-        font-size: 13px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, .18);
-        opacity: 0;
-        transform: translateY(10px);
-        pointer-events: none;
-        transition:
-            opacity .2s ease,
-            transform .2s ease;
-    }
-
-
-    .branding-toast.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-
-    .branding-toast.error {
-        background: #b42318;
-    }
-
-
-    /* =========================================================
-	   RESPONSIVE
-	========================================================= */
-
-    @media (max-width: 800px) {
-
-        .branding-page .admin-form-grid {
-            grid-template-columns: 1fr;
-        }
-
-    }
-
-
-    @media (max-width: 600px) {
-
-        .branding-card-header {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-
-        .branding-save-button {
-            width: 100%;
-        }
-
-    }
-
-    /* =========================================================
-   GENERAL SWITCH
-========================================================= */
+       GENERAL SWITCH
+    ========================================================= */
 
     .branding-switch-field {
         display: flex;
         align-items: center;
         gap: 12px;
-        min-height: 40px;
+        min-height: 50px;
     }
 
 
     .branding-switch {
         position: relative;
         display: inline-block;
-        width: 44px;
-        height: 24px;
+        width: 52px;
+        height: 30px;
         margin: 0;
         cursor: pointer;
     }
@@ -433,8 +480,8 @@ $getBranding = function ($key, $default = '') use ($branding) {
     .branding-switch-slider {
         position: absolute;
         inset: 0;
-        background: #d4d4d4;
-        border-radius: 24px;
+        background: #d4d8de;
+        border-radius: 30px;
         transition: background .2s ease;
     }
 
@@ -442,10 +489,10 @@ $getBranding = function ($key, $default = '') use ($branding) {
     .branding-switch-slider:before {
         content: "";
         position: absolute;
-        width: 18px;
-        height: 18px;
-        left: 3px;
-        top: 3px;
+        width: 22px;
+        height: 22px;
+        left: 4px;
+        top: 4px;
         background: #ffffff;
         border-radius: 50%;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
@@ -454,24 +501,29 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     .branding-switch input[type="checkbox"]:checked+.branding-switch-slider {
-        background: #111111;
+        background: #111827;
     }
 
 
     .branding-switch input[type="checkbox"]:checked+.branding-switch-slider:before {
-        transform: translateX(20px);
+        transform: translateX(22px);
     }
 
 
     .branding-switch-label {
         font-size: 13px;
-        color: #666666;
+        color: #6b7280;
     }
 
 
     /* =========================================================
-   FULL SHEET LINK
-========================================================= */
+       FULL SHEET LINK
+    ========================================================= */
+
+    .branding-url-preview {
+        margin-top: 10px;
+    }
+
 
     .branding-file-link {
         display: inline-flex;
@@ -513,6 +565,81 @@ $getBranding = function ($key, $default = '') use ($branding) {
         color: #999999;
         font-size: 13px;
     }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    .branding-toast {
+        position: fixed;
+        right: 25px;
+        bottom: 25px;
+        z-index: 99999;
+        min-width: 240px;
+        max-width: 380px;
+        padding: 13px 17px;
+        border-radius: 8px;
+        background: #222222;
+        color: #ffffff;
+        font-size: 13px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, .18);
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        transition:
+            opacity .2s ease,
+            transform .2s ease;
+    }
+
+
+    .branding-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+
+    .branding-toast.error {
+        background: #b42318;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 800px) {
+
+        .branding-page .admin-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .branding-card-header {
+            align-items: flex-start;
+        }
+
+
+        .branding-card-header-main {
+            align-items: flex-start;
+        }
+
+
+        .branding-card-footer {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+
+        .branding-save-button {
+            width: 100%;
+        }
+
+    }
 </style>
 
 
@@ -520,8 +647,8 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
 
     <!-- =========================================================
-		 PAGE HEADER
-	========================================================= -->
+         PAGE HEADER
+    ========================================================= -->
 
     <div class="cpanel-page-header">
 
@@ -537,34 +664,34 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
     </div>
 
+
     <!-- =========================================================
-     GENERAL
-========================================================= -->
+         GENERAL
+    ========================================================= -->
 
     <div class="branding-card">
 
         <div class="branding-card-header">
 
-            <div>
+            <div class="branding-card-header-main">
 
-                <h2>General</h2>
+                <div class="branding-card-icon">
+                    +
+                </div>
 
-                <p>
-                    Configura la información general y elementos globales
-                    del sitio.
-                </p>
+                <div class="branding-card-header-content">
+
+                    <h2>
+                        General
+                    </h2>
+
+                    <p>
+                        Configura la información general y elementos globales del sitio.
+                    </p>
+
+                </div>
 
             </div>
-
-
-            <button
-                type="button"
-                class="branding-save-button js-branding-save"
-                data-section="general">
-
-                Guardar
-
-            </button>
 
         </div>
 
@@ -573,10 +700,6 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
             <div class="admin-form-grid">
 
-
-                <!-- =================================================
-				 SITE NAME
-			================================================= -->
 
                 <div class="admin-form-field">
 
@@ -594,10 +717,6 @@ $getBranding = function ($key, $default = '') use ($branding) {
                 </div>
 
 
-                <!-- =================================================
-				 TAGLINE
-			================================================= -->
-
                 <div class="admin-form-field">
 
                     <label for="tagline">
@@ -612,6 +731,7 @@ $getBranding = function ($key, $default = '') use ($branding) {
                         class="branding-field">
 
                 </div>
+
 
                 <div class="admin-form-field">
 
@@ -628,6 +748,7 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
                 </div>
 
+
                 <div class="admin-form-field">
 
                     <label for="logo_footer_size">
@@ -643,10 +764,6 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
                 </div>
 
-
-                <!-- =================================================
-				 TAGLINE MENU
-			================================================= -->
 
                 <div class="admin-form-field">
 
@@ -683,10 +800,6 @@ $getBranding = function ($key, $default = '') use ($branding) {
                 </div>
 
 
-                <!-- =================================================
-				 TAGLINE FOOTER
-			================================================= -->
-
                 <div class="admin-form-field">
 
                     <label>
@@ -721,10 +834,6 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
                 </div>
 
-
-                <!-- =================================================
-				 FULL SHEET
-			================================================= -->
 
                 <div class="admin-form-field">
 
@@ -783,37 +892,55 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
         </div>
 
-    </div>
 
+        <div class="branding-card-footer">
 
-    <!-- =========================================================
-		 TYPOGRAPHY
-	========================================================= -->
-
-    <div class="branding-card">
-
-        <div class="branding-card-header">
-
-            <div>
-
-                <h2>Tipografía</h2>
-
-                <p>
-                    Selecciona las familias tipográficas de Google Fonts
-                    para cada elemento del sitio.
-                </p>
-
-            </div>
+            <p class="branding-card-footer-info">
+                Guarda los cambios realizados en la configuración general.
+            </p>
 
 
             <button
                 type="button"
                 class="branding-save-button js-branding-save"
-                data-section="typography">
+                data-section="general">
 
                 Guardar
 
             </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TYPOGRAPHY
+    ========================================================= -->
+
+    <div class="branding-card">
+
+        <div class="branding-card-header">
+
+            <div class="branding-card-header-main">
+
+                <div class="branding-card-icon">
+                    +
+                </div>
+
+                <div class="branding-card-header-content">
+
+                    <h2>
+                        Tipografía
+                    </h2>
+
+                    <p>
+                        Selecciona las familias tipográficas de Google Fonts para cada elemento del sitio.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -920,38 +1047,55 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
         </div>
 
-    </div>
 
+        <div class="branding-card-footer">
 
-
-    <!-- =========================================================
-		 TEXT COLORS
-	========================================================= -->
-
-    <div class="branding-card">
-
-        <div class="branding-card-header">
-
-            <div>
-
-                <h2>Colores de texto</h2>
-
-                <p>
-                    Define los colores globales para títulos, eyebrows,
-                    textos y separadores.
-                </p>
-
-            </div>
+            <p class="branding-card-footer-info">
+                Guarda las familias tipográficas seleccionadas.
+            </p>
 
 
             <button
                 type="button"
                 class="branding-save-button js-branding-save"
-                data-section="text">
+                data-section="typography">
 
                 Guardar
 
             </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TEXT COLORS
+    ========================================================= -->
+
+    <div class="branding-card">
+
+        <div class="branding-card-header">
+
+            <div class="branding-card-header-main">
+
+                <div class="branding-card-icon">
+                    +
+                </div>
+
+                <div class="branding-card-header-content">
+
+                    <h2>
+                        Colores de texto
+                    </h2>
+
+                    <p>
+                        Define los colores globales para títulos, eyebrows, textos y separadores.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -1036,38 +1180,55 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
         </div>
 
-    </div>
 
+        <div class="branding-card-footer">
 
-
-    <!-- =========================================================
-		 BUTTONS & CTA
-	========================================================= -->
-
-    <div class="branding-card">
-
-        <div class="branding-card-header">
-
-            <div>
-
-                <h2>Botones & CTA</h2>
-
-                <p>
-                    Define los colores de los botones principales
-                    y llamadas a la acción.
-                </p>
-
-            </div>
+            <p class="branding-card-footer-info">
+                Guarda los colores utilizados por los textos del sitio.
+            </p>
 
 
             <button
                 type="button"
                 class="branding-save-button js-branding-save"
-                data-section="buttons">
+                data-section="text">
 
                 Guardar
 
             </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BUTTONS & CTA
+    ========================================================= -->
+
+    <div class="branding-card">
+
+        <div class="branding-card-header">
+
+            <div class="branding-card-header-main">
+
+                <div class="branding-card-icon">
+                    +
+                </div>
+
+                <div class="branding-card-header-content">
+
+                    <h2>
+                        Botones & CTA
+                    </h2>
+
+                    <p>
+                        Define los colores de los botones principales y llamadas a la acción.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -1162,37 +1323,55 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
         </div>
 
-    </div>
 
+        <div class="branding-card-footer">
 
-
-    <!-- =========================================================
-		 BACKGROUNDS
-	========================================================= -->
-
-    <div class="branding-card">
-
-        <div class="branding-card-header">
-
-            <div>
-
-                <h2>Fondos</h2>
-
-                <p>
-                    Configura los colores de fondo globales del sitio.
-                </p>
-
-            </div>
+            <p class="branding-card-footer-info">
+                Guarda los colores utilizados por los botones y CTA.
+            </p>
 
 
             <button
                 type="button"
                 class="branding-save-button js-branding-save"
-                data-section="backgrounds">
+                data-section="buttons">
 
                 Guardar
 
             </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BACKGROUNDS
+    ========================================================= -->
+
+    <div class="branding-card">
+
+        <div class="branding-card-header">
+
+            <div class="branding-card-header-main">
+
+                <div class="branding-card-icon">
+                    +
+                </div>
+
+                <div class="branding-card-header-content">
+
+                    <h2>
+                        Fondos
+                    </h2>
+
+                    <p>
+                        Configura los colores de fondo globales del sitio.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -1282,11 +1461,29 @@ $getBranding = function ($key, $default = '') use ($branding) {
 
         </div>
 
+
+        <div class="branding-card-footer">
+
+            <p class="branding-card-footer-info">
+                Guarda los colores de fondo globales del sitio.
+            </p>
+
+
+            <button
+                type="button"
+                class="branding-save-button js-branding-save"
+                data-section="backgrounds">
+
+                Guardar
+
+            </button>
+
+        </div>
+
     </div>
 
 
 </div>
-
 
 
 <!-- =========================================================

@@ -1325,6 +1325,13 @@ class m260824_235301_firstTable extends CDbMigration
 				'link' => null,
 				'sort_order' => 0,
 			),
+			array(
+				'key' => 'explore_catalog',
+				'is_menu' => 0,
+				'is_button' => 0,
+				'link' => null,
+				'sort_order' => 0,
+			)
 		);
 
 		foreach ($items as $item) {
@@ -1373,6 +1380,7 @@ class m260824_235301_firstTable extends CDbMigration
 			'remove_filters_message' => 'Prueba quitando alguno de los filtros para volver a ver todo el catálogo.',
 			'loading_product_information' => 'Cargando información del producto...',
 			'product_infographic_unavailable' => 'La infografía de este producto aún no está disponible.',
+			'explore_catalog' => 'Explora nuestro catalogo'
 		);
 
 		foreach ($translations as $key => $label) {
