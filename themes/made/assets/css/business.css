@@ -43,7 +43,7 @@
     margin-left: -12px;
 }
 
-.business__grid > [class*="col-"] {
+.business__grid>[class*="col-"] {
     padding-right: 12px;
     padding-left: 12px;
     margin-bottom: 24px;
@@ -70,7 +70,7 @@
 .business-card__image {
     position: relative;
     width: 100%;
-    height: 160px;
+    height: 300px;
     overflow: hidden;
 }
 
@@ -191,7 +191,7 @@
         margin-left: 0;
     }
 
-    .business__grid > [class*="col-"] {
+    .business__grid>[class*="col-"] {
         padding-right: 0;
         padding-left: 0;
         margin-bottom: 20px;

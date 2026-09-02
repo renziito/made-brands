@@ -181,6 +181,10 @@ class FaqController extends Controller
 							$translation->form_text = $attributes['form_text'];
 						}
 
+						if (isset($attributes['form_id'])) {
+							$translation->form_id = $attributes['form_id'];
+						}
+
 						$translation->updated_at = date('Y-m-d H:i:s');
 
 						if (!$translation->save()) {

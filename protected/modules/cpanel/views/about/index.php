@@ -22,8 +22,8 @@ $this->breadcrumbs = array(
 
 ?>
 
-<div class="container">
-    <div class="page-header">
+<div class="admin-form-page">
+    <div class="admin-page-header">
 
         <div>
             <span class="section-label">CONTENIDO DEL SITIO</span>
@@ -976,12 +976,83 @@ $this->breadcrumbs = array(
 </script>
 
 <style>
+    /* =========================================================
+       ADMIN PAGE
+    ========================================================= */
+
+    .admin-form-page {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .admin-page-header {
+        margin-bottom: 28px;
+    }
+
+    .admin-page-header .section-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: .08em;
+        line-height: 1.4;
+        text-transform: uppercase;
+    }
+
+    .admin-page-header h1 {
+        margin: 0;
+        color: #111827;
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+    .admin-page-header .text-muted {
+        margin: 12px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       ALERTS
+    ========================================================= */
+
+    .admin-form-page .alert {
+        margin: 0 0 20px;
+        padding: 12px 14px;
+        border-radius: 7px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .admin-form-page .alert-success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .admin-form-page .alert-danger {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+
+    /* =========================================================
+       CARDS
+    ========================================================= */
+
     .admin-card {
+        margin-bottom: 20px;
+        overflow: hidden;
         background: #fff;
         border: 1px solid #e5e7eb;
         border-radius: 10px;
-        margin-bottom: 24px;
-        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
     }
 
     .admin-card-header {
@@ -989,30 +1060,47 @@ $this->breadcrumbs = array(
         align-items: center;
         justify-content: space-between;
         gap: 20px;
-        padding: 20px 24px;
+        padding: 18px 20px;
         border-bottom: 1px solid #e5e7eb;
     }
 
+    .admin-card-header>div {
+        min-width: 0;
+    }
+
     .admin-card-header h2 {
-        margin: 0 0 5px;
-        font-size: 20px;
+        margin: 0;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.3;
     }
 
     .admin-card-header p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 14px;
+        margin: 3px 0 0;
+        color: #9ca3af;
+        font-size: 12px;
+        line-height: 1.4;
     }
 
     .admin-card-body {
-        padding: 24px;
+        padding: 24px 20px;
     }
+
+
+    /* =========================================================
+       FORMS
+    ========================================================= */
 
     .form-row,
     .form-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 180px;
-        gap: 20px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 18px;
+    }
+
+    .form-group {
+        min-width: 0;
     }
 
     .form-group-full {
@@ -1025,47 +1113,93 @@ $this->breadcrumbs = array(
 
     .form-group label {
         display: block;
-        margin-bottom: 7px;
+        margin: 0 0 7px;
+        color: #374151;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 13px;
+        line-height: 1.4;
     }
 
     .form-control {
+        display: block;
         width: 100%;
+        min-height: 40px;
         box-sizing: border-box;
-        padding: 10px 12px;
+        padding: 9px 11px;
         border: 1px solid #d1d5db;
         border-radius: 6px;
+        outline: none;
         background: #fff;
-        font-size: 14px;
+        color: #374151;
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 1.5;
+        transition:
+            border-color .15s ease,
+            box-shadow .15s ease,
+            background-color .15s ease;
+    }
+
+    .form-control:hover {
+        border-color: #9ca3af;
     }
 
     .form-control:focus {
-        outline: none;
-        border-color: #111827;
+        border-color: #9ca3af;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
     }
 
-    .form-control-file {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        border: 1px dashed #d1d5db;
-        border-radius: 6px;
-        background: #f9fafb;
-        cursor: pointer;
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-control-title {
+        min-height: 90px !important;
     }
 
     .form-help {
         display: block;
-        margin-top: 6px;
-        color: #6b7280;
-        font-size: 12px;
+        margin-top: 7px;
+        color: #9ca3af;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+
+    /* =========================================================
+       IMAGE
+    ========================================================= */
+
+    .form-control-file {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #fff;
+        color: #374151;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .form-control-file:hover {
+        border-color: #9ca3af;
+        background: #fafafa;
+    }
+
+    .form-control-file:focus {
+        outline: none;
+        border-color: #9ca3af;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
     }
 
     .current-image {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 14px;
         margin-bottom: 12px;
         padding: 10px;
         border: 1px solid #e5e7eb;
@@ -1074,57 +1208,84 @@ $this->breadcrumbs = array(
     }
 
     .current-image img {
+        display: block;
         width: 100px;
         height: 70px;
         object-fit: cover;
-        border-radius: 5px;
+        border-radius: 6px;
     }
 
     .current-image-info {
-        font-size: 13px;
         color: #6b7280;
+        font-size: 12px;
     }
 
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
 
-    .form-control-title {
-        min-height: 80px;
-    }
+    /* =========================================================
+       LANGUAGE TABS
+    ========================================================= */
 
     .language-tabs,
     .stat-language-tabs {
         display: flex;
-        gap: 5px;
-        border-bottom: 1px solid #e5e7eb;
+        gap: 0;
         margin-bottom: 24px;
         overflow-x: auto;
+        border-bottom: 1px solid #e5e7eb;
     }
 
     .language-tab,
     .stat-language-tab {
+        position: relative;
+        flex-shrink: 0;
+        padding: 13px 16px;
         border: 0;
-        background: transparent;
-        padding: 10px 15px;
-        cursor: pointer;
-        color: #6b7280;
         border-bottom: 2px solid transparent;
+        background: transparent;
+        color: #9ca3af;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
         white-space: nowrap;
+        cursor: pointer;
+        transition:
+            color .15s ease,
+            border-color .15s ease;
+    }
+
+    .language-tab:first-child,
+    .stat-language-tab:first-child {
+        padding-left: 0;
     }
 
     .language-tab span,
     .stat-language-tab span {
         margin-left: 5px;
+        color: #9ca3af;
         font-size: 11px;
-        opacity: .65;
+        font-weight: 500;
+    }
+
+    .language-tab:hover,
+    .stat-language-tab:hover {
+        color: #374151;
     }
 
     .language-tab.is-active,
     .stat-language-tab.is-active {
         color: #111827;
         border-bottom-color: #111827;
+    }
+
+    .language-tab.is-active span,
+    .stat-language-tab.is-active span {
+        color: #6b7280;
+    }
+
+    .language-tab:focus,
+    .stat-language-tab:focus {
+        outline: none;
     }
 
     .language-panel,
@@ -1137,27 +1298,38 @@ $this->breadcrumbs = array(
         display: block;
     }
 
+
+    /* =========================================================
+       STATISTICS
+    ========================================================= */
+
     .stat-item {
+        margin-bottom: 14px;
+        overflow: hidden;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
-        margin-bottom: 18px;
-        overflow: hidden;
+        background: #fff;
+    }
+
+    .stat-item:last-child {
+        margin-bottom: 0;
     }
 
     .stat-item-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 15px;
-        padding: 15px 18px;
-        background: #f9fafb;
+        gap: 16px;
+        padding: 13px 14px;
         border-bottom: 1px solid #e5e7eb;
+        background: #f9fafb;
     }
 
     .stat-item-header>div {
         display: flex;
         align-items: center;
         gap: 10px;
+        min-width: 0;
     }
 
     .stat-number {
@@ -1166,62 +1338,220 @@ $this->breadcrumbs = array(
         justify-content: center;
         width: 28px;
         height: 28px;
-        border-radius: 50%;
-        background: #111827;
-        color: #fff;
+        flex-shrink: 0;
+        border-radius: 7px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stat-item-header strong {
+        color: #374151;
         font-size: 12px;
         font-weight: 600;
     }
 
     .stat-item-settings {
         display: flex;
-        gap: 20px;
-        padding: 18px;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 18px 14px;
         border-bottom: 1px solid #e5e7eb;
+    }
+
+    .stat-item-settings .form-group {
+        margin: 0;
     }
 
     .stat-language-tabs {
         margin: 0;
-        padding: 0 18px;
+        padding: 0 14px;
+        background: #fff;
     }
 
     .stat-language-panels {
-        padding: 20px 18px;
+        padding: 18px 14px;
     }
 
-    .empty-state {
-        padding: 35px 20px;
-        text-align: center;
-        color: #6b7280;
+    .stat-language-panels .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+
+    /* =========================================================
+       BUTTONS
+       =========================================================
+       Same visual language as the other CRUD forms:
+       primary = dark
+       secondary = white with border
+       danger = outlined red
+    ========================================================= */
+
+    .admin-form-page .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 38px;
+        height: 38px;
+        box-sizing: border-box;
+        padding: 0 14px;
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        text-decoration: none !important;
+        cursor: pointer;
+        box-shadow: none;
+        transition:
+            background-color .15s ease,
+            border-color .15s ease,
+            color .15s ease,
+            box-shadow .15s ease;
+    }
+
+    .admin-form-page .btn i {
+        font-size: 12px;
+    }
+
+    .admin-form-page .btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
+    }
+
+    /* Primary */
+
+    .admin-form-page .btn.btn-primary {
+        background: #111827 !important;
+        border: 1px solid #111827 !important;
+        color: #fff !important;
+    }
+
+    .admin-form-page .btn.btn-primary:hover {
+        background: #1f2937 !important;
+        border-color: #1f2937 !important;
+        color: #fff !important;
+    }
+
+    .admin-form-page .btn.btn-primary:active {
+        background: #030712 !important;
+        border-color: #030712 !important;
+    }
+
+    /* Secondary */
+
+    .admin-form-page .btn.btn-secondary {
+        background: #fff !important;
+        border: 1px solid #d1d5db !important;
+        color: #374151 !important;
+    }
+
+    .admin-form-page .btn.btn-secondary:hover {
+        background: #f3f4f6 !important;
+        border-color: #9ca3af !important;
+        color: #111827 !important;
+    }
+
+    /* Danger */
+
+    .admin-form-page .btn.btn-danger {
+        background: #fff !important;
+        border: 1px solid #fecaca !important;
+        color: #dc2626 !important;
+    }
+
+    .admin-form-page .btn.btn-danger:hover {
+        background: #fef2f2 !important;
+        border-color: #fca5a5 !important;
+        color: #b91c1c !important;
+    }
+
+    /* Disabled */
+
+    .admin-form-page .btn:disabled {
+        opacity: .7;
+        cursor: wait;
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+    ========================================================= */
+
+    .empty-state {
+        padding: 30px 20px;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .empty-state p {
+        margin: 0 0 14px;
+    }
+
+
+    /* =========================================================
+       SAVE ACTION
+    ========================================================= */
 
     .form-actions {
         display: flex;
+        align-items: center;
         justify-content: flex-end;
-        padding: 10px 0 40px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+        padding: 16px 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #f9fafb;
     }
 
-    .btn-danger {
-        border: 1px solid #dc2626;
-        background: #fff;
-        color: #dc2626;
+    .form-actions .btn {
+        min-width: 150px;
     }
 
-    .btn-danger:hover {
-        background: #dc2626;
-        color: #fff;
-    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
 
     @media (max-width: 768px) {
+
+        .admin-form-page {
+            max-width: none;
+        }
+
+        .admin-page-header {
+            margin-bottom: 20px;
+        }
+
+        .admin-page-header h1 {
+            font-size: 28px;
+        }
 
         .admin-card-header {
             align-items: flex-start;
             flex-direction: column;
         }
 
+        .admin-card-body {
+            padding: 20px 16px;
+        }
+
         .form-row,
-        .form-grid {
-            grid-template-columns: 1fr;
+        .form-grid,
+        .stat-language-panels .form-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .form-group-full {
+            grid-column: auto;
         }
 
         .form-group-small {
@@ -1232,6 +1562,23 @@ $this->breadcrumbs = array(
             flex-direction: column;
         }
 
+        .stat-item-settings .form-group {
+            width: 100%;
+        }
+
+        .stat-item-settings .form-group-small {
+            max-width: none;
+        }
+
+        .form-actions {
+            align-items: stretch;
+            margin-bottom: 24px;
+            padding: 14px 16px;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
     }
 </style>
 

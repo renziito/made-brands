@@ -20,17 +20,16 @@ $this->breadcrumbs = array(
 
 ?>
 
-<div class="container">
+<div class="admin-form-page">
 
-
-    <div class="page-header">
+    <div class="admin-page-header">
 
         <div>
-            <span class="section-label">CONTENIDO DEL SITIO</span>
+            <span class="admin-page-header__eyebrow">CONTENIDO DEL SITIO</span>
 
-            <h1>Intro</h1>
+            <h1 class="admin-page-header__title">Intro</h1>
 
-            <p class="text-muted">
+            <p class="admin-page-header__description">
                 Administra el contenido principal de la sección Intro.
             </p>
         </div>
@@ -71,12 +70,31 @@ $this->breadcrumbs = array(
              TRADUCCIONES
         ========================================================= -->
 
-        <div class="admin-card">
+        <div class="admin-form-card">
 
+            <div class="admin-form-card__header">
 
+                <div class="admin-form-card__heading">
 
+                    <div class="admin-form-card__icon">
+                        <i class="fas fa-language"></i>
+                    </div>
 
-            <div class="admin-card-body">
+                    <div>
+                        <h2 class="admin-form-card__title">
+                            Traducciones
+                        </h2>
+
+                        <p class="admin-form-card__description">
+                            Administra el contenido de Intro por idioma.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="admin-form-card__body">
 
                 <?php if (!empty($languages)): ?>
 
@@ -327,21 +345,37 @@ $this->breadcrumbs = array(
 
         <?php if (!empty($languages)): ?>
 
-            <div class="form-actions">
+            <div class="admin-form-card admin-form-card--actions">
 
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="save-intro">
+                <div class="admin-form-card__footer">
 
-                    <i class="fa fa-save"></i>
+                    <div class="admin-form-footer__note">
 
-                    <?php echo $isNewRecord
-                        ? 'Crear sección'
-                        : 'Guardar cambios';
-                    ?>
+                        <span class="required">*</span>
 
-                </button>
+                        Campos obligatorios
+
+                    </div>
+
+                    <div class="admin-form-actions">
+
+                        <button
+                            type="submit"
+                            class="admin-form-button admin-form-button--primary"
+                            id="save-intro">
+
+                            <i class="fas fa-save"></i>
+
+                            <?php echo $isNewRecord
+                                ? 'Crear sección'
+                                : 'Guardar cambios';
+                            ?>
+
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -353,52 +387,277 @@ $this->breadcrumbs = array(
 
 
 <style>
-    .language-tabs,
-    .stat-language-tabs {
+    /* =========================================================
+       ADMIN PAGE
+    ========================================================= */
+
+    .admin-form-page {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .admin-page-header {
+        margin-bottom: 28px;
+    }
+
+    .admin-page-header__eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: .08em;
+        line-height: 1.4;
+        text-transform: uppercase;
+    }
+
+    .admin-page-header__title {
+        margin: 0;
+        color: #111827;
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+    .admin-page-header__description {
+        margin: 12px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       ALERTS
+    ========================================================= */
+
+    .admin-form-page .alert {
+        margin: 0 0 20px;
+        padding: 12px 14px;
+        border-radius: 7px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .admin-form-page .alert-success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .admin-form-page .alert-danger {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+
+    /* =========================================================
+       CARDS
+    ========================================================= */
+
+    .admin-form-card {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+    }
+
+    .admin-form-card--actions {
+        margin-top: 20px;
+    }
+
+    .admin-form-card__header {
         display: flex;
-        gap: 5px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px 20px;
         border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 24px;
+    }
+
+    .admin-form-card__heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .admin-form-card__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 7px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    .admin-form-card__title {
+        margin: 0;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .admin-form-card__description {
+        margin: 2px 0 0;
+        color: #9ca3af;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .admin-form-card__body {
+        padding: 24px 20px;
+    }
+
+    .admin-form-card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+    }
+
+    .admin-form-footer__note {
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+    .admin-form-footer__note .required {
+        color: #dc2626;
+        font-weight: 700;
+    }
+
+    .admin-form-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .admin-form-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 14px;
+        box-sizing: border-box;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        text-decoration: none !important;
+    }
+
+    .admin-form-button--primary {
+        background: #111827;
+        border-color: #111827;
+        color: #fff !important;
+    }
+
+    .admin-form-button--primary:hover {
+        background: #1f2937;
+        border-color: #1f2937;
+        color: #fff !important;
+    }
+
+    .admin-form-button:disabled {
+        opacity: .7;
+        cursor: wait;
+    }
+
+
+    /* =========================================================
+       LANGUAGE TABS
+    ========================================================= */
+
+    .language-tabs {
+        display: flex;
+        gap: 0;
+        margin: -24px -20px 24px;
+        padding: 0 20px;
+        border-bottom: 1px solid #e5e7eb;
         overflow-x: auto;
     }
 
-    .language-tab,
-    .stat-language-tab {
+    .language-tab {
+        position: relative;
         border: 0;
-        background: transparent;
-        padding: 10px 15px;
-        cursor: pointer;
-        color: #6b7280;
         border-bottom: 2px solid transparent;
+        background: transparent;
+        padding: 14px 16px;
+        cursor: pointer;
+        color: #9ca3af;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
         white-space: nowrap;
+        transition:
+            color .15s ease,
+            border-color .15s ease;
     }
 
-    .language-tab span,
-    .stat-language-tab span {
+    .language-tab:first-child {
+        padding-left: 0;
+    }
+
+    .language-tab span {
         margin-left: 5px;
+        color: #9ca3af;
         font-size: 11px;
-        opacity: .65;
+        font-weight: 500;
     }
 
-    .language-tab.is-active,
-    .stat-language-tab.is-active {
+    .language-tab:hover {
+        color: #374151;
+    }
+
+    .language-tab.is-active {
         color: #111827;
         border-bottom-color: #111827;
     }
 
-    .language-panel,
-    .stat-language-panel {
+    .language-tab.is-active span {
+        color: #6b7280;
+    }
+
+    .language-tab:focus {
+        outline: none;
+    }
+
+
+    /* =========================================================
+       LANGUAGE PANELS / FORM
+    ========================================================= */
+
+    .language-panel {
         display: none;
     }
 
-    .language-panel.is-active,
-    .stat-language-panel.is-active {
+    .language-panel.is-active {
         display: block;
     }
 
     .form-grid {
         display: grid;
-        gap: 20px;
+        gap: 20px 18px;
+    }
+
+    .form-group {
+        min-width: 0;
     }
 
     .form-group-full {
@@ -411,57 +670,126 @@ $this->breadcrumbs = array(
 
     .form-group label {
         display: block;
-        margin-bottom: 7px;
+        margin: 0 0 7px;
+        color: #374151;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 13px;
+        line-height: 1.4;
     }
 
     .form-control {
+        display: block;
         width: 100%;
+        min-height: 40px;
         box-sizing: border-box;
-        padding: 10px 12px;
+        padding: 9px 11px;
         border: 1px solid #d1d5db;
         border-radius: 6px;
+        outline: none;
         background: #fff;
-        font-size: 14px;
+        color: #374151;
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 1.5;
+        transition:
+            border-color .15s ease,
+            box-shadow .15s ease,
+            background-color .15s ease;
     }
 
     .form-control:focus {
-        outline: none;
-        border-color: #111827;
+        border-color: #9ca3af;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, .06);
     }
 
     textarea.form-control {
+        min-height: 120px;
         resize: vertical;
-        min-height: 100px;
     }
 
     .form-control-title {
-        min-height: 80px;
+        min-height: 90px !important;
     }
 
     .empty-state {
         padding: 35px 20px;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        color: #9ca3af;
+        font-size: 12px;
         text-align: center;
-        color: #6b7280;
     }
 
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        padding: 10px 0 40px;
+    .empty-state p {
+        margin: 0;
     }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
 
     @media (max-width: 768px) {
 
+        .admin-form-page {
+            max-width: none;
+        }
+
+        .admin-page-header {
+            margin-bottom: 20px;
+        }
+
+        .admin-page-header__title {
+            font-size: 28px;
+        }
+
+        .admin-form-card__header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .admin-form-card__body {
+            padding: 20px 16px;
+        }
+
+        .language-tabs {
+            margin: -20px -16px 20px;
+            padding: 0 16px;
+        }
+
+        .language-tab {
+            padding: 13px 12px;
+        }
+
+        .language-tab:first-child {
+            padding-left: 0;
+        }
+
         .form-grid {
             grid-template-columns: 1fr !important;
+        }
+
+        .form-group-full {
+            grid-column: auto;
         }
 
         .form-group-small {
             max-width: none;
         }
 
+        .admin-form-card__footer {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .admin-form-actions {
+            width: 100%;
+        }
+
+        .admin-form-button {
+            width: 100%;
+        }
     }
 </style>
 

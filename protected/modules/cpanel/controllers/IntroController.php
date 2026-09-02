@@ -58,12 +58,30 @@ class IntroController extends Controller
             return;
         }
 
-        $post = Yii::app()->request->getPost();
+
+        /*
+		 * =========================================================
+		 * OBTENER TRADUCCIONES DEL FORMULARIO
+		 * =========================================================
+		 *
+		 * El index.php envía:
+		 *
+		 * translations[LANGUAGE_ID][eyebrow]
+		 * translations[LANGUAGE_ID][title]
+		 * translations[LANGUAGE_ID][text]
+		 * translations[LANGUAGE_ID][eyebrow_size]
+		 * translations[LANGUAGE_ID][title_size]
+		 * translations[LANGUAGE_ID][text_size]
+		 *
+		 * Por eso debemos leer "translations".
+		 */
 
         $translationsPost =
-            isset($post['IntroSectionTranslations'])
-            ? $post['IntroSectionTranslations']
-            : array();
+            Yii::app()->request->getPost(
+                'translations',
+                array()
+            );
+
 
         $languages = Languages::model()->findAll(
             array(
@@ -72,9 +90,13 @@ class IntroController extends Controller
             )
         );
 
+
         /*
-		 * Validar antes de modificar la información actual.
+		 * =========================================================
+		 * VALIDAR QUE EXISTA CONTENIDO
+		 * =========================================================
 		 */
+
         $hasContent = false;
 
         foreach ($languages as $language) {
@@ -104,9 +126,13 @@ class IntroController extends Controller
                 || $title !== ''
                 || $text !== ''
             ) {
+
                 $hasContent = true;
+
+                break;
             }
         }
+
 
         if (!$hasContent) {
 
@@ -122,24 +148,40 @@ class IntroController extends Controller
             return;
         }
 
+
+        /*
+		 * =========================================================
+		 * TRANSACCIÓN
+		 * =========================================================
+		 */
+
         $transaction =
             Yii::app()->db->beginTransaction();
+
 
         try {
 
             $now = date('Y-m-d H:i:s');
 
+
             /*
-			 * Obtener la versión actualmente activa.
+			 * =====================================================
+			 * OBTENER LA VERSIÓN ACTUALMENTE ACTIVA
+			 * =====================================================
 			 */
+
             $currentIntro =
                 $this->getActiveIntro();
 
+
             /*
-			 * Crear una NUEVA versión.
+			 * =====================================================
+			 * CREAR NUEVA VERSIÓN
+			 * =====================================================
 			 *
-			 * No hacemos UPDATE sobre la actual.
+			 * No modificamos directamente la versión actual.
 			 */
+
             $newIntro = new IntroSections;
 
             $newIntro->type = 'intro';
@@ -150,19 +192,54 @@ class IntroController extends Controller
                 : 1;
 
             $newIntro->is_active = 1;
+
             $newIntro->created_at = $now;
+
             $newIntro->updated_at = $now;
+
 
             if (!$newIntro->save()) {
 
+                $errors = $newIntro->getErrors();
+
+                $errorMessage =
+                    'No fue posible crear la nueva versión del Intro.';
+
+                if (!empty($errors)) {
+
+                    $errorParts = array();
+
+                    foreach ($errors as $attributeErrors) {
+
+                        foreach ($attributeErrors as $attributeError) {
+
+                            $errorParts[] = $attributeError;
+                        }
+                    }
+
+                    if (!empty($errorParts)) {
+
+                        $errorMessage .=
+                            ' ' .
+                            implode(
+                                ' ',
+                                $errorParts
+                            );
+                    }
+                }
+
                 throw new Exception(
-                    'No fue posible crear la nueva versión del Intro.'
+                    $errorMessage
                 );
             }
 
+
             /*
-			 * Crear las traducciones de la nueva versión.
+			 * =====================================================
+			 * CREAR LAS TRADUCCIONES
+			 * =====================================================
 			 */
+
             foreach ($languages as $language) {
 
                 $languageId = (int) $language->id;
@@ -172,78 +249,183 @@ class IntroController extends Controller
                     ? $translationsPost[$languageId]
                     : array();
 
+
                 $translation =
                     new IntroSectionTranslations;
+
 
                 $translation->intro_section_id =
                     $newIntro->id;
 
+
                 $translation->language_id =
                     $languageId;
+
 
                 $translation->eyebrow =
                     isset($data['eyebrow'])
                     ? trim($data['eyebrow'])
                     : null;
 
+
                 $translation->eyebrow_size =
                     isset($data['eyebrow_size'])
                     ? trim($data['eyebrow_size'])
                     : null;
+
 
                 $translation->title =
                     isset($data['title'])
                     ? trim($data['title'])
                     : null;
 
+
                 $translation->title_size =
                     isset($data['title_size'])
                     ? trim($data['title_size'])
                     : null;
+
 
                 $translation->text =
                     isset($data['text'])
                     ? trim($data['text'])
                     : null;
 
+
                 $translation->text_size =
                     isset($data['text_size'])
                     ? trim($data['text_size'])
                     : null;
 
-                $translation->created_at = $now;
-                $translation->updated_at = $now;
+
+                $translation->created_at =
+                    $now;
+
+
+                $translation->updated_at =
+                    $now;
+
 
                 if (!$translation->save()) {
 
-                    throw new Exception(
+                    $errors =
+                        $translation->getErrors();
+
+                    $errorMessage =
                         'No fue posible guardar la traducción del idioma ID ' .
-                            $languageId .
-                            '.'
+                        $languageId .
+                        '.';
+
+
+                    if (!empty($errors)) {
+
+                        $errorParts = array();
+
+                        foreach (
+                            $errors
+                            as $attributeErrors
+                        ) {
+
+                            foreach (
+                                $attributeErrors
+                                as $attributeError
+                            ) {
+
+                                $errorParts[] =
+                                    $attributeError;
+                            }
+                        }
+
+                        if (!empty($errorParts)) {
+
+                            $errorMessage .=
+                                ' ' .
+                                implode(
+                                    ' ',
+                                    $errorParts
+                                );
+                        }
+                    }
+
+
+                    throw new Exception(
+                        $errorMessage
                     );
                 }
             }
 
+
             /*
-			 * Soft delete de la versión anterior.
+			 * =====================================================
+			 * DESACTIVAR VERSIÓN ANTERIOR
+			 * =====================================================
 			 *
-			 * Se hace DESPUÉS de crear correctamente
-			 * la nueva versión.
+			 * Solo se hace después de crear correctamente
+			 * la nueva versión y todas sus traducciones.
 			 */
+
             if ($currentIntro !== null) {
 
                 $currentIntro->is_active = 0;
+
                 $currentIntro->updated_at = $now;
+
 
                 if (!$currentIntro->save()) {
 
+                    $errors =
+                        $currentIntro->getErrors();
+
+                    $errorMessage =
+                        'No fue posible desactivar la versión anterior del Intro.';
+
+
+                    if (!empty($errors)) {
+
+                        $errorParts = array();
+
+                        foreach (
+                            $errors
+                            as $attributeErrors
+                        ) {
+
+                            foreach (
+                                $attributeErrors
+                                as $attributeError
+                            ) {
+
+                                $errorParts[] =
+                                    $attributeError;
+                            }
+                        }
+
+                        if (!empty($errorParts)) {
+
+                            $errorMessage .=
+                                ' ' .
+                                implode(
+                                    ' ',
+                                    $errorParts
+                                );
+                        }
+                    }
+
+
                     throw new Exception(
-                        'No fue posible desactivar la versión anterior del Intro.'
+                        $errorMessage
                     );
                 }
             }
 
+
+            /*
+			 * =====================================================
+			 * COMMIT
+			 * =====================================================
+			 */
+
             $transaction->commit();
+
 
             Yii::app()->user->setFlash(
                 'success',
@@ -253,12 +435,14 @@ class IntroController extends Controller
 
             $transaction->rollback();
 
+
             Yii::app()->user->setFlash(
                 'error',
                 'No fue posible actualizar el Intro: ' .
                     $e->getMessage()
             );
         }
+
 
         $this->redirect(
             array('index')

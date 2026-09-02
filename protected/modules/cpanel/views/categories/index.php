@@ -1434,7 +1434,7 @@ $(document).on(
 
 								$imageHtml =
 									'<img src="' .
-									CHtml::encode($data->image) .
+									Yii::app()->baseUrl . '/' . CHtml::encode($data->image) .
 									'" alt="' .
 									CHtml::encode($name) .
 									'">';
@@ -1493,7 +1493,7 @@ $(document).on(
 							$count = 0;
 
 							foreach ($rows as $subcategory) {
-								
+
 								if ((int) $subcategory->is_active !== 1) {
 									break;
 								}
@@ -1530,7 +1530,7 @@ $(document).on(
 							if ($count > $visibleCount) {
 
 								$remaining =
-									$count- $visibleCount;
+									$count - $visibleCount;
 
 								$html .=
 

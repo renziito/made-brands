@@ -12,4 +12,8 @@ $this->breadcrumbs = array(
 <h1>Crear Producto</h1>
 
 <div class="container">
-	<?php $this->renderPartial('_form_create', array('model' => $model)); ?></div>
+	<?php $this->renderPartial('_form_create', array(
+		'model' => $model,
+		'translation' => $translation,
+		'defaultLanguage' => $defaultLanguage,
+	)); ?></div>

@@ -74,7 +74,7 @@ class Menu
             [
                 'name'  => 'Fomularios',
                 'icon'  => ' fas fa-edit',
-                'class' => self::isActive(['cpanel', ['forms'], '*']),
+                'class' => self::isActive(['cpanel', ['forms', 'respuesta'], '*']),
                 'link'  => "javascript:;",
                 'sub'   => [
                     [
@@ -92,17 +92,10 @@ class Menu
                 ]
             ],
             [
-                'name'  => 'Extras',
-                'icon'  => ' fas fa-folder-plus',
-                'class' => self::isActive(['cpanel', ['extras'], '*']),
-                'link'  => Yii::app()->createurl('cpanel/extras'),
-            ],
-
-            [
                 'name'  => 'Secciones',
                 'link'  => 'javascript:;',
                 'icon'  => 'fas fa-copy',
-                'class' => self::isActive(['cpanel', ['hero', 'about', 'faq'], '*']),
+                'class' => self::isActive(['cpanel', ['hero', 'intro', 'about', 'business', 'faq', 'footer'], '*']),
                 'sub'   => [
                     [
                         'name'  => 'Hero',
@@ -146,7 +139,13 @@ class Menu
                     ],
 
                 ]
-            ]
+            ],
+            [
+                'name'  => 'Extras',
+                'icon'  => ' fas fa-folder-plus',
+                'class' => self::isActive(['cpanel', ['extras'], '*']),
+                'link'  => Yii::app()->createurl('cpanel/extras'),
+            ],
         ];
         return $menu;
     }
