@@ -8,6 +8,7 @@ deployment:
 
     - /bin/mkdir -p $COMPOSER_BIN
     - /bin/mkdir -p $COMPOSER_HOME
+    - /bin/mkdir -p $DEPLOYPATH
 
     - |
       if [ ! -f "$COMPOSER_BIN/composer.phar" ]; then
@@ -16,7 +17,8 @@ deployment:
         /bin/rm -f /homeX/madebran/composer-setup.php
       fi
 
-    - /bin/cp -R --exclude=.git . $DEPLOYPATH
+    - |
+      find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec /bin/cp -R {} "$DEPLOYPATH" \;
 
     - cd $DEPLOYPATH
 
