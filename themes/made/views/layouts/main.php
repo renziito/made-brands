@@ -522,7 +522,7 @@ $languages =
                 <?php
 
                 echo $this->renderPartial(
-                    '../partials/_site_menu',
+                    '/partials/_site_menu',
                     array(
                         'menuItems' =>
                         WebUtils::getMenu(
@@ -609,7 +609,7 @@ $languages =
             <?php
 
             echo $this->renderPartial(
-                '../partials/_footer_contact',
+                '/partials/_footer_contact',
                 array(
                     'contactItems' =>
                     WebUtils::getContactItems(
@@ -704,7 +704,7 @@ $languages =
                         <?php
 
                         echo $this->renderPartial(
-                            '../partials/_footer_copyright',
+                            '/partials/_footer_copyright',
                             array(
                                 'languageId' =>
                                 $languageId,
