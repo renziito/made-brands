@@ -36,12 +36,16 @@
     object-position: center center;
 }
 
+/*
+linear-gradient(270deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.35) 10%, rgba(0, 0, 0, 0.08) 20%, rgba(0, 0, 0, 0) 60%);
+*/
 .hero__overlay {
     position: absolute;
     inset: 0;
     z-index: 2;
+
     background:
-        linear-gradient(90deg,
+        linear-gradient(270deg,
             rgba(0, 0, 0, 0.82) 0%,
             rgba(0, 0, 0, 0.68) 24%,
             rgba(0, 0, 0, 0.35) 48%,
