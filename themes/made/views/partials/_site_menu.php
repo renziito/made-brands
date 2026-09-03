@@ -99,7 +99,8 @@ $sectionUrl = function ($section) use ($isHome) {
 
                 <a
                     href="#"
-                    class="header-language-button<?= $isCurrentLanguage ? ' active' : ''; ?>"
+                    class="header-language-button<?= $isCurrentLanguage ? ' active' : ''; ?>" 
+                    style="min-height: 40px;" 
                     data-language="<?= CHtml::encode($activeLanguageCode); ?>"
                     aria-label="<?= CHtml::encode($activeLanguage->name); ?>">
 
