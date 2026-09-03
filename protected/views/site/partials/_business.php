@@ -35,7 +35,7 @@ usort(
 
 <section
 	id="negocios"
-	class="business" style="background-color:<?= WebUtils::getSiteSetting('section_alt_background_color') ?>">
+	class="business" style="background-color:<?= WebUtils::getSiteSetting('section_alt_background_color') ?>;padding-top: 60px;">
 
 	<div class="container">
 
@@ -48,7 +48,7 @@ usort(
 
 		<div class="business__header">
 
-			<h2 class="business__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>;padding-top: 60px;">
+			<h2 class="business__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
 				<?= WebUtils::getMenuItemByKey('our_businesses', $languageId)['label'] ?>
 			</h2>
 
