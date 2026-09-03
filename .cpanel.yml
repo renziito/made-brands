@@ -2,7 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/homeX/madebran/public_html/
-    - /bin/cp -R . $DEPLOYPATH
-    - cd $DEPLOYPATH
-    - composer install --no-dev --optimize-autoloader
-    - php protected/yiic migrate up --interactive=0
+    - /bin/touch $DEPLOYPATH/deployment-started.txt
+    - echo "PHP:" > $DEPLOYPATH/server-check.txt
+    - php -v >> $DEPLOYPATH/server-check.txt 2>&1
+    - echo "" >> $DEPLOYPATH/server-check.txt
+    - echo "COMPOSER:" >> $DEPLOYPATH/server-check.txt
+    - which composer >> $DEPLOYPATH/server-check.txt 2>&1
+    - composer --version >> $DEPLOYPATH/server-check.txt 2>&1
