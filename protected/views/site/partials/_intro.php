@@ -43,7 +43,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['mission']['eyebrow'])): ?>
 
-                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
+                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>; font-size:<?= $introContent['mission']['eyebrow_size'] ?>">
                         <?php echo CHtml::encode($introContent['mission']['eyebrow']); ?>
                     </span>
 
@@ -52,7 +52,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['mission']['title'])): ?>
 
-                    <h2 class="intro__mission-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+                    <h2 class="intro__mission-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>; font-size:<?= $introContent['mission']['title_size'] ?>">
 
                         <?php echo $introContent['mission']['title']; ?>
 
@@ -63,7 +63,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['mission']['description'])): ?>
 
-                    <p class="intro__mission-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
+                    <p class="intro__mission-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>; font-size:<?= $introContent['mission']['text_size'] ?>">
 
                         <?php echo CHtml::encode($introContent['mission']['description']); ?>
 
@@ -101,7 +101,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['about']['eyebrow'])): ?>
 
-                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
+                    <span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>; font-size:<?= $introContent['about']['eyebrow_size'] ?>">
                         <?php echo CHtml::encode($introContent['about']['eyebrow']); ?>
                     </span>
 
@@ -110,7 +110,7 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php if (!empty($introContent['about']['title'])): ?>
 
-                    <h2 class="intro__about-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+                    <h2 class="intro__about-title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>; font-size:<?= $introContent['about']['title_size'] ?>">
 
                         <?php echo $introContent['about']['title']; ?>
 
@@ -118,24 +118,29 @@ if ($aboutHighlightCount <= 1) {
 
                 <?php endif; ?>
 
+                <?php if (!empty($introContent['about']['text'])): ?>
 
-                <?php if (!empty($introContent['about']['descriptions'])): ?>
+                    <p class="intro__about-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>; font-size:<?= $introContent['about']['text_size'] ?>">
 
-                    <?php foreach ($introContent['about']['descriptions'] as $description): ?>
+                        <?php echo CHtml::encode($introContent['about']['text']); ?>
 
-                        <?php if (!empty($description)): ?>
-
-                            <p class="intro__about-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
-
-                                <?php echo CHtml::encode($description); ?>
-
-                            </p>
-
-                        <?php endif; ?>
-
-                    <?php endforeach; ?>
+                    </p>
 
                 <?php endif; ?>
+
+                <?php if (!empty($introContent['about']['secondary_text'])): ?>
+
+                    <p class="intro__about-description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>; font-size:<?= $introContent['about']['secondary_text_size'] ?>">
+
+                        <?php echo CHtml::encode($introContent['about']['secondary_text']); ?>
+
+                    </p>
+
+                <?php endif; ?>
+
+
+
+
 
 
                 <!--

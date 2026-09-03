@@ -65,6 +65,9 @@ class WebUtils
                     'eyebrow' => $translation->eyebrow,
                     'title' => $translation->title,
                     'description' => $translation->text,
+                    'eyebrow_size' => $translation->eyebrow_size,
+                    'title_size' => $translation->title_size,
+                    'text_size' => $translation->text_size
                 );
             }
         }
@@ -118,13 +121,14 @@ class WebUtils
             if ($aboutTranslation) {
 
                 $about['eyebrow'] = $aboutTranslation->eyebrow;
-
                 $about['title'] = $aboutTranslation->title;
+                $about['text'] = $aboutTranslation->text;
+                $about['secondary_text'] = $aboutTranslation->secondary_text;
 
-                $about['descriptions'] = array(
-                    $aboutTranslation->text,
-                    $aboutTranslation->secondary_text,
-                );
+                $about['eyebrow_size'] = $aboutTranslation->eyebrow_size;
+                $about['title_size'] = $aboutTranslation->title_size;
+                $about['text_size'] = $aboutTranslation->text_size;
+                $about['secondary_text_size'] = $aboutTranslation->secondary_text_size;
             }
 
 
