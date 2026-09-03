@@ -54,6 +54,11 @@ foreach ($heroSlidesModels as $index => $slide) {
 		'eyebrow' => $translation ? $translation->eyebrow : '',
 		'title' => $translation ? $translation->title : '',
 		'description' => $translation ? $translation->text : '',
+		'eyebrow_size' => $translation->eyebrow_size ? $translation->eyebrow_size : '12px',
+		'title_size' => $translation->title_size ? $translation->title_size : 'clamp(42px, 4.5vw, 68px)',
+		'text_size' => $translation->text_size ? $translation->title_size : '15px',
+		'button_text' => $translation->button_text,
+		'button_text_size' => $translation->button_text_size,
 		'active' => $isFirstSlide,
 		'loading' => $isFirstSlide ? 'eager' : 'lazy',
 	);
@@ -238,7 +243,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasEyebrow): ?>
 
-									<span class="hero__eyebrow" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
+									<span class="hero__eyebrow" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>; font-size:<?= $slide['eyebrow_size'] ?>">
 										<?php echo $slide['eyebrow']; ?>
 									</span>
 
@@ -247,7 +252,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasTitle): ?>
 
-									<h2 class="hero__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+									<h2 class="hero__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>; font-size:<?= $slide['title_size'] ?>">
 										<?php echo $slide['title']; ?>
 									</h2>
 
@@ -256,7 +261,7 @@ foreach ($heroSlidesModels as $index => $slide) {
 
 								<?php if ($hasDescription): ?>
 
-									<p class="hero__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
+									<p class="hero__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>; font-size:<?= $slide['text_size'] ?>">
 										<?php echo $slide['description']; ?>
 									</p>
 
