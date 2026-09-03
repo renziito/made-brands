@@ -22,7 +22,7 @@ deployment:
 
     - cd $DEPLOYPATH
 
-    - php $COMPOSER_BIN/composer.phar install --no-dev --optimize-autoloader --no-interaction
+    - php $COMPOSER_BIN/composer.phar install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
     - php mkdir.php
 
