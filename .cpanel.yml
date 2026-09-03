@@ -1,11 +1,20 @@
 ---
 deployment:
   tasks:
+    - export HOME=/homeX/madebran
+    - export COMPOSER_HOME=/homeX/madebran/.composer
+    - export COMPOSER_BIN=/homeX/madebran/bin
     - export DEPLOYPATH=/homeX/madebran/public_html/
-    - /bin/touch $DEPLOYPATH/deployment-started.txt
-    - echo "PHP:" > $DEPLOYPATH/server-check.txt
-    - php -v >> $DEPLOYPATH/server-check.txt 2>&1
-    - echo "" >> $DEPLOYPATH/server-check.txt
-    - echo "COMPOSER:" >> $DEPLOYPATH/server-check.txt
-    - which composer >> $DEPLOYPATH/server-check.txt 2>&1
-    - composer --version >> $DEPLOYPATH/server-check.txt 2>&1
+
+    - /bin/mkdir -p $COMPOSER_BIN
+    - /bin/mkdir -p $COMPOSER_HOME
+
+    - |
+      if [ ! -f "$COMPOSER_BIN/composer.phar" ]; then
+        php -r "copy('https://getcomposer.org/installer', '/homeX/madebran/composer-setup.php');"
+        php -r "if (hash_file('sha384', '/homeX/madebran/composer-setup.php') === 'c8b085408188070d5f52bcfe4ecfbee5f727afa458b2573b8eaaf77b3419b0bf2768dc67c86944da1544f06fa544fd47') { echo 'Composer installer verified'.PHP_EOL; } else { echo 'ERROR: Composer installer verification failed'.PHP_EOL; unlink('/homeX/madebran/composer-setup.php'); exit(1); }"
+        php /homeX/madebran/composer-setup.php --install-dir=$COMPOSER_BIN --filename=composer.phar
+        /bin/rm -f /homeX/madebran/composer-setup.php
+      fi
+
+    - php $COMPOSER_BIN/composer.phar --version > $DEPLOYPATH/composer-version.txt 2>&1
