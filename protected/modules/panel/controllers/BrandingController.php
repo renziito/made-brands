@@ -55,7 +55,7 @@ class BrandingController extends Controller
      * Branding index.
      *
      * URL:
-     * /cpanel/branding
+     * /panel/branding
      */
     public function actionIndex()
     {

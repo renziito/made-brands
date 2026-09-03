@@ -334,9 +334,9 @@ Yii::app()->clientScript->registerCss('admin-form-categories', '
 </div>
 
 <?php
-$translationUrl = Yii::app()->getUrlManager()->createUrl('/cpanel/categories/translation');
-$subcategoryUrl = Yii::app()->getUrlManager()->createUrl('/cpanel/categories/subcategory');
-$subcategoryTranslationUrl = Yii::app()->getUrlManager()->createUrl('/cpanel/categories/subcategoryTranslation');
+$translationUrl = Yii::app()->getUrlManager()->createUrl('/panel/categories/translation');
+$subcategoryUrl = Yii::app()->getUrlManager()->createUrl('/panel/categories/subcategory');
+$subcategoryTranslationUrl = Yii::app()->getUrlManager()->createUrl('/panel/categories/subcategoryTranslation');
 
 Yii::app()->clientScript->registerScript('categories-admin-ajax-modal', "
 (function($) {
@@ -434,7 +434,7 @@ Yii::app()->clientScript->registerScript('categories-admin-ajax-modal', "
 		button.prop('disabled', true);
 
 		$.ajax({
-			url: " . CJSON::encode(Yii::app()->getUrlManager()->createUrl('/cpanel/categories/removeSubcategory')) . ",
+			url: " . CJSON::encode(Yii::app()->getUrlManager()->createUrl('/panel/categories/removeSubcategory')) . ",
 			type: 'POST',
 			data: {category_id: categoryId, subcategory_id: subcategoryId, ajax: 1},
 			dataType: 'json',

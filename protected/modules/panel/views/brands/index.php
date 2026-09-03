@@ -1726,7 +1726,7 @@ $('.brands-section-tab').on(
 								if ($section) {
 
 									echo Yii::app()->createUrl(
-										'/cpanel/brandsSection/update',
+										'/panel/brandsSection/update',
 										array(
 											'id' =>
 											$section->id,
@@ -1735,7 +1735,7 @@ $('.brands-section-tab').on(
 								} else {
 
 									echo Yii::app()->createUrl(
-										'/cpanel/brandsSection/create'
+										'/panel/brandsSection/create'
 									);
 								}
 

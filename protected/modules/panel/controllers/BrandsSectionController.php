@@ -122,7 +122,7 @@ class BrandsSectionController extends Controller
 			 */
             if (!$model->hasErrors() && $model->save()) {
 
-                $this->redirect(Yii::app()->createAbsoluteUrl('cpanel/brands'));
+                $this->redirect(Yii::app()->createAbsoluteUrl('panel/brands'));
             }
         }
 
@@ -235,7 +235,7 @@ class BrandsSectionController extends Controller
                 }
 
 
-                $this->redirect(Yii::app()->createAbsoluteUrl('cpanel/brands'));
+                $this->redirect(Yii::app()->createAbsoluteUrl('panel/brands'));
             }
         }
 

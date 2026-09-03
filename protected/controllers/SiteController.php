@@ -410,7 +410,7 @@ class SiteController extends Controller
 
 				$this->redirect(
 					Yii::app()->createAbsoluteUrl(
-						'cpanel'
+						'panel'
 					)
 				);
 			}

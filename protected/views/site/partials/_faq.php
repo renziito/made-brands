@@ -178,8 +178,8 @@ Yii::app()->clientScript->registerCoreScript('jquery');
     (function($) {
         'use strict';
 
-        var faqFormUrl = '<?= Yii::app()->createUrl('cpanel/faq/getForm'); ?>';
-        var faqSubmitUrl = '<?= Yii::app()->createUrl('cpanel/faq/submitForm'); ?>';
+        var faqFormUrl = '<?= Yii::app()->createUrl('panel/faq/getForm'); ?>';
+        var faqSubmitUrl = '<?= Yii::app()->createUrl('panel/faq/submitForm'); ?>';
 
         function escapeHtml(value) {
             return $('<div>').text(value == null ? '' : value).html();
