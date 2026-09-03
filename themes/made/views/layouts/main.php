@@ -473,7 +473,7 @@ $languages =
             |--------------------------------------------------------------------------
             -->
 
-            <strong>
+            <strong class="logo">
 
                 <a
                     href="<?php echo Yii::app()->homeUrl; ?>"

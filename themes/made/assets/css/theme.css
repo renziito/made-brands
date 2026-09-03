@@ -287,6 +287,10 @@ p:last-child {
     max-height: 52px;
 }
 
+.logo a {
+    text-decoration: none;
+}
+
 /* Navigation */
 .site-menu {
     display: flex;
@@ -305,6 +309,7 @@ p:last-child {
     font-weight: 600;
     white-space: nowrap;
     transition: color var(--made-transition);
+    text-decoration: none;
 }
 
 .site-menu a::after {
