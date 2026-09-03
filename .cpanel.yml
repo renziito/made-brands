@@ -17,4 +17,11 @@ deployment:
         /bin/rm -f /homeX/madebran/composer-setup.php
       fi
 
-    - php $COMPOSER_BIN/composer.phar --version > $DEPLOYPATH/composer-version.txt 2>&1
+    - /bin/cp -R . $DEPLOYPATH
+
+    - cd $DEPLOYPATH
+    - php $COMPOSER_BIN/composer.phar install --no-dev --optimize-autoloader
+
+    - php mkdir.php
+
+    - php protected/yiic migrate up --interactive=0
