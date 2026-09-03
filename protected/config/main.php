@@ -20,7 +20,7 @@ return array(
 				'ext.giiext'
 			],
 		),
-		'cpanel',
+		'panel',
 	),
 	'components' => array(
 		'user' => array(

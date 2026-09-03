@@ -1,6 +1,6 @@
 <?php
 
-class CpanelModule extends CWebModule
+class PanelModule extends CWebModule
 {
 	public function init()
 	{
@@ -9,8 +9,8 @@ class CpanelModule extends CWebModule
 
 		// import the module-level models and components
 		$this->setImport(array(
-			'cpanel.models.*',
-			'cpanel.components.*',
+			'panel.models.*',
+			'panel.components.*',
 		));
 	}
 
