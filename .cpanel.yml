@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/homeX/madebran/public_html/
+    - /bin/cp -R . $DEPLOYPATH
+    - cd $DEPLOYPATH
+    - composer install --no-dev --optimize-autoloader
+    - php protected/yiic migrate up --interactive=0
