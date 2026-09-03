@@ -35,7 +35,7 @@ $brandPagesMobile = array_chunk(
         |--------------------------------------------------------------------------
         -->
 
-		<div class="clients__info">
+		<div class="clients__info" style="padding-top: 60px;">
 
 			<div class="clients__info-inner">
 

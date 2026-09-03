@@ -11,7 +11,7 @@ $productsSection = array(
 
 <section
 	id="productos"
-	class="products" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
+	class="products" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>;padding-top: 60px;">
 
 	<div class="container">
 
@@ -98,7 +98,7 @@ $productsSection = array(
 				href="<?php echo $this->createUrl(
 							$productsSection['button_url']
 						); ?>"
-				class="products__button"  style="font-family:<?= WebUtils::getSiteSetting('button_font_family') ?>">
+				class="products__button" style="font-family:<?= WebUtils::getSiteSetting('button_font_family') ?>">
 
 				<?php echo CHtml::encode(
 					$productsSection['button_text']

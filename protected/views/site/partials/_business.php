@@ -48,7 +48,7 @@ usort(
 
 		<div class="business__header">
 
-			<h2 class="business__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+			<h2 class="business__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>;padding-top: 60px;">
 				<?= WebUtils::getMenuItemByKey('our_businesses', $languageId)['label'] ?>
 			</h2>
 

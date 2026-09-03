@@ -96,7 +96,7 @@ if ($aboutHighlightCount <= 1) {
             |--------------------------------------------------------------------------
             -->
 
-            <div class="intro__about-text">
+            <div class="intro__about-text" style="padding-top:60px">
 
 
                 <?php if (!empty($introContent['about']['eyebrow'])): ?>

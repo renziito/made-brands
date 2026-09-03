@@ -92,7 +92,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
     }
 </style>
 
-<section id="faq" class="faq" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
+<section id="faq" class="faq" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>;padding-top: 60px;">
     <div class="container">
         <div class="faq__header">
             <h2 class="faq__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
