@@ -397,10 +397,12 @@ class WebUtils
     public static function getBrands()
     {
         $brandModels = Brands::model()->findAll(array(
-            'condition' => 't.is_active = :status',
+             'condition' => 't.is_active = :status
+			AND t.is_featured = :featured',
 
             'params' => array(
                 ':status' => 1,
+                ':featured' => 0,
             ),
 
             'order' => 't.sort_order ASC, t.id ASC',

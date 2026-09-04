@@ -866,7 +866,7 @@ Yii::app()->clientScript->registerCss(
 								<img
 									src="<?= Yii::app()->getBaseUrl() . CHtml::encode(
 												$model->image
-											); ?>"
+											); ?>?img=<?= date('His') ?>"
 									alt="Vista previa">
 
 							<?php else: ?>
