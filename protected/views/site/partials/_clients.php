@@ -182,7 +182,7 @@ $brandPagesMobile = array_chunk(
 									<div class="clients__logo">
 
 										<img
-											src="<?php echo $themeUrl; ?>/images/brands/<?php echo CHtml::encode($brand['image']); ?>"
+											src="<?php echo $themeUrl . CHtml::encode($brand['image']); ?>"
 											alt="<?php echo CHtml::encode($brand['name']); ?>"
 											loading="lazy">
 
