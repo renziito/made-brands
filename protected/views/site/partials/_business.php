@@ -112,12 +112,12 @@ usort(
 
 						<div class="business-card__content">
 
-							<h3 class="business-card__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+							<h3 class="business-card__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>;font-size:<?= $business['name_size'] ?>">
 								<?php echo CHtml::encode($business['title']); ?>
 							</h3>
 
 
-							<p class="business-card__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
+							<p class="business-card__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>;font-size:<?= $business['description_size'] ?>">
 								<?php echo $business['description']; ?>
 							</p>
 

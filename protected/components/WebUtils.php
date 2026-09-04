@@ -233,27 +233,14 @@ class WebUtils
 
             $businesses[] = array(
                 'id' => $business->id,
-
-                'title' => $translation
-                    ? $translation->name
-                    : '',
-
-                'description' => $translation
-                    ? $translation->description
-                    : '',
-
-                'image' => !empty($business->image)
-                    ? $business->image
-                    : '',
-
-                'alt' => $translation
-                    ? $translation->name
-                    : '',
-
+                'title' => $translation ? $translation->name : '',
+                'description' => $translation ? $translation->description : '',
+                'image' => !empty($business->image) ? $business->image : '',
+                'alt' => $translation ? $translation->name : '',
                 'icon' => $business->icon,
-
+                'name_size' => $translation ? $translation->name_size : '',
+                'description_size' => $translation ? $translation->description_size : '',
                 'status' => (int) $business->is_active,
-
                 'sort_order' => (int) $business->sort_order,
             );
         }

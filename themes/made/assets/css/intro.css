@@ -138,12 +138,12 @@
 }
 
 .intro__about-description {
-    max-width: 520px;
     margin: 24px 0 0;
     color: var(--made-color-text-soft);
     font-family: var(--made-font-ui);
     font-size: 15px;
     line-height: 1.6;
+    text-align: justify;
 }
 
 .intro__about-description+.intro__about-description {

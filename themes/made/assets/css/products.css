@@ -37,9 +37,12 @@
 .products__grid {
     margin-right: -6px;
     margin-left: -6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.products__grid > [class*="col-"] {
+.products__grid>[class*="col-"] {
     padding-right: 6px;
     padding-left: 6px;
     margin-bottom: 12px;
@@ -136,7 +139,7 @@
         padding: 60px 0 64px;
     }
 
-    .products__grid > [class*="col-"] {
+    .products__grid>[class*="col-"] {
         margin-bottom: 14px;
     }
 
@@ -166,7 +169,7 @@
 }
 
 @media (max-width: 480px) {
-    .products__grid > .col-sm-6 {
+    .products__grid>.col-sm-6 {
         width: 100%;
     }
 
