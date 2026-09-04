@@ -207,7 +207,7 @@ class BrandsController extends Controller
 		/*
 		 * Generate a unique filename.
 		 */
-		$filename = 'brand-' . uniqid('', true) . '.webp';
+		$filename = 'brand-' . date('His') . '.webp';
 		$filePath = $uploadPath . $filename;
 
 		/*
