@@ -397,7 +397,7 @@ class WebUtils
     public static function getBrands()
     {
         $brandModels = Brands::model()->findAll(array(
-             'condition' => 't.is_active = :status
+            'condition' => 't.is_active = :status
 			AND t.is_featured = :featured',
 
             'params' => array(
@@ -1120,20 +1120,18 @@ class WebUtils
             self::getActiveLanguages();
 
 
-        $isHome =
-            Yii::app()->controller->getRoute()
-            ===
-            'site/index';
+        $isHome = Yii::app()->controller->getRoute() === 'site/index';
 
 
         $sectionUrl =
             function ($section) use ($isHome) {
-
-                return $isHome
-                    ? '#' . $section
-                    : Yii::app()->controller->createUrl(
-                        'site/index'
-                    ) . '#' . $section;
+                if (filter_var($section, FILTER_VALIDATE_URL)) {
+                    return $section;
+                } else {
+                    return $isHome
+                        ? $section
+                        : Yii::app()->controller->createUrl('site/index') . $section;
+                }
             };
 
 

@@ -8,9 +8,13 @@
 
 $sectionUrl = function ($section) use ($isHome) {
 
-    return $isHome
-        ? '#' . $section
-        : Yii::app()->controller->createUrl('site/index') . '#' . $section;
+    if (filter_var($section, FILTER_VALIDATE_URL)) {
+        return $section;
+    } else {
+        return $isHome
+            ? $section
+            : Yii::app()->controller->createUrl('site/index') . $section;
+    }
 };
 
 ?>
@@ -20,24 +24,7 @@ $sectionUrl = function ($section) use ($isHome) {
 
     <?php foreach ($menuItems as $menuItem): ?>
 
-        <?php
-
-        $url = $sectionUrl(
-            $menuItem['link']
-        );
-
-
-        if (
-            str_starts_with(
-                $menuItem['link'],
-                "#"
-            )
-        ) {
-
-            $url = $menuItem['link'];
-        }
-
-        ?>
+        <?php $url = $sectionUrl($menuItem['link']); ?>
 
 
         <?php if ($menuItem['is_button']): ?>
@@ -99,8 +86,8 @@ $sectionUrl = function ($section) use ($isHome) {
 
                 <a
                     href="#"
-                    class="header-language-button<?= $isCurrentLanguage ? ' active' : ''; ?>" 
-                    style="min-height: 40px;" 
+                    class="header-language-button<?= $isCurrentLanguage ? ' active' : ''; ?>"
+                    style="min-height: 40px;"
                     data-language="<?= CHtml::encode($activeLanguageCode); ?>"
                     aria-label="<?= CHtml::encode($activeLanguage->name); ?>">
 
@@ -115,7 +102,16 @@ $sectionUrl = function ($section) use ($isHome) {
             <?php endforeach; ?>
 
         </div>
+    <?php else: ?>
+        <?php
 
+        $languageCode = Yii::app()->session->get('language', 'es');
+
+        Yii::app()->session['language'] =  $languages[0]->code;
+        if ($languageCode != $languages[0]->code) {
+            $this->refresh();
+        }
+        ?>
     <?php endif; ?>
 
 </nav>
