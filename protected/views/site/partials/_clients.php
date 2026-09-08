@@ -15,14 +15,15 @@ $brandPagesMobile = array_chunk(
 
 <section
 	id="clientes"
-	class="clients" style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
+	class="clients"
+	style="background-color:<?= WebUtils::getSiteSetting('section_background_color') ?>">
 
 	<div class="clients__content">
 
 		<div class="clients__image">
 
 			<img
-				src="<?= Yii::app()->getBaseUrl() . $brandSection['image']   ?>"
+				src="<?= Yii::app()->getBaseUrl() . $brandSection['image'] ?>"
 				alt="<?= $brandSection['eyebrow'] ?>"
 				loading="lazy">
 
@@ -39,11 +40,23 @@ $brandPagesMobile = array_chunk(
 
 			<div class="clients__info-inner">
 
-				<span class="section-label" style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>"><?= $brandSection['eyebrow'] ?></span>
+				<span
+					class="section-label"
+					style="font-family:<?= WebUtils::getSiteSetting('eyebrow_font_family') ?>">
+					<?= $brandSection['eyebrow'] ?>
+				</span>
 
-				<h2 class="clients__title" style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>"><?= $brandSection['title'] ?></h2>
+				<h2
+					class="clients__title"
+					style="font-family:<?= WebUtils::getSiteSetting('heading_font_family') ?>">
+					<?= $brandSection['title'] ?>
+				</h2>
 
-				<p class="clients__description" style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>"><?= $brandSection['text'] ?></p>
+				<p
+					class="clients__description"
+					style="font-family:<?= WebUtils::getSiteSetting('body_font_family') ?>">
+					<?= $brandSection['text'] ?>
+				</p>
 
 
 				<!--
@@ -54,7 +67,6 @@ $brandPagesMobile = array_chunk(
 
 				<div class="clients__featured">
 
-
 					<span class="clients__featured-label">
 						<?= $brandSection['featuredText'] ?>
 					</span>
@@ -64,10 +76,13 @@ $brandPagesMobile = array_chunk(
 
 						<?php foreach ($featuredBrands as $brand): ?>
 
-							<?php $brandUrl = trim($brand['website_url']);
+							<?php
+							$brandUrl = trim($brand['website_url']);
+
 							if ($brandUrl && !preg_match('#^https?://#i', $brandUrl)) {
 								$brandUrl = 'https://' . ltrim($brandUrl, '/');
-							} ?>
+							}
+							?>
 
 							<?php if ($brandUrl): ?>
 
@@ -103,7 +118,6 @@ $brandPagesMobile = array_chunk(
 
 				</div>
 
-
 			</div>
 
 		</div>
@@ -117,24 +131,18 @@ $brandPagesMobile = array_chunk(
     |--------------------------------------------------------------------------
     -->
 
-	<!--
-|--------------------------------------------------------------------------
-| BRAND CAROUSEL
-|--------------------------------------------------------------------------
--->
-
 	<?php if (!empty($brands)): ?>
 
 		<div class="clients__brands">
 
 
 			<!--
-        |--------------------------------------------------------------------------
-        | DESKTOP / TABLET CAROUSEL
-        |--------------------------------------------------------------------------
-        | 5 brands per page.
-        |--------------------------------------------------------------------------
-        -->
+            |--------------------------------------------------------------------------
+            | DESKTOP / TABLET CAROUSEL
+            |--------------------------------------------------------------------------
+            | Maximum 5 brands per page.
+            |--------------------------------------------------------------------------
+            -->
 
 			<div
 				id="clientsCarouselDesktop"
@@ -148,15 +156,13 @@ $brandPagesMobile = array_chunk(
 
 					<ol class="carousel-indicators clients__indicators">
 
-						<?php foreach (
-							$brandPagesDesktop
-							as $pageIndex => $page
-						): ?>
+						<?php foreach ($brandPagesDesktop as $pageIndex => $page): ?>
 
 							<li
 								data-target="#clientsCarouselDesktop"
 								data-slide-to="<?php echo $pageIndex; ?>"
-								class="<?php echo $pageIndex === 0 ? 'active' : ''; ?>"></li>
+								class="<?php echo $pageIndex === 0 ? 'active' : ''; ?>">
+							</li>
 
 						<?php endforeach; ?>
 
@@ -167,22 +173,30 @@ $brandPagesMobile = array_chunk(
 
 				<div class="carousel-inner">
 
-					<?php foreach (
-						$brandPagesDesktop
-						as $pageIndex => $page
-					): ?>
+					<?php foreach ($brandPagesDesktop as $pageIndex => $page): ?>
 
 						<div
 							class="item <?php echo $pageIndex === 0 ? 'active' : ''; ?>">
 
-							<div class="clients__logos">
+							<div
+								class="clients__logos"
+								style="
+									width: 100%;
+									display: flex;
+									align-items: center;
+									justify-content: space-evenly;
+								">
 
 								<?php foreach ($page as $brand): ?>
 
-									<div class="clients__logo">
+									<div
+										class="clients__logo"
+										style="
+											flex: 0 0 auto;
+										">
 
 										<img
-											src="<?php echo $themeUrl . CHtml::encode($brand['image']); ?>"
+											src="<?php echo $themeUrl . '/' . CHtml::encode($brand['image']); ?>"
 											alt="<?php echo CHtml::encode($brand['name']); ?>"
 											loading="lazy">
 
@@ -209,11 +223,12 @@ $brandPagesMobile = array_chunk(
 
 						<span
 							class="fa fa-chevron-left"
-							aria-hidden="true"></span>
+							aria-hidden="true">
+						</span>
 
 						<span class="sr-only">
-							<
-								</span>
+							Anterior
+						</span>
 
 					</a>
 
@@ -226,10 +241,11 @@ $brandPagesMobile = array_chunk(
 
 						<span
 							class="fa fa-chevron-right"
-							aria-hidden="true"></span>
+							aria-hidden="true">
+						</span>
 
 						<span class="sr-only">
-							>
+							Siguiente
 						</span>
 
 					</a>
@@ -240,12 +256,12 @@ $brandPagesMobile = array_chunk(
 
 
 			<!--
-        |--------------------------------------------------------------------------
-        | MOBILE CAROUSEL
-        |--------------------------------------------------------------------------
-        | 3 brands per page.
-        |--------------------------------------------------------------------------
-        -->
+            |--------------------------------------------------------------------------
+            | MOBILE CAROUSEL
+            |--------------------------------------------------------------------------
+            | Maximum 3 brands per page.
+            |--------------------------------------------------------------------------
+            -->
 
 			<div
 				id="clientsCarouselMobile"
@@ -259,15 +275,13 @@ $brandPagesMobile = array_chunk(
 
 					<ol class="carousel-indicators clients__indicators">
 
-						<?php foreach (
-							$brandPagesMobile
-							as $pageIndex => $page
-						): ?>
+						<?php foreach ($brandPagesMobile as $pageIndex => $page): ?>
 
 							<li
 								data-target="#clientsCarouselMobile"
 								data-slide-to="<?php echo $pageIndex; ?>"
-								class="<?php echo $pageIndex === 0 ? 'active' : ''; ?>"></li>
+								class="<?php echo $pageIndex === 0 ? 'active' : ''; ?>">
+							</li>
 
 						<?php endforeach; ?>
 
@@ -278,22 +292,30 @@ $brandPagesMobile = array_chunk(
 
 				<div class="carousel-inner">
 
-					<?php foreach (
-						$brandPagesMobile
-						as $pageIndex => $page
-					): ?>
+					<?php foreach ($brandPagesMobile as $pageIndex => $page): ?>
 
 						<div
 							class="item <?php echo $pageIndex === 0 ? 'active' : ''; ?>">
 
-							<div class="clients__logos">
+							<div
+								class="clients__logos"
+								style="
+									width: 100%;
+									display: flex;
+									align-items: center;
+									justify-content: space-evenly;
+								">
 
 								<?php foreach ($page as $brand): ?>
 
-									<div class="clients__logo">
+									<div
+										class="clients__logo"
+										style="
+											flex: 0 0 auto;
+										">
 
 										<img
-											src="<?php echo $themeUrl; ?>/images/brands/<?php echo CHtml::encode($brand['image']); ?>"
+											src="<?php echo $themeUrl . '/' . CHtml::encode($brand['image']); ?>"
 											alt="<?php echo CHtml::encode($brand['name']); ?>"
 											loading="lazy">
 
@@ -320,11 +342,12 @@ $brandPagesMobile = array_chunk(
 
 						<span
 							class="fa fa-chevron-left"
-							aria-hidden="true"></span>
+							aria-hidden="true">
+						</span>
 
 						<span class="sr-only">
-							<
-								</span>
+							Anterior
+						</span>
 
 					</a>
 
@@ -337,16 +360,16 @@ $brandPagesMobile = array_chunk(
 
 						<span
 							class="fa fa-chevron-right"
-							aria-hidden="true"></span>
+							aria-hidden="true">
+						</span>
 
 						<span class="sr-only">
-							>
+							Siguiente
 						</span>
 
 					</a>
 
 				<?php endif; ?>
-
 
 			</div>
 

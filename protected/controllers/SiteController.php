@@ -31,32 +31,15 @@ class SiteController extends Controller
 		$this->render(
 			'index',
 			array(
-				'languageId' =>
-				$languageId,
-
-				'heroSlides' =>
-				$heroSlides,
-
-				'introContent' =>
-				$introContent,
-
-				'businesses' =>
-				$businesses,
-
-				'featuredCategories' =>
-				$featuredCategories,
-
-				'brandSection' =>
-				$brandSection,
-
-				'featuredBrands' =>
-				$featuredBrands,
-
-				'brands' =>
-				$brands,
-
-				'faqItems' =>
-				$faqItems
+				'languageId' => $languageId,
+				'heroSlides' => $heroSlides,
+				'introContent' => $introContent,
+				'businesses' => $businesses,
+				'featuredCategories' => $featuredCategories,
+				'brandSection' => $brandSection,
+				'featuredBrands' => $featuredBrands,
+				'brands' => $brands,
+				'faqItems' => $faqItems
 			)
 		);
 	}
@@ -393,21 +376,10 @@ class SiteController extends Controller
 			new LoginForm;
 
 
-		if (
-			isset(
-				$_POST['LoginForm']
-			)
-		) {
+		if (isset($_POST['LoginForm'])) {
 
-			$model->attributes =
-				$_POST['LoginForm'];
-
-
-			if (
-				$model->validate() &&
-				$model->login()
-			) {
-
+			$model->attributes = $_POST['LoginForm'];
+			if ($model->validate() && $model->login()) {
 				$this->redirect(
 					Yii::app()->createAbsoluteUrl(
 						'panel'
@@ -416,14 +388,7 @@ class SiteController extends Controller
 			}
 		}
 
-
-		$this->render(
-			'login',
-			array(
-				'model' =>
-				$model
-			)
-		);
+		$this->render('login', array('model' => $model));
 	}
 
 
@@ -457,8 +422,7 @@ class SiteController extends Controller
 	 */
 	public function actionProductos()
 	{
-		$productViewData =
-			$this->getProductosViewData();
+		$productViewData = $this->getProductosViewData();
 
 
 		$this->render(
@@ -640,50 +604,24 @@ class SiteController extends Controller
 			);
 
 
-			$criteria->params[':current_language'] =
-				(int)
-				$languageId;
+			$criteria->params[':current_language'] = (int)$languageId;
 
 
-			$criteria->params[':default_language'] =
-				(int)
-				$defaultLanguageId;
+			$criteria->params[':default_language'] = (int)$defaultLanguageId;
 
 
-			$rows =
-				CategoryTranslations::model()->findAll(
-					$criteria
-				);
+			$rows = CategoryTranslations::model()->findAll($criteria);
 
 
-			foreach (
-				$rows
-				as $row
-			) {
+			foreach ($rows as $row) {
+				$categoryId = (int)$row->category_id;
+				$translationLanguageId = (int)$row->language_id;
 
-				$categoryId =
-					(int)
-					$row->category_id;
-
-
-				$translationLanguageId =
-					(int)
-					$row->language_id;
-
-
-				if (
-					!isset(
-						$categoryTranslations[$categoryId]
-					)
-				) {
-
-					$categoryTranslations[$categoryId] =
-						array();
+				if (!isset($categoryTranslations[$categoryId])) {
+					$categoryTranslations[$categoryId] = array();
 				}
 
-
-				$categoryTranslations[$categoryId][$translationLanguageId] =
-					$row;
+				$categoryTranslations[$categoryId][$translationLanguageId] = $row;
 			}
 		}
 
@@ -692,44 +630,18 @@ class SiteController extends Controller
 		 * Prepare public category names.
 		 */
 
-		$categoryData =
-			array();
+		$categoryData = array();
+		$categoryNameById = array();
+		$categorySlugById = array();
 
-		$categoryNameById =
-			array();
+		foreach ($categories as $category) {
 
-		$categorySlugById =
-			array();
-
-
-		foreach (
-			$categories
-			as $category
-		) {
-
-			$id =
-				(int)
-				$category->id;
+			$id = (int) $category->id;
+			$name = '';
 
 
-			$name =
-				'';
-
-
-			if (
-				isset(
-					$categoryTranslations[$id]
-				) &&
-				isset(
-					$categoryTranslations[$id][$languageId]
-				)
-			) {
-
-				$name =
-					trim(
-						(string)
-						$categoryTranslations[$id][$languageId]->name
-					);
+			if (isset($categoryTranslations[$id]) && isset($categoryTranslations[$id][$languageId])) {
+				$name = trim((string)$categoryTranslations[$id][$languageId]->name);
 			}
 
 
@@ -1202,11 +1114,8 @@ class SiteController extends Controller
 		$brands =
 			Brands::model()->findAll(
 				array(
-					'condition' =>
-					'is_active = 1',
-
-					'order' =>
-					'sort_order ASC, name ASC, id ASC',
+					'condition' => 'is_active = 1 AND is_featured= 1',
+					'order' => 'sort_order ASC, name ASC, id ASC',
 				)
 			);
 

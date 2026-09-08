@@ -118,6 +118,13 @@
     object-fit: contain;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| BRANDS CAROUSEL
+|--------------------------------------------------------------------------
+*/
+
 .clients__brands {
     position: relative;
     width: 100%;
@@ -130,6 +137,13 @@
 .clients__carousel .carousel-inner {
     width: 100%;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| LOGOS
+|--------------------------------------------------------------------------
+*/
 
 .clients__logos {
     display: flex;
@@ -144,7 +158,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
     height: 70px;
 }
@@ -152,9 +166,51 @@
 .clients__logo img {
     display: block;
     max-width: 130px;
-    max-height: 55px;
+    max-height: 155px;
     object-fit: contain;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| DESKTOP
+|--------------------------------------------------------------------------
+|
+| Maximum 5 logos per page is handled by PHP with:
+|
+| array_chunk($brands, 5)
+|
+| Each logo uses equal available space, so:
+|
+| 5 logos = 20% each
+| 4 logos = 25% each
+| 3 logos = 33.33% each
+| 2 logos = 50% each
+| 1 logo  = 100%
+|
+|--------------------------------------------------------------------------
+*/
+
+.clients__carousel--desktop {
+    display: block;
+}
+
+.clients__carousel--desktop .clients__logos {
+    min-height: 250px;
+    gap: 25px;
+}
+
+.clients__carousel--desktop .clients__logo {
+    flex: 1 1 0;
+    width: auto;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CONTROLS
+|--------------------------------------------------------------------------
+*/
 
 .clients__control {
     width: 60px;
@@ -163,7 +219,7 @@
     text-shadow: none;
 }
 
-.clients__control > span:not(.sr-only) {
+.clients__control>span:not(.sr-only) {
     position: absolute;
     top: 50%;
     display: flex;
@@ -179,11 +235,28 @@
     box-shadow: var(--made-shadow-sm);
 }
 
-.clients__control--prev { left: 10px; }
-.clients__control--next { right: 10px; }
+.clients__control--prev {
+    left: 10px;
+}
 
-.clients__control--prev > span:not(.sr-only) { left: 0; }
-.clients__control--next > span:not(.sr-only) { right: 0; }
+.clients__control--next {
+    right: 10px;
+}
+
+.clients__control--prev>span:not(.sr-only) {
+    left: 0;
+}
+
+.clients__control--next>span:not(.sr-only) {
+    right: 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| INDICATORS
+|--------------------------------------------------------------------------
+*/
 
 .clients__indicators {
     bottom: 0;
@@ -207,25 +280,26 @@
     background: var(--made-color-primary);
 }
 
-.clients__carousel--desktop {
-    display: block;
-}
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE CAROUSEL
+|--------------------------------------------------------------------------
+*/
 
 .clients__carousel--mobile {
     display: none;
 }
 
-.clients__carousel--desktop .clients__logos {
-    min-height: 90px;
-    gap: 25px;
-}
 
-.clients__carousel--desktop .clients__logo {
-    flex: 0 0 calc(20% - 20px);
-    width: calc(20% - 20px);
-}
+/*
+|--------------------------------------------------------------------------
+| TABLET
+|--------------------------------------------------------------------------
+*/
 
 @media (max-width: 992px) {
+
     .clients__info {
         min-height: 460px;
         padding: 55px 40px;
@@ -252,9 +326,22 @@
         padding-right: 65px;
         padding-left: 65px;
     }
+
+    .clients__carousel--desktop .clients__logos {
+        gap: 20px;
+    }
+
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE
+|--------------------------------------------------------------------------
+*/
+
 @media (max-width: 767px) {
+
     .clients__content {
         grid-template-columns: 1fr;
     }
@@ -301,8 +388,8 @@
     }
 
     .clients__logo {
-        flex: 0 0 calc(20% - 7px);
-        width: calc(20% - 7px);
+        flex: 1 1 0;
+        width: auto;
         height: 65px;
     }
 
@@ -315,8 +402,13 @@
         width: 42px;
     }
 
-    .clients__control--prev { left: 3px; }
-    .clients__control--next { right: 3px; }
+    .clients__control--prev {
+        left: 3px;
+    }
+
+    .clients__control--next {
+        right: 3px;
+    }
 
     .clients__carousel--desktop {
         display: none;
@@ -332,8 +424,8 @@
     }
 
     .clients__carousel--mobile .clients__logo {
-        flex: 0 0 calc(33.333% - 7px);
-        width: calc(33.333% - 7px);
+        flex: 1 1 0;
+        width: auto;
         height: 65px;
     }
 
@@ -341,4 +433,5 @@
         max-width: 100%;
         max-height: 42px;
     }
+
 }
