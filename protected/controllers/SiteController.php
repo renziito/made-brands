@@ -8,15 +8,10 @@ class SiteController extends Controller
 
 		$language = Languages::model()->find(
 			'code = :code',
-			array(
-				':code' => $languageCode
-			)
+			[':code' => $languageCode]
 		);
 
-		$languageId = $language
-			? $language->id
-			: null;
-
+		$languageId = $language ? $language->id : null;
 
 		$heroSlides = WebUtils::getHero($languageId);
 		$introContent = WebUtils::getIntro($languageId);
@@ -26,7 +21,6 @@ class SiteController extends Controller
 		$featuredBrands = WebUtils::getFeaturedBrands();
 		$brands = WebUtils::getBrands();
 		$faqItems = WebUtils::getFaqItems($languageId);
-
 
 		$this->render(
 			'index',
@@ -44,7 +38,6 @@ class SiteController extends Controller
 		);
 	}
 
-
 	/**
 	 * Changes the current language through AJAX.
 	 *
@@ -58,50 +51,22 @@ class SiteController extends Controller
 	 */
 	public function actionChangeLanguage()
 	{
-		header(
-			'Content-Type: application/json; charset=UTF-8'
-		);
-
-
-		/*
-		|--------------------------------------------------------------------------
-		| REQUEST METHOD
-		|--------------------------------------------------------------------------
-		*/
+		header('Content-Type: application/json; charset=UTF-8');
 
 		if (!Yii::app()->request->isPostRequest) {
 
 			echo CJSON::encode(
 				array(
 					'success' => false,
-
-					'message' =>
-					'Método de solicitud no permitido.'
+					'message' => 'Método de solicitud no permitido.'
 				)
 			);
 
 			Yii::app()->end();
 		}
 
-
-		/*
-		|--------------------------------------------------------------------------
-		| LANGUAGE CODE
-		|--------------------------------------------------------------------------
-		*/
-
-		$languageCode = trim(
-			(string) Yii::app()->request->getPost(
-				'language',
-				''
-			)
-		);
-
-
-		$languageCode = strtolower(
-			$languageCode
-		);
-
+		$languageCode = trim((string) Yii::app()->request->getPost('language', ''));
+		$languageCode = strtolower($languageCode);
 
 		/*
 		|--------------------------------------------------------------------------
@@ -114,15 +79,12 @@ class SiteController extends Controller
 			echo CJSON::encode(
 				array(
 					'success' => false,
-
-					'message' =>
-					'No se recibió un idioma válido.'
+					'message' => 'No se recibió un idioma válido.'
 				)
 			);
 
 			Yii::app()->end();
 		}
-
 
 		/*
 		|--------------------------------------------------------------------------
@@ -132,12 +94,8 @@ class SiteController extends Controller
 
 		$language = Languages::model()->find(
 			'LOWER(code) = :code AND is_active = 1',
-			array(
-				':code' =>
-				$languageCode
-			)
+			array(':code' => $languageCode)
 		);
-
 
 		/*
 		|--------------------------------------------------------------------------
@@ -150,15 +108,12 @@ class SiteController extends Controller
 			echo CJSON::encode(
 				array(
 					'success' => false,
-
-					'message' =>
-					'El idioma seleccionado no está disponible.'
+					'message' => 'El idioma seleccionado no está disponible.'
 				)
 			);
 
 			Yii::app()->end();
 		}
-
 
 		/*
 		|--------------------------------------------------------------------------
@@ -166,9 +121,7 @@ class SiteController extends Controller
 		|--------------------------------------------------------------------------
 		*/
 
-		Yii::app()->session['language'] =
-			$language->code;
-
+		Yii::app()->session['language'] = $language->code;
 
 		/*
 		|--------------------------------------------------------------------------
@@ -176,9 +129,7 @@ class SiteController extends Controller
 		|--------------------------------------------------------------------------
 		*/
 
-		$languageId =
-			(int) $language->id;
-
+		$languageId = (int) $language->id;
 
 		/*
 		|--------------------------------------------------------------------------
@@ -186,211 +137,71 @@ class SiteController extends Controller
 		|--------------------------------------------------------------------------
 		*/
 
-		$heroHtml =
-			WebUtils::getHeroHtml(
-				$languageId
-			);
+		$heroHtml = WebUtils::getHeroHtml($languageId);
+		$introHtml = WebUtils::getIntroHtml($languageId);
+		$businessHtml = WebUtils::getBusinessHtml($languageId);
+		$productsHtml = WebUtils::getProductsHtml($languageId);
+		$clientsHtml = WebUtils::getClientsHtml($languageId);
+		$faqHtml = WebUtils::getFaqHtml($languageId);
+		$menuHtml = WebUtils::getMenuHtml($languageId);
+		$footerContactHtml = WebUtils::getFooterContactHtml($languageId);
+		$copyrightHtml = WebUtils::getCopyrightHtml($languageId);
 
-		$introHtml =
-			WebUtils::getIntroHtml(
-				$languageId
-			);
-
-		$businessHtml =
-			WebUtils::getBusinessHtml(
-				$languageId
-			);
-
-		$productsHtml =
-			WebUtils::getProductsHtml(
-				$languageId
-			);
-
-		$clientsHtml =
-			WebUtils::getClientsHtml(
-				$languageId
-			);
-
-		$faqHtml =
-			WebUtils::getFaqHtml(
-				$languageId
-			);
-
-		$menuHtml =
-			WebUtils::getMenuHtml(
-				$languageId
-			);
-
-		$footerContactHtml =
-			WebUtils::getFooterContactHtml(
-				$languageId
-			);
-
-		$copyrightHtml =
-			WebUtils::getCopyrightHtml(
-				$languageId
-			);
-
-
-		/*
-		|--------------------------------------------------------------------------
-		| PRODUCT CATALOG HTML
-		|--------------------------------------------------------------------------
-		|
-		| This is intentionally generated separately from the
-		| homepage product section.
-		|
-		| WebUtils::getProductosHtml() will render the catalog
-		| partial using the current URL filters.
-		|
-		*/
-
-		$catalogHtml =
-			WebUtils::getProductosHtml(
-				$languageId
-			);
-
-
-		/*
-		|--------------------------------------------------------------------------
-		| AJAX RESPONSE
-		|--------------------------------------------------------------------------
-		*/
+		$catalogHtml = WebUtils::getProductosHtml($languageId);
 
 		echo CJSON::encode(
 			array(
-				'success' =>
-				true,
-
-				'language' =>
-				strtolower(
-					trim(
-						(string)
-						$language->code
-					)
-				),
-
-				'languageId' =>
-				$languageId,
-
-				'html' =>
-				array(
-
-					/*
-					|--------------------------------------------------------------------------
-					| GENERAL MENU
-					|--------------------------------------------------------------------------
-					*/
-
-					'menu' =>
-					$menuHtml,
-
-
-					/*
-					|--------------------------------------------------------------------------
-					| HOMEPAGE
-					|--------------------------------------------------------------------------
-					*/
-
-					'hero' =>
-					$heroHtml,
-
-					'intro' =>
-					$introHtml,
-
-					'business' =>
-					$businessHtml,
-
-					'products' =>
-					$productsHtml,
-
-					'clients' =>
-					$clientsHtml,
-
-					'faq' =>
-					$faqHtml,
-
-
-					/*
-					|--------------------------------------------------------------------------
-					| FOOTER
-					|--------------------------------------------------------------------------
-					*/
-
-					'footerContact' =>
-					$footerContactHtml,
-
-					'copyright' =>
-					$copyrightHtml,
-
-
-					/*
-					|--------------------------------------------------------------------------
-					| PRODUCT CATALOG
-					|--------------------------------------------------------------------------
-					*/
-
-					'catalog' =>
-					$catalogHtml,
+				'success' => true,
+				'language' => strtolower(trim((string)$language->code)),
+				'languageId' => $languageId,
+				'html' => array(
+					'menu' => $menuHtml,
+					'hero' => $heroHtml,
+					'intro' => $introHtml,
+					'business' => $businessHtml,
+					'products' => $productsHtml,
+					'clients' => $clientsHtml,
+					'faq' => $faqHtml,
+					'footerContact' => $footerContactHtml,
+					'copyright' => $copyrightHtml,
+					'catalog' => $catalogHtml,
 				)
 			)
 		);
 
-
 		Yii::app()->end();
 	}
-
 
 	/**
 	 * This is the action to handle external exceptions.
 	 */
 	public function actionError()
 	{
-		if (
-			$error =
-			Yii::app()->errorHandler->error
-		) {
-
-			if (
-				Yii::app()->request->isAjaxRequest
-			) {
-
+		if ($error = Yii::app()->errorHandler->error) {
+			if (Yii::app()->request->isAjaxRequest) {
 				echo $error['message'];
 			} else {
-
-				$this->render(
-					'error',
-					$error
-				);
+				$this->render('error', $error);
 			}
 		}
 	}
-
 
 	/**
 	 * Displays the login page.
 	 */
 	public function actionLogin()
 	{
-		$model =
-			new LoginForm;
-
+		$model = new LoginForm;
 
 		if (isset($_POST['LoginForm'])) {
-
 			$model->attributes = $_POST['LoginForm'];
 			if ($model->validate() && $model->login()) {
-				$this->redirect(
-					Yii::app()->createAbsoluteUrl(
-						'panel'
-					)
-				);
+				$this->redirect(Yii::app()->createAbsoluteUrl('panel'));
 			}
 		}
 
 		$this->render('login', array('model' => $model));
 	}
-
 
 	/**
 	 * Logs out the current user and redirect to homepage.
@@ -398,13 +209,8 @@ class SiteController extends Controller
 	public function actionLogout()
 	{
 		Yii::app()->user->logout();
-
-
-		$this->redirect(
-			Yii::app()->homeUrl
-		);
+		$this->redirect(Yii::app()->homeUrl);
 	}
-
 
 	/**
 	 * Displays the public product catalog.
@@ -423,14 +229,8 @@ class SiteController extends Controller
 	public function actionProductos()
 	{
 		$productViewData = $this->getProductosViewData();
-
-
-		$this->render(
-			'productos',
-			$productViewData
-		);
+		$this->render('productos', $productViewData);
 	}
-
 
 	/**
 	 * Builds all public product catalog data.
@@ -446,49 +246,13 @@ class SiteController extends Controller
 	 */
 	public function getProductosViewData()
 	{
-		/*
-		 * ==========================================================
-		 * LANGUAGE
-		 * ==========================================================
-		 */
+		$languageCode = Yii::app()->session->get('language', 'es');
+		$language = Languages::model()->find('code = :code', array(':code' => $languageCode));
+		$languageId = $language ? (int) $language->id : null;
 
-		$languageCode =
-			Yii::app()->session->get(
-				'language',
-				'es'
-			);
+		$defaultLanguage = Languages::model()->findByAttributes(array('is_default' => 1));
 
-
-		$language =
-			Languages::model()->find(
-				'code = :code',
-				array(
-					':code' =>
-					$languageCode,
-				)
-			);
-
-
-		$languageId =
-			$language
-			? (int) $language->id
-			: null;
-
-
-		$defaultLanguage =
-			Languages::model()->findByAttributes(
-				array(
-					'is_default' =>
-					1,
-				)
-			);
-
-
-		$defaultLanguageId =
-			$defaultLanguage
-			? (int) $defaultLanguage->id
-			: $languageId;
-
+		$defaultLanguageId = $defaultLanguage ? (int) $defaultLanguage->id : $languageId;
 
 		/*
 		 * ==========================================================
@@ -496,55 +260,40 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$categoryFilter =
-			trim(
-				(string)
-				Yii::app()->request->getQuery(
-					'categoria',
-					''
-				)
-			);
+		$categoryFilter = trim(
+			(string) Yii::app()->request->getQuery(
+				'categoria',
+				''
+			)
+		);
 
+		$subcategoryFilter = trim(
+			(string) Yii::app()->request->getQuery(
+				'subcategoria',
+				''
+			)
+		);
 
-		$subcategoryFilter =
-			trim(
-				(string)
-				Yii::app()->request->getQuery(
-					'subcategoria',
-					''
-				)
-			);
+		$brandFilter = trim(
+			(string) Yii::app()->request->getQuery(
+				'marca',
+				''
+			)
+		);
 
+		$orderFilter = trim(
+			(string) Yii::app()->request->getQuery(
+				'orden',
+				'recientes'
+			)
+		);
 
-		$brandFilter =
-			trim(
-				(string)
-				Yii::app()->request->getQuery(
-					'marca',
-					''
-				)
-			);
-
-
-		$orderFilter =
-			trim(
-				(string)
-				Yii::app()->request->getQuery(
-					'orden',
-					'recientes'
-				)
-			);
-
-
-		$productFilter =
-			trim(
-				(string)
-				Yii::app()->request->getQuery(
-					'producto',
-					''
-				)
-			);
-
+		$productFilter = trim(
+			(string) Yii::app()->request->getQuery(
+				'producto',
+				''
+			)
+		);
 
 		/*
 		 * ==========================================================
@@ -552,66 +301,49 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$categories =
-			Categories::model()->findAll(
-				array(
-					'condition' =>
-					'is_active = 1',
+		$categories = Categories::model()->findAll(
+			array(
+				'condition' => 'is_active = 1',
 
-					'order' =>
-					'sort_order ASC, id ASC',
-				)
-			);
+				'order' => 'sort_order ASC, id ASC',
+			)
+		);
 
-
-		$categoryIds =
-			array();
-
+		$categoryIds = array();
 
 		foreach (
 			$categories
 			as $category
 		) {
 
-			$categoryIds[] =
-				(int)
-				$category->id;
+			$categoryIds[] = (int)
+			$category->id;
 		}
-
 
 		/*
 		 * Category translations.
 		 */
 
-		$categoryTranslations =
-			array();
-
+		$categoryTranslations = array();
 
 		if ($categoryIds) {
 
-			$criteria =
-				new CDbCriteria;
-
+			$criteria = new CDbCriteria;
 
 			$criteria->addInCondition(
 				'category_id',
 				$categoryIds
 			);
 
-
 			$criteria->addCondition(
 				'language_id IN (:current_language, :default_language)'
 			);
 
-
 			$criteria->params[':current_language'] = (int)$languageId;
-
 
 			$criteria->params[':default_language'] = (int)$defaultLanguageId;
 
-
 			$rows = CategoryTranslations::model()->findAll($criteria);
-
 
 			foreach ($rows as $row) {
 				$categoryId = (int)$row->category_id;
@@ -624,7 +356,6 @@ class SiteController extends Controller
 				$categoryTranslations[$categoryId][$translationLanguageId] = $row;
 			}
 		}
-
 
 		/*
 		 * Prepare public category names.
@@ -639,11 +370,9 @@ class SiteController extends Controller
 			$id = (int) $category->id;
 			$name = '';
 
-
 			if (isset($categoryTranslations[$id]) && isset($categoryTranslations[$id][$languageId])) {
 				$name = trim((string)$categoryTranslations[$id][$languageId]->name);
 			}
-
 
 			if (
 				$name === '' &&
@@ -655,54 +384,36 @@ class SiteController extends Controller
 				)
 			) {
 
-				$name =
-					trim(
-						(string)
-						$categoryTranslations[$id][$defaultLanguageId]->name
-					);
+				$name = trim(
+					(string) $categoryTranslations[$id][$defaultLanguageId]->name
+				);
 			}
-
 
 			if ($name === '') {
 
-				$name =
-					'Categoría #' . $id;
+				$name = 'Categoría #' . $id;
 			}
 
+			$slug = $this->publicSlug(
+				$name
+			);
 
-			$slug =
-				$this->publicSlug(
-					$name
-				);
+			$categoryData[] = array(
+				'model' => $category,
 
+				'id' => $id,
 
-			$categoryData[] =
-				array(
-					'model' =>
-					$category,
+				'name' => $name,
 
-					'id' =>
-					$id,
+				'slug' => $slug,
 
-					'name' =>
-					$name,
+				'subcategories' => array(),
+			);
 
-					'slug' =>
-					$slug,
+			$categoryNameById[$id] = $name;
 
-					'subcategories' =>
-					array(),
-				);
-
-
-			$categoryNameById[$id] =
-				$name;
-
-
-			$categorySlugById[$id] =
-				$slug;
+			$categorySlugById[$id] = $slug;
 		}
-
 
 		/*
 		 * ==========================================================
@@ -710,84 +421,58 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$subcategories =
-			Subcategories::model()->findAll(
-				array(
-					'condition' =>
-					'is_active = 1',
+		$subcategories = Subcategories::model()->findAll(
+			array(
+				'condition' => 'is_active = 1',
 
-					'order' =>
-					'category_id ASC, sort_order ASC, id ASC',
-				)
-			);
+				'order' => 'category_id ASC, sort_order ASC, id ASC',
+			)
+		);
 
-
-		$subcategoryIds =
-			array();
-
+		$subcategoryIds = array();
 
 		foreach (
 			$subcategories
 			as $subcategory
 		) {
 
-			$subcategoryIds[] =
-				(int)
-				$subcategory->id;
+			$subcategoryIds[] = (int)
+			$subcategory->id;
 		}
 
-
-		$subcategoryTranslations =
-			array();
-
+		$subcategoryTranslations = array();
 
 		if ($subcategoryIds) {
 
-			$criteria =
-				new CDbCriteria;
-
+			$criteria = new CDbCriteria;
 
 			$criteria->addInCondition(
 				'subcategory_id',
 				$subcategoryIds
 			);
 
-
 			$criteria->addCondition(
 				'language_id IN (:current_language, :default_language)'
 			);
 
+			$criteria->params[':current_language'] = (int)
+			$languageId;
 
-			$criteria->params[':current_language'] =
-				(int)
-				$languageId;
+			$criteria->params[':default_language'] = (int)
+			$defaultLanguageId;
 
-
-			$criteria->params[':default_language'] =
-				(int)
-				$defaultLanguageId;
-
-
-			$rows =
-				SubcategoryTranslations::model()->findAll(
-					$criteria
-				);
-
+			$rows = SubcategoryTranslations::model()->findAll(
+				$criteria
+			);
 
 			foreach (
 				$rows
 				as $row
 			) {
 
-				$subcategoryId =
-					(int)
-					$row->subcategory_id;
+				$subcategoryId = (int) $row->subcategory_id;
 
-
-				$translationLanguageId =
-					(int)
-					$row->language_id;
-
+				$translationLanguageId = (int) $row->language_id;
 
 				if (
 					!isset(
@@ -795,48 +480,31 @@ class SiteController extends Controller
 					)
 				) {
 
-					$subcategoryTranslations[$subcategoryId] =
-						array();
+					$subcategoryTranslations[$subcategoryId] = array();
 				}
 
-
-				$subcategoryTranslations[$subcategoryId][$translationLanguageId] =
-					$row;
+				$subcategoryTranslations[$subcategoryId][$translationLanguageId] = $row;
 			}
 		}
 
+		$subcategoryData = array();
 
-		$subcategoryData =
-			array();
+		$subcategoryNameById = array();
 
-		$subcategoryNameById =
-			array();
+		$subcategorySlugById = array();
 
-		$subcategorySlugById =
-			array();
-
-		$subcategoryCategoryById =
-			array();
-
+		$subcategoryCategoryById = array();
 
 		foreach (
 			$subcategories
 			as $subcategory
 		) {
 
-			$id =
-				(int)
-				$subcategory->id;
+			$id = (int) $subcategory->id;
 
+			$categoryId = (int) $subcategory->category_id;
 
-			$categoryId =
-				(int)
-				$subcategory->category_id;
-
-
-			$name =
-				'';
-
+			$name = '';
 
 			if (
 				isset(
@@ -847,13 +515,10 @@ class SiteController extends Controller
 				)
 			) {
 
-				$name =
-					trim(
-						(string)
-						$subcategoryTranslations[$id][$languageId]->name
-					);
+				$name = trim(
+					(string) $subcategoryTranslations[$id][$languageId]->name
+				);
 			}
-
 
 			if (
 				$name === '' &&
@@ -865,61 +530,39 @@ class SiteController extends Controller
 				)
 			) {
 
-				$name =
-					trim(
-						(string)
-						$subcategoryTranslations[$id][$defaultLanguageId]->name
-					);
+				$name = trim(
+					(string) $subcategoryTranslations[$id][$defaultLanguageId]->name
+				);
 			}
-
 
 			if ($name === '') {
 
-				$name =
-					'Subcategoría #' . $id;
+				$name = 'Subcategoría #' . $id;
 			}
 
+			$slug = $this->publicSlug(
+				$name
+			);
 
-			$slug =
-				$this->publicSlug(
-					$name
-				);
+			$data = array(
+				'model' => $subcategory,
 
+				'id' => $id,
 
-			$data =
-				array(
-					'model' =>
-					$subcategory,
+				'category_id' => $categoryId,
 
-					'id' =>
-					$id,
+				'name' => $name,
 
-					'category_id' =>
-					$categoryId,
+				'slug' => $slug,
+			);
 
-					'name' =>
-					$name,
+			$subcategoryData[] = $data;
 
-					'slug' =>
-					$slug,
-				);
+			$subcategoryNameById[$id] = $name;
 
+			$subcategorySlugById[$id] = $slug;
 
-			$subcategoryData[] =
-				$data;
-
-
-			$subcategoryNameById[$id] =
-				$name;
-
-
-			$subcategorySlugById[$id] =
-				$slug;
-
-
-			$subcategoryCategoryById[$id] =
-				$categoryId;
-
+			$subcategoryCategoryById[$id] = $categoryId;
 
 			foreach (
 				$categoryData
@@ -927,24 +570,20 @@ class SiteController extends Controller
 			) {
 
 				if (
-					(int)
-					$categoryItem['id'] ===
+					(int) $categoryItem['id'] ===
 					$categoryId
 				) {
 
-					$categoryItem['subcategories'][] =
-						$data;
+					$categoryItem['subcategories'][] = $data;
 
 					break;
 				}
 			}
 
-
 			unset(
 				$categoryItem
 			);
 		}
-
 
 		/*
 		 * ==========================================================
@@ -952,9 +591,7 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$selectedCategoryId =
-			null;
-
+		$selectedCategoryId = null;
 
 		if (
 			$categoryFilter !== ''
@@ -966,10 +603,7 @@ class SiteController extends Controller
 				)
 			) {
 
-				$candidateId =
-					(int)
-					$categoryFilter;
-
+				$candidateId = (int) $categoryFilter;
 
 				if (
 					isset(
@@ -977,8 +611,7 @@ class SiteController extends Controller
 					)
 				) {
 
-					$selectedCategoryId =
-						$candidateId;
+					$selectedCategoryId = $candidateId;
 				}
 			} else {
 
@@ -988,15 +621,12 @@ class SiteController extends Controller
 				) {
 
 					if (
-						$slug ===
-						$this->publicSlug(
+						$slug === $this->publicSlug(
 							$categoryFilter
 						)
 					) {
 
-						$selectedCategoryId =
-							(int)
-							$id;
+						$selectedCategoryId = (int) $id;
 
 						break;
 					}
@@ -1004,16 +634,13 @@ class SiteController extends Controller
 			}
 		}
 
-
 		/*
 		 * ==========================================================
 		 * RESOLVE SUBCATEGORY FILTER
 		 * ==========================================================
 		 */
 
-		$selectedSubcategoryId =
-			null;
-
+		$selectedSubcategoryId = null;
 
 		if (
 			$subcategoryFilter !== ''
@@ -1025,10 +652,7 @@ class SiteController extends Controller
 				)
 			) {
 
-				$candidateId =
-					(int)
-					$subcategoryFilter;
-
+				$candidateId = (int) $subcategoryFilter;
 
 				if (
 					isset(
@@ -1036,8 +660,7 @@ class SiteController extends Controller
 					)
 				) {
 
-					$selectedSubcategoryId =
-						$candidateId;
+					$selectedSubcategoryId = $candidateId;
 				}
 			} else {
 
@@ -1047,21 +670,17 @@ class SiteController extends Controller
 				) {
 
 					if (
-						$slug ===
-						$this->publicSlug(
+						$slug === $this->publicSlug(
 							$subcategoryFilter
 						)
 					) {
 
-						$selectedSubcategoryId =
-							(int)
-							$id;
+						$selectedSubcategoryId = (int) $id;
 
 						break;
 					}
 				}
 			}
-
 
 			/*
 			 * If a subcategory was selected together
@@ -1075,15 +694,12 @@ class SiteController extends Controller
 				isset(
 					$subcategoryCategoryById[$selectedSubcategoryId]
 				) &&
-				(int)
-				$subcategoryCategoryById[$selectedSubcategoryId] !==
+				(int) $subcategoryCategoryById[$selectedSubcategoryId] !==
 				$selectedCategoryId
 			) {
 
-				$selectedSubcategoryId =
-					null;
+				$selectedSubcategoryId = null;
 			}
-
 
 			/*
 			 * Selecting a subcategory also selects
@@ -1098,12 +714,9 @@ class SiteController extends Controller
 				)
 			) {
 
-				$selectedCategoryId =
-					(int)
-					$subcategoryCategoryById[$selectedSubcategoryId];
+				$selectedCategoryId = (int) $subcategoryCategoryById[$selectedSubcategoryId];
 			}
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1111,35 +724,25 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$brands =
-			Brands::model()->findAll(
-				array(
-					'condition' => 'is_active = 1 AND is_featured= 1',
-					'order' => 'sort_order ASC, name ASC, id ASC',
-				)
-			);
+		$sql = "
+			SELECT b.id, b.name, COUNT(p.id) AS total_products, b.slug
+			FROM brands b
+			INNER JOIN products p ON p.brand_id = b.id
+			WHERE b.is_active = 1
+			GROUP BY b.id, b.name
+		";
 
+		$brands = Yii::app()->db->createCommand($sql)->queryAll();
 
-		$brandIdsBySlug =
-			array();
+		
 
+		$brandIdsBySlug = array();
 
-		foreach (
-			$brands
-			as $brand
-		) {
-
-			$brandIdsBySlug[$this->publicSlug(
-				$brand->slug
-			)] =
-				(int)
-				$brand->id;
+		foreach ($brands as $brand) {
+			$brandIdsBySlug[$this->publicSlug($brand['slug'])] = (int)$brand['id'];
 		}
 
-
-		$selectedBrandId =
-			null;
-
+		$selectedBrandId = null;
 
 		if (
 			$brandFilter !== ''
@@ -1157,26 +760,20 @@ class SiteController extends Controller
 				) {
 
 					if (
-						(int)
-						$brand->id ===
-						(int)
-						$brandFilter
+						(int) $brand->id ===
+						(int) $brandFilter
 					) {
 
-						$selectedBrandId =
-							(int)
-							$brand->id;
+						$selectedBrandId = (int) $brand->id;
 
 						break;
 					}
 				}
 			} else {
 
-				$brandSlug =
-					$this->publicSlug(
-						$brandFilter
-					);
-
+				$brandSlug = $this->publicSlug(
+					$brandFilter
+				);
 
 				if (
 					isset(
@@ -1184,12 +781,10 @@ class SiteController extends Controller
 					)
 				) {
 
-					$selectedBrandId =
-						$brandIdsBySlug[$brandSlug];
+					$selectedBrandId = $brandIdsBySlug[$brandSlug];
 				}
 			}
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1197,14 +792,11 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$criteria =
-			new CDbCriteria;
-
+		$criteria = new CDbCriteria;
 
 		$criteria->addCondition(
 			"(status = 'published' OR status = 'publicado')"
 		);
-
 
 		if (
 			$selectedCategoryId !== null
@@ -1218,11 +810,8 @@ class SiteController extends Controller
 				)'
 			);
 
-
-			$criteria->params[':catalog_category_id'] =
-				$selectedCategoryId;
+			$criteria->params[':catalog_category_id'] = $selectedCategoryId;
 		}
-
 
 		if (
 			$selectedSubcategoryId !== null
@@ -1236,11 +825,8 @@ class SiteController extends Controller
 				)'
 			);
 
-
-			$criteria->params[':catalog_subcategory_id'] =
-				$selectedSubcategoryId;
+			$criteria->params[':catalog_subcategory_id'] = $selectedSubcategoryId;
 		}
-
 
 		if (
 			$selectedBrandId !== null
@@ -1250,57 +836,43 @@ class SiteController extends Controller
 				'brand_id = :catalog_brand_id'
 			);
 
-
-			$criteria->params[':catalog_brand_id'] =
-				$selectedBrandId;
+			$criteria->params[':catalog_brand_id'] = $selectedBrandId;
 		}
-
 
 		switch ($orderFilter) {
 
 			case 'nombre':
 
-				$criteria->order =
-					'LOWER(slug) ASC, id ASC';
+				$criteria->order = 'LOWER(slug) ASC, id ASC';
 
 				break;
-
 
 			case 'antiguos':
 
-				$criteria->order =
-					'published_at ASC, id ASC';
+				$criteria->order = 'published_at ASC, id ASC';
 
 				break;
-
 
 			case 'orden':
 
-				$criteria->order =
-					'sort_order ASC, id ASC';
+				$criteria->order = 'sort_order ASC, id ASC';
 
 				break;
-
 
 			case 'recientes':
 
 			default:
 
-				$orderFilter =
-					'recientes';
+				$orderFilter = 'recientes';
 
-				$criteria->order =
-					'published_at DESC, sort_order DESC, id DESC';
+				$criteria->order = 'published_at DESC, sort_order DESC, id DESC';
 
 				break;
 		}
 
-
-		$products =
-			Products::model()->findAll(
-				$criteria
-			);
-
+		$products = Products::model()->findAll(
+			$criteria
+		);
 
 		/*
 		 * ==========================================================
@@ -1308,72 +880,50 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productIds =
-			array();
-
+		$productIds = array();
 
 		foreach (
 			$products
 			as $product
 		) {
 
-			$productIds[] =
-				(int)
-				$product->id;
+			$productIds[] = (int)
+			$product->id;
 		}
 
-
-		$productTranslations =
-			array();
-
+		$productTranslations = array();
 
 		if ($productIds) {
 
-			$criteriaTranslations =
-				new CDbCriteria;
-
+			$criteriaTranslations = new CDbCriteria;
 
 			$criteriaTranslations->addInCondition(
 				'product_id',
 				$productIds
 			);
 
-
 			$criteriaTranslations->addCondition(
 				'language_id IN (:product_current_language, :product_default_language)'
 			);
 
+			$criteriaTranslations->params[':product_current_language'] = (int)
+			$languageId;
 
-			$criteriaTranslations->params[':product_current_language'] =
-				(int)
-				$languageId;
+			$criteriaTranslations->params[':product_default_language'] = (int)
+			$defaultLanguageId;
 
-
-			$criteriaTranslations->params[':product_default_language'] =
-				(int)
-				$defaultLanguageId;
-
-
-			$rows =
-				ProductTranslations::model()->findAll(
-					$criteriaTranslations
-				);
-
+			$rows = ProductTranslations::model()->findAll(
+				$criteriaTranslations
+			);
 
 			foreach (
 				$rows
 				as $row
 			) {
 
-				$productId =
-					(int)
-					$row->product_id;
+				$productId = (int) $row->product_id;
 
-
-				$translationLanguageId =
-					(int)
-					$row->language_id;
-
+				$translationLanguageId = (int) $row->language_id;
 
 				if (
 					!isset(
@@ -1381,16 +931,12 @@ class SiteController extends Controller
 					)
 				) {
 
-					$productTranslations[$productId] =
-						array();
+					$productTranslations[$productId] = array();
 				}
 
-
-				$productTranslations[$productId][$translationLanguageId] =
-					$row;
+				$productTranslations[$productId][$translationLanguageId] = $row;
 			}
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1398,46 +944,31 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productCategories =
-			array();
+		$productCategories = array();
 
-
-		$productSubcategories =
-			array();
-
+		$productSubcategories = array();
 
 		if ($productIds) {
 
-			$criteriaProductCategories =
-				new CDbCriteria;
-
+			$criteriaProductCategories = new CDbCriteria;
 
 			$criteriaProductCategories->addInCondition(
 				'product_id',
 				$productIds
 			);
 
-
-			$rows =
-				ProductCategories::model()->findAll(
-					$criteriaProductCategories
-				);
-
+			$rows = ProductCategories::model()->findAll(
+				$criteriaProductCategories
+			);
 
 			foreach (
 				$rows
 				as $row
 			) {
 
-				$productId =
-					(int)
-					$row->product_id;
+				$productId = (int) $row->product_id;
 
-
-				$categoryId =
-					(int)
-					$row->category_id;
-
+				$categoryId = (int) $row->category_id;
 
 				if (
 					!isset(
@@ -1445,46 +976,31 @@ class SiteController extends Controller
 					)
 				) {
 
-					$productCategories[$productId] =
-						array();
+					$productCategories[$productId] = array();
 				}
 
-
-				$productCategories[$productId][] =
-					$categoryId;
+				$productCategories[$productId][] = $categoryId;
 			}
 
-
-			$criteriaProductSubcategories =
-				new CDbCriteria;
-
+			$criteriaProductSubcategories = new CDbCriteria;
 
 			$criteriaProductSubcategories->addInCondition(
 				'product_id',
 				$productIds
 			);
 
-
-			$rows =
-				ProductSubcategories::model()->findAll(
-					$criteriaProductSubcategories
-				);
-
+			$rows = ProductSubcategories::model()->findAll(
+				$criteriaProductSubcategories
+			);
 
 			foreach (
 				$rows
 				as $row
 			) {
 
-				$productId =
-					(int)
-					$row->product_id;
+				$productId = (int) $row->product_id;
 
-
-				$subcategoryId =
-					(int)
-					$row->subcategory_id;
-
+				$subcategoryId = (int) $row->subcategory_id;
 
 				if (
 					!isset(
@@ -1492,16 +1008,12 @@ class SiteController extends Controller
 					)
 				) {
 
-					$productSubcategories[$productId] =
-						array();
+					$productSubcategories[$productId] = array();
 				}
 
-
-				$productSubcategories[$productId][] =
-					$subcategoryId;
+				$productSubcategories[$productId][] = $subcategoryId;
 			}
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1509,23 +1021,16 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$productData =
-			array();
-
+		$productData = array();
 
 		foreach (
 			$products
 			as $product
 		) {
 
-			$productId =
-				(int)
-				$product->id;
+			$productId = (int) $product->id;
 
-
-			$translation =
-				null;
-
+			$translation = null;
 
 			if (
 				isset(
@@ -1536,8 +1041,7 @@ class SiteController extends Controller
 				)
 			) {
 
-				$translation =
-					$productTranslations[$productId][$languageId];
+				$translation = $productTranslations[$productId][$languageId];
 			} elseif (
 				isset(
 					$productTranslations[$productId]
@@ -1547,51 +1051,24 @@ class SiteController extends Controller
 				)
 			) {
 
-				$translation =
-					$productTranslations[$productId][$defaultLanguageId];
+				$translation = $productTranslations[$productId][$defaultLanguageId];
 			}
 
-
-			$name =
-				$translation
-				? trim(
-					(string)
-					$translation->name
-				)
-				: '';
-
+			$name = $translation ? trim((string) $translation->name) : '';
 
 			if (
 				$name === ''
 			) {
 
-				$name =
-					'Producto #' .
+				$name = 'Producto #' .
 					$productId;
 			}
 
+			$shortDescription = $translation ? trim((string) $translation->short_description) : '';
 
-			$shortDescription =
-				$translation
-				? trim(
-					(string)
-					$translation->short_description
-				)
-				: '';
+			$description = $translation ? trim((string) $translation->description) : '';
 
-
-			$description =
-				$translation
-				? trim(
-					(string)
-					$translation->description
-				)
-				: '';
-
-
-			$categoriesForProduct =
-				array();
-
+			$categoriesForProduct = array();
 
 			if (
 				isset(
@@ -1610,25 +1087,18 @@ class SiteController extends Controller
 						)
 					) {
 
-						$categoriesForProduct[] =
-							array(
-								'id' =>
-								$categoryId,
+						$categoriesForProduct[] = array(
+							'id' => $categoryId,
 
-								'name' =>
-								$categoryNameById[$categoryId],
+							'name' => $categoryNameById[$categoryId],
 
-								'slug' =>
-								$categorySlugById[$categoryId],
-							);
+							'slug' => $categorySlugById[$categoryId],
+						);
 					}
 				}
 			}
 
-
-			$subcategoriesForProduct =
-				array();
-
+			$subcategoriesForProduct = array();
 
 			if (
 				isset(
@@ -1647,66 +1117,45 @@ class SiteController extends Controller
 						)
 					) {
 
-						$subcategoriesForProduct[] =
-							array(
-								'id' =>
-								$subcategoryId,
+						$subcategoriesForProduct[] = array(
+							'id' => $subcategoryId,
 
-								'name' =>
-								$subcategoryNameById[$subcategoryId],
+							'name' => $subcategoryNameById[$subcategoryId],
 
-								'slug' =>
-								$subcategorySlugById[$subcategoryId],
+							'slug' => $subcategorySlugById[$subcategoryId],
 
-								'category_id' =>
-								$subcategoryCategoryById[$subcategoryId],
-							);
+							'category_id' => $subcategoryCategoryById[$subcategoryId],
+						);
 					}
 				}
 			}
 
+			$brand = $product->brand;
 
-			$brand =
-				$product->brand;
+			$productData[] = array(
+				'model' => $product,
 
+				'id' => $productId,
 
-			$productData[] =
-				array(
-					'model' =>
-					$product,
+				'name' => $name,
 
-					'id' =>
-					$productId,
+				'slug' => $product->slug,
 
-					'name' =>
-					$name,
+				'short_description' => $shortDescription,
 
-					'slug' =>
-					$product->slug,
+				'description' => $description,
 
-					'short_description' =>
-					$shortDescription,
+				'main_image' => $product->main_image,
 
-					'description' =>
-					$description,
+				'infographic_image' => $product->infographic_image,
 
-					'main_image' =>
-					$product->main_image,
+				'brand' => $brand,
 
-					'infographic_image' =>
-					$product->infographic_image,
+				'categories' => $categoriesForProduct,
 
-					'brand' =>
-					$brand,
-
-					'categories' =>
-					$categoriesForProduct,
-
-					'subcategories' =>
-					$subcategoriesForProduct,
-				);
+				'subcategories' => $subcategoriesForProduct,
+			);
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1714,24 +1163,18 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$dataProvider =
-			new CArrayDataProvider(
-				$productData,
-				array(
-					'keyField' =>
-					'id',
+		$dataProvider = new CArrayDataProvider(
+			$productData,
+			array(
+				'keyField' => 'id',
 
-					'pagination' =>
-					array(
-						'pageSize' =>
-						12,
+				'pagination' => array(
+					'pageSize' => 12,
 
-						'pageVar' =>
-						'pagina',
-					),
-				)
-			);
-
+					'pageVar' => 'pagina',
+				),
+			)
+		);
 
 		/*
 		 * ==========================================================
@@ -1739,9 +1182,7 @@ class SiteController extends Controller
 		 * ==========================================================
 		 */
 
-		$selectedProduct =
-			null;
-
+		$selectedProduct = null;
 
 		if (
 			$productFilter !== ''
@@ -1755,20 +1196,17 @@ class SiteController extends Controller
 				if (
 					$this->publicSlug(
 						$item['slug']
-					) ===
-					$this->publicSlug(
+					) === $this->publicSlug(
 						$productFilter
 					)
 				) {
 
-					$selectedProduct =
-						$item;
+					$selectedProduct = $item;
 
 					break;
 				}
 			}
 		}
-
 
 		/*
 		 * ==========================================================
@@ -1777,117 +1215,82 @@ class SiteController extends Controller
 		 */
 
 		return array(
-			'languageId' =>
-			$languageId,
+			'languageId' => $languageId,
 
-			'language' =>
-			$language,
+			'language' => $language,
 
-			'categories' =>
-			$categoryData,
+			'categories' => $categoryData,
 
-			'subcategories' =>
-			$subcategoryData,
+			'subcategories' => $subcategoryData,
 
-			'brands' =>
-			$brands,
+			'brands' => $brands,
 
-			'products' =>
-			$productData,
+			'products' => $productData,
 
-			'dataProvider' =>
-			$dataProvider,
+			'dataProvider' => $dataProvider,
 
-			'selectedProduct' =>
-			$selectedProduct,
+			'selectedProduct' => $selectedProduct,
 
-			'selectedCategoryId' =>
-			$selectedCategoryId,
+			'selectedCategoryId' => $selectedCategoryId,
 
-			'selectedSubcategoryId' =>
-			$selectedSubcategoryId,
+			'selectedSubcategoryId' => $selectedSubcategoryId,
 
-			'selectedBrandId' =>
-			$selectedBrandId,
+			'selectedBrandId' => $selectedBrandId,
 
-			'categoryFilter' =>
-			$categoryFilter,
+			'categoryFilter' => $categoryFilter,
 
-			'subcategoryFilter' =>
-			$subcategoryFilter,
+			'subcategoryFilter' => $subcategoryFilter,
 
-			'brandFilter' =>
-			$brandFilter,
+			'brandFilter' => $brandFilter,
 
-			'orderFilter' =>
-			$orderFilter,
+			'orderFilter' => $orderFilter,
 
-			'productFilter' =>
-			$productFilter,
+			'productFilter' => $productFilter,
 		);
 	}
-
 
 	/**
 	 * Converts a public name into a URL-friendly slug.
 	 */
 	protected function publicSlug($value)
 	{
-		$value =
-			trim(
-				(string)
-				$value
-			);
+		$value = trim(
+			(string) $value
+		);
 
+		$value = strtolower(
+			$value
+		);
 
-		$value =
-			strtolower(
-				$value
-			);
+		$value = strtr(
+			$value,
+			array(
+				'á' => 'a',
 
+				'é' => 'e',
 
-		$value =
-			strtr(
-				$value,
-				array(
-					'á' =>
-					'a',
+				'í' => 'i',
 
-					'é' =>
-					'e',
+				'ó' => 'o',
 
-					'í' =>
-					'i',
+				'ú' => 'u',
 
-					'ó' =>
-					'o',
+				'ü' => 'u',
 
-					'ú' =>
-					'u',
+				'ñ' => 'n',
+			)
+		);
 
-					'ü' =>
-					'u',
+		$value = preg_replace(
+			'/[^a-z0-9]+/',
+			'-',
+			$value
+		);
 
-					'ñ' =>
-					'n',
-				)
-			);
-
-
-		$value =
-			preg_replace(
-				'/[^a-z0-9]+/',
-				'-',
-				$value
-			);
-
-
-		$value =
-			trim(
-				$value,
-				'-'
-			);
-
+		$value = trim(
+			$value,
+			'-'
+		);
 
 		return $value;
 	}

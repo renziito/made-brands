@@ -2176,6 +2176,8 @@ $('.brands-section-tab').on(
 
 						'is_featured',
 
+						'is_active',
+
 						'slug',
 
 						'logo',

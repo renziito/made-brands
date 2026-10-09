@@ -1099,8 +1099,7 @@ $brandUrl =
 
         return $catalogUrl(
             array(
-                'marca' =>
-                $brand->slug,
+                'marca' => $brand['slug'],
             )
         );
     };
@@ -1598,7 +1597,7 @@ $initialProductName =
                         <span>
 
                             <?= CHtml::encode(
-                                $brand->name
+                                $brand['name']
                             ); ?>
 
                         </span>

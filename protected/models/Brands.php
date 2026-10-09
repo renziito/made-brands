@@ -106,7 +106,6 @@ class Brands extends CActiveRecord
 		$criteria->order = 'sort_order DESC';
 		$criteria->compare('is_active',$this->is_active);
 
-		$criteria->addCondition('is_active = TRUE','AND');
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
