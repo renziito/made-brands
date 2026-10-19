@@ -1559,22 +1559,8 @@ $initialProductName =
             <div
                 class="catalog-filter-section__content">
 
-
-                <?php foreach (
-                    $brands
-                    as $brand
-                ): ?>
-
-                    <?php
-
-                    $isSelected =
-                        $selectedBrandId !== null &&
-                        (int)
-                        $selectedBrandId ===
-                        (int)
-                        $brand->id;
-
-                    ?>
+                <?php foreach ($brands as $brand): ?>
+                    <?php $isSelected = $selectedBrandId !== null && (int)$selectedBrandId === (int)$brand['id']; ?>
 
 
                     <a
@@ -1932,7 +1918,7 @@ $initialProductName =
                     ): ?>
 
                         <?php if (
-                            (int) $brand->id ===
+                            (int) $brand['id'] ===
                             (int) $selectedBrandId
                         ): ?>
 
@@ -1945,7 +1931,7 @@ $initialProductName =
 
 
                                 <?= CHtml::encode(
-                                    $brand->name
+                                    $brand['name']
                                 ); ?>
 
                             </span>
