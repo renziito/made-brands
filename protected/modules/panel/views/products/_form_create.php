@@ -221,6 +221,40 @@ $languages = Languages::model()->findAll(
  * ----------------------------------------------------------
  */
 
+// Select2 para buscar marcas conservando el campo original de Yii.
+Yii::app()->clientScript->registerCssFile('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
+Yii::app()->clientScript->registerScriptFile('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScript(
+	'product-brand-select2',
+	"jQuery(function($) {
+        var \$brand = $('#Products_brand_id');
+
+        if (\$brand.length && $.fn.select2) {
+            var \$brandField = \$brand.closest('.admin-form-field');
+
+            \$brand.select2({
+                width: '100%',
+                language: 'es',
+                placeholder: 'Seleccione una marca',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                dropdownAutoWidth: false,
+                dropdownParent: \$brandField.length ? \$brandField : \$brand.parent()
+            });
+        }
+    });",
+	CClientScript::POS_READY
+);
+
+// Ordena primero las marcas que ya tienen productos asociados.
+$productTable = Products::model()->tableName();
+$brandsWithProductsFirst = Brands::model()->findAll(
+	array(
+		'order' => "(SELECT COUNT(*) FROM {$productTable} p WHERE p.brand_id = t.id) DESC, t.name ASC",
+	)
+);
+
 Yii::app()->clientScript->registerCss(
 	'admin-form-products-create',
 	'
@@ -415,6 +449,83 @@ Yii::app()->clientScript->registerCss(
 	min-height: 120px;
 	resize: vertical;
 }
+.select2-container .select2-choice {padding: 12px; !important }
+
+/* Select2: estilo aislado para evitar conflictos con el CSS global del panel. */
+.admin-form-field .select2-container { padding: 0px !important; display: block !important; width: 100% !important; min-width: 0; font-family: inherit !important; font-size: 13px !important; }
+.admin-form-field .select2-container .select2-selection--single { position: relative; display: block; box-sizing: border-box; width: 100%; height: 40px !important; padding: 0 34px 0 0 !important; border: 1px solid #d1d5db !important; border-radius: 6px !important; background: #fff !important; box-shadow: none !important; }
+.admin-form-field .select2-container .select2-selection--single .select2-selection__rendered { display: block; box-sizing: border-box; padding: 0 11px !important; color: #374151 !important; font-family: inherit !important; font-size: 13px !important; font-weight: 400 !important; line-height: 38px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-form-field .select2-container .select2-selection--single .select2-selection__placeholder { color: #6b7280 !important; font-weight: 400 !important; }
+.admin-form-field .select2-container .select2-selection--single .select2-selection__clear { position: relative; z-index: 2; margin-right: 8px; color: #6b7280; font-size: 16px; }
+.admin-form-field .select2-container .select2-selection--single .select2-selection__arrow { position: absolute !important; top: 1px !important; right: 1px !important; width: 30px !important; height: 36px !important; border: 0 !important; background: transparent !important; }
+.admin-form-field .select2-container .select2-selection--single .select2-selection__arrow b { position: absolute !important; top: 50% !important; left: 50% !important; width: 0 !important; height: 0 !important; margin: -2px 0 0 -5px !important; border: 5px solid transparent !important; border-top-color: #6b7280 !important; border-bottom: 0 !important; transform: none !important; }
+/* El dropdown se monta normalmente al final de BODY; normalizamos sus estilos globalmente para evitar el CSS del tema. */
+body .select2-container,
+body .select2-container *,
+body .select2-dropdown,
+body .select2-dropdown * {
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    line-height: 1.5 !important;
+    text-transform: none !important;
+    text-shadow: none !important;
+}
+body .select2-dropdown {
+    z-index: 99999 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    background: #fff !important;
+    color: #374151 !important;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, .12) !important;
+}
+body .select2-container--open .select2-dropdown--below { border-top: 1px solid #d1d5db !important; }
+body .select2-container--open .select2-dropdown--above { border-bottom: 1px solid #d1d5db !important; }
+body .select2-container--default .select2-search--dropdown { padding: 8px !important; background: #fff !important; }
+body .select2-container--default .select2-search--dropdown .select2-search__field {
+    display: block !important;
+    width: 100% !important;
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 7px 10px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 5px !important;
+    outline: none !important;
+    background: #fff !important;
+    color: #374151 !important;
+    box-shadow: none !important;
+}
+body .select2-container--default .select2-search--dropdown .select2-search__field:focus { border-color: #9ca3af !important; box-shadow: 0 0 0 3px rgba(17, 24, 39, .06) !important; }
+body .select2-container--default .select2-results > .select2-results__options { max-height: 260px !important; overflow-y: auto !important; background: #fff !important; }
+body .select2-container--default .select2-results__option {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #374151 !important;
+    cursor: pointer !important;
+}
+body .select2-container--default .select2-results__option[aria-selected=true] { background: #f3f4f6 !important; color: #374151 !important; }
+body .select2-container--default .select2-results__option--highlighted[aria-selected] { background: #2563eb !important; color: #fff !important; }
+body .select2-container--default .select2-results__message { padding: 8px 10px !important; color: #6b7280 !important; }
+/* Refuerzo de estilos dentro del campo: el dropdownParent evita que el tema global le aplique tipografía serif. */
+.admin-form-field .select2-dropdown,
+.admin-form-field .select2-dropdown * { font-family: Arial, Helvetica, sans-serif !important; font-size: 13px !important; font-weight: 400 !important; font-style: normal !important; letter-spacing: normal !important; line-height: 1.5 !important; text-transform: none !important; text-shadow: none !important; }
+.admin-form-field .select2-dropdown { border: 1px solid #d1d5db !important; border-radius: 6px !important; background: #fff !important; color: #374151 !important; box-shadow: 0 4px 12px rgba(17, 24, 39, .12) !important; }
+.admin-form-field .select2-results__options { max-height: 260px !important; background: #fff !important; }
+.admin-form-field .select2-results__option { margin: 0 !important; padding: 8px 10px !important; border: 0 !important; border-radius: 0 !important; background: #fff !important; color: #374151 !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 13px !important; font-weight: 400 !important; cursor: pointer !important; }
+.admin-form-field .select2-results__option[aria-selected=true] { background: #f3f4f6 !important; color: #374151 !important; }
+.admin-form-field .select2-results__option--highlighted[aria-selected] { background: #2563eb !important; color: #fff !important; }
+.admin-form-field .select2-search--dropdown { padding: 8px !important; background: #fff !important; }
+.admin-form-field .select2-search--dropdown .select2-search__field { width: 100% !important; height: 36px !important; margin: 0 !important; padding: 7px 10px !important; border: 1px solid #d1d5db !important; border-radius: 5px !important; background: #fff !important; color: #374151 !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 13px !important; font-weight: 400 !important; box-shadow: none !important; }
+.admin-form-field .select2-container--default.select2-container--focus .select2-selection--single,
+.admin-form-field .select2-container--default.select2-container--open .select2-selection--single { border-color: #9ca3af !important; box-shadow: 0 0 0 3px rgba(17, 24, 39, .06) !important; }
 
 .admin-form-field input:focus,
 .admin-form-field select:focus,
@@ -934,6 +1045,12 @@ Yii::app()->clientScript->registerCss(
 	.admin-form-image-preview {
 		order: -1;
 	}
+}
+
+.select2-result-label{
+	font-weight: 400 !important;
+	font-size: 13px !important;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif; !important;
 }
 '
 );
@@ -1713,18 +1830,13 @@ var productCreateTaxonomy = " . CJSON::encode(
 						$model,
 						'brand_id',
 						CHtml::listData(
-							Brands::model()->findAll(
-								array(
-									'order' =>
-									'name ASC',
-								)
-							),
+							$brandsWithProductsFirst,
 							'id',
 							'name'
 						),
 						array(
 							'class' =>
-							'form-control',
+							'form-control js-brand-select2',
 
 							'prompt' =>
 							'Seleccione una marca',
