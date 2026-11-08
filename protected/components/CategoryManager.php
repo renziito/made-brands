@@ -27,26 +27,20 @@ class CategoryManager
 		$translation = new CategoryTranslations;
 
 		if ($categoryAttributes) {
-
-			$model->attributes =
-				$categoryAttributes;
+			$model->attributes = $categoryAttributes;
 		}
 
 		if ($translationAttributes) {
-
-			$translation->attributes =
-				$translationAttributes;
+			$translation->attributes = $translationAttributes;
 		}
 
 		/*
 		 * The first translation must always use
 		 * the configured default language.
 		 */
-		$defaultLanguage =
-			$this->getDefaultLanguage();
+		$defaultLanguage = $this->getDefaultLanguage();
 
 		if ($defaultLanguage === null) {
-
 			$model->addError(
 				'is_active',
 				'No existe un idioma predeterminado configurado.'
@@ -65,27 +59,16 @@ class CategoryManager
 		$model->created_at = $now;
 		$model->updated_at = $now;
 
-		$translation->language_id =
-			$defaultLanguage->id;
-
+		$translation->language_id = $defaultLanguage->id;
 		$translation->created_at = $now;
 		$translation->updated_at = $now;
 
 		/*
-		 * Validate both models before starting
-		 * the transaction.
+		 * Validate the category first. The translation cannot
+		 * be fully validated yet because category_id is generated
+		 * only after the category has been inserted.
 		 */
-		$categoryValid =
-			$model->validate();
-
-		$translationValid =
-			$translation->validate();
-
-		if (
-			!$categoryValid ||
-			!$translationValid
-		) {
-
+		if (!$model->validate()) {
 			return array(
 				'model' => $model,
 				'translation' => $translation,
@@ -94,29 +77,44 @@ class CategoryManager
 			);
 		}
 
-		$transaction =
-			Yii::app()->db->beginTransaction();
+		$transaction = Yii::app()->db->beginTransaction();
 
 		try {
-
 			/*
 			 * Save category first so we obtain its ID.
 			 */
 			if (!$model->save(false)) {
-
 				throw new Exception(
 					'No se pudo guardar la categoría.'
 				);
 			}
 
 			/*
-			 * Associate translation with category.
+			 * Associate the translation with the newly created category.
 			 */
-			$translation->category_id =
-				$model->id;
+			$translation->category_id = $model->id;
+
+			/*
+			 * Validate only after category_id has been assigned.
+			 */
+			if (!$translation->validate()) {
+				$translationErrors = $translation->getErrors();
+				$errorMessages = array();
+
+				foreach ($translationErrors as $attributeErrors) {
+					foreach ($attributeErrors as $errorMessage) {
+						$errorMessages[] = $errorMessage;
+					}
+				}
+
+				throw new Exception(
+					$errorMessages
+						? 'La traducción no es válida: ' . implode(' ', $errorMessages)
+						: 'La traducción de la categoría no es válida.'
+				);
+			}
 
 			if (!$translation->save(false)) {
-
 				throw new Exception(
 					'No se pudo guardar la traducción de la categoría.'
 				);
@@ -132,7 +130,6 @@ class CategoryManager
 			);
 
 		} catch (Exception $e) {
-
 			$transaction->rollback();
 
 			$model->addError(
@@ -148,7 +145,6 @@ class CategoryManager
 			);
 		}
 	}
-
 
 	/**
 	 * Updates an existing category.
